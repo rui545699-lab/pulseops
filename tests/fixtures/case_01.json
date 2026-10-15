@@ -1,0 +1,54 @@
+{
+  "funnel": {
+    "baseline": {"view_sessions": 8224, "converted_sessions": 2599, "view_users": 7099, "converted_users": 2305},
+    "target": {"view_sessions": 4119, "converted_sessions": 944, "view_users": 3729, "converted_users": 866}
+  },
+  "segments": {
+    "lifecycle": {
+      "baseline": [
+        {"segment": "new", "view_users": 5419, "converted_users": 1682},
+        {"segment": "returning", "view_users": 1680, "converted_users": 623}
+      ],
+      "target": [
+        {"segment": "new", "view_users": 2910, "converted_users": 567},
+        {"segment": "returning", "view_users": 819, "converted_users": 299}
+      ]
+    },
+    "device": {
+      "baseline": [
+        {"segment": "desktop", "view_users": 3500, "converted_users": 1088},
+        {"segment": "mobile", "view_users": 3400, "converted_users": 1058},
+        {"segment": "tablet", "view_users": 80, "converted_users": 22}
+      ],
+      "target": [
+        {"segment": "desktop", "view_users": 1850, "converted_users": 358},
+        {"segment": "mobile", "view_users": 1800, "converted_users": 362},
+        {"segment": "tablet", "view_users": 45, "converted_users": 11}
+      ]
+    },
+    "acquisition": {
+      "baseline": [
+        {"segment": "(direct) / (none)", "view_users": 2600, "converted_users": 841},
+        {"segment": "google / organic", "view_users": 2100, "converted_users": 625},
+        {"segment": "google / cpc", "view_users": 1300, "converted_users": 393}
+      ],
+      "target": [
+        {"segment": "(direct) / (none)", "view_users": 1350, "converted_users": 270},
+        {"segment": "google / organic", "view_users": 1050, "converted_users": 181},
+        {"segment": "google / cpc", "view_users": 650, "converted_users": 90}
+      ]
+    },
+    "category": {
+      "baseline": [
+        {"segment": "Apparel", "view_users": 1800, "converted_users": 558},
+        {"segment": "Accessories", "view_users": 1200, "converted_users": 360},
+        {"segment": "Electronics", "view_users": 700, "converted_users": 140}
+      ],
+      "target": [
+        {"segment": "Apparel", "view_users": 900, "converted_users": 180},
+        {"segment": "Accessories", "view_users": 620, "converted_users": 190},
+        {"segment": "Electronics", "view_users": 350, "converted_users": 84}
+      ]
+    }
+  }
+}
