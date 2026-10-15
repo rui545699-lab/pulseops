@@ -20,6 +20,8 @@ class Confidence(str, Enum):
 class RecommendedStatus(str, Enum):
     NEEDS_EVIDENCE = "NEEDS_EVIDENCE"
     MONITOR = "MONITOR"
+    DATA_QUALITY_ALERT = "DATA_QUALITY_ALERT"
+    NO_OPPORTUNITY = "NO_OPPORTUNITY"
 
 
 class DateWindows(BaseModel):
