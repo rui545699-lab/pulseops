@@ -1,0 +1,717 @@
+{
+  "verification": "Milestone 3.5 Live LLM Planner Verification",
+  "generated_at": "2026-10-15T06:10:08.669444+00:00",
+  "provider": "deepseek",
+  "configured_model": "deepseek-flash",
+  "response_model_identifier": "deepseek-flash",
+  "case": "Golden Case 01",
+  "windows": {
+    "baseline_start": "2020-12-07",
+    "baseline_end": "2020-12-13",
+    "target_start": "2020-12-21",
+    "target_end": "2020-12-27"
+  },
+  "runs": [
+    {
+      "run_id": "case-01-live-1",
+      "planner_guard_log": [
+        {
+          "step_order": 4,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null,
+            "rationale": "Lifecycle must be investigated before secondary dimensions, and no dimensions have been investigated yet. The detected View→Cart decline is a funnel-stage signal with no affected segment specified, so lifecycle is the appropriate first bounded investigation.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle must be investigated before secondary dimensions, and no dimensions have been investigated yet. The detected View→Cart decline is a funnel-stage signal with no affected segment specified, so lifecycle is the appropriate first bounded investigation.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null
+          }
+        },
+        {
+          "step_order": 5,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "device",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check for the new-user View→Cart decline, since the signal is concentrated in new users and device mix can differ for that segment.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check for the new-user View→Cart decline, since the signal is concentrated in new users and device mix can differ for that segment.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "device",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 6,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle and device have already been investigated, and the decline is concentrated in new users while being broad across device types. With remaining budget, investigate acquisition for new users to check whether traffic-source mix or quality shifted.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle and device have already been investigated, and the decline is concentrated in new users while being broad across device types. With remaining budget, investigate acquisition for new users to check whether traffic-source mix or quality shifted.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 7,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "category",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle, device, and acquisition have already been investigated, and one investigation remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded dimension to check is category for the new-user segment.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle, device, and acquisition have already been investigated, and one investigation remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded dimension to check is category for the new-user segment.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "category",
+            "lifecycle_filter": "new"
+          }
+        }
+      ],
+      "proposal_count": 4,
+      "guard_accepted_count": 4,
+      "guard_rejected_count": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposal_count": 0,
+      "duplicate_proposal_count": 0,
+      "premature_stop_count": 0,
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED",
+      "signal_confidence": "HIGH",
+      "root_cause_confidence": "LOW",
+      "recommended_status": "NEEDS_EVIDENCE",
+      "recommended_action_type": "EVIDENCE_COLLECTION",
+      "unsupported_causal_claim": false,
+      "live_proposal_accepted": true,
+      "run_passed": true,
+      "final_output": {
+        "evidence": [
+          "Strict session view_item→add_to_cart conversion declined by 8.68 percentage points.",
+          "The decline is concentrated in New Users.",
+          "Returning Users remained broadly stable.",
+          "Major device types declined in parallel.",
+          "Major acquisition sources declined within-source while channel mix stayed broadly stable.",
+          "Category effects were mixed across sufficiently sampled categories."
+        ],
+        "hypotheses": [
+          "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
+          "Promotion or pricing context may contribute to the decline; this is unverified.",
+          "Landing experience differences may contribute to the decline; this is unverified.",
+          "Inventory or content differences may contribute to the decline; this is unverified."
+        ],
+        "unknowns": [
+          "Mixed category movements do not establish a single category root cause.",
+          "Landing page changes and page version are unknown.",
+          "Pricing history and promotion configuration are unknown.",
+          "Inventory and content availability are unknown.",
+          "Page performance is unknown.",
+          "User feedback explaining the observed behavior is unavailable."
+        ]
+      }
+    },
+    {
+      "run_id": "case-01-live-2",
+      "planner_guard_log": [
+        {
+          "step_order": 4,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null,
+            "rationale": "Lifecycle has not been investigated and must be investigated before secondary dimensions. The detected View→Cart decline may differ across lifecycle stages, so investigate lifecycle first within the remaining budget.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has not been investigated and must be investigated before secondary dimensions. The detected View→Cart decline may differ across lifecycle stages, so investigate lifecycle first within the remaining budget.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null
+          }
+        },
+        {
+          "step_order": 5,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "device",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension. The decline is concentrated in new users, so investigate device within the new-user segment to check whether the View→Cart drop is device-specific.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension. The decline is concentrated in new users, so investigate device within the new-user segment to check whether the View→Cart drop is device-specific.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "device",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 6,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With the decline concentrated in new users and remaining budget available, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline aligns with a specific acquisition source or campaign mix.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With the decline concentrated in new users and remaining budget available, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline aligns with a specific acquisition source or campaign mix.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 7,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "category",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle, device, and acquisition have already been investigated, and one unit of budget remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded check is whether the View→Cart decline is concentrated in a specific product category for new users.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle, device, and acquisition have already been investigated, and one unit of budget remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded check is whether the View→Cart decline is concentrated in a specific product category for new users.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "category",
+            "lifecycle_filter": "new"
+          }
+        }
+      ],
+      "proposal_count": 4,
+      "guard_accepted_count": 4,
+      "guard_rejected_count": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposal_count": 0,
+      "duplicate_proposal_count": 0,
+      "premature_stop_count": 0,
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED",
+      "signal_confidence": "HIGH",
+      "root_cause_confidence": "LOW",
+      "recommended_status": "NEEDS_EVIDENCE",
+      "recommended_action_type": "EVIDENCE_COLLECTION",
+      "unsupported_causal_claim": false,
+      "live_proposal_accepted": true,
+      "run_passed": true,
+      "final_output": {
+        "evidence": [
+          "Strict session view_item→add_to_cart conversion declined by 8.68 percentage points.",
+          "The decline is concentrated in New Users.",
+          "Returning Users remained broadly stable.",
+          "Major device types declined in parallel.",
+          "Major acquisition sources declined within-source while channel mix stayed broadly stable.",
+          "Category effects were mixed across sufficiently sampled categories."
+        ],
+        "hypotheses": [
+          "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
+          "Promotion or pricing context may contribute to the decline; this is unverified.",
+          "Landing experience differences may contribute to the decline; this is unverified.",
+          "Inventory or content differences may contribute to the decline; this is unverified."
+        ],
+        "unknowns": [
+          "Mixed category movements do not establish a single category root cause.",
+          "Landing page changes and page version are unknown.",
+          "Pricing history and promotion configuration are unknown.",
+          "Inventory and content availability are unknown.",
+          "Page performance is unknown.",
+          "User feedback explaining the observed behavior is unavailable."
+        ]
+      }
+    },
+    {
+      "run_id": "case-01-live-3",
+      "planner_guard_log": [
+        {
+          "step_order": 4,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null,
+            "rationale": "Lifecycle must be investigated before secondary dimensions. The detected View→Cart decline has no segment attribution yet, so lifecycle is the correct first bounded investigation to localize where the conversion drop occurs.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle must be investigated before secondary dimensions. The detected View→Cart decline has no segment attribution yet, so lifecycle is the correct first bounded investigation to localize where the conversion drop occurs.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null
+          }
+        },
+        {
+          "step_order": 5,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "device",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check to see whether the new-user View→Cart decline is concentrated on a specific device type.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check to see whether the new-user View→Cart decline is concentrated on a specific device type.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "device",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 6,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With remaining budget, investigate acquisition for new users to check whether the new-user decline is concentrated in a specific acquisition source or campaign.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With remaining budget, investigate acquisition for new users to check whether the new-user decline is concentrated in a specific acquisition source or campaign.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 7,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "category",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle, device, and acquisition have already been investigated, and the remaining budget is 1. The decline is concentrated in new users while device and acquisition explanations were rejected, so the only remaining allowed dimension is category. Investigating category for the new-user segment is a bounded next step to check whether the View→Cart decline is concentrated in specific product categories.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle, device, and acquisition have already been investigated, and the remaining budget is 1. The decline is concentrated in new users while device and acquisition explanations were rejected, so the only remaining allowed dimension is category. Investigating category for the new-user segment is a bounded next step to check whether the View→Cart decline is concentrated in specific product categories.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "category",
+            "lifecycle_filter": "new"
+          }
+        }
+      ],
+      "proposal_count": 4,
+      "guard_accepted_count": 4,
+      "guard_rejected_count": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposal_count": 0,
+      "duplicate_proposal_count": 0,
+      "premature_stop_count": 0,
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED",
+      "signal_confidence": "HIGH",
+      "root_cause_confidence": "LOW",
+      "recommended_status": "NEEDS_EVIDENCE",
+      "recommended_action_type": "EVIDENCE_COLLECTION",
+      "unsupported_causal_claim": false,
+      "live_proposal_accepted": true,
+      "run_passed": true,
+      "final_output": {
+        "evidence": [
+          "Strict session view_item→add_to_cart conversion declined by 8.68 percentage points.",
+          "The decline is concentrated in New Users.",
+          "Returning Users remained broadly stable.",
+          "Major device types declined in parallel.",
+          "Major acquisition sources declined within-source while channel mix stayed broadly stable.",
+          "Category effects were mixed across sufficiently sampled categories."
+        ],
+        "hypotheses": [
+          "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
+          "Promotion or pricing context may contribute to the decline; this is unverified.",
+          "Landing experience differences may contribute to the decline; this is unverified.",
+          "Inventory or content differences may contribute to the decline; this is unverified."
+        ],
+        "unknowns": [
+          "Mixed category movements do not establish a single category root cause.",
+          "Landing page changes and page version are unknown.",
+          "Pricing history and promotion configuration are unknown.",
+          "Inventory and content availability are unknown.",
+          "Page performance is unknown.",
+          "User feedback explaining the observed behavior is unavailable."
+        ]
+      }
+    },
+    {
+      "run_id": "case-01-live-4",
+      "planner_guard_log": [
+        {
+          "step_order": 4,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null,
+            "rationale": "No dimensions have been investigated yet, and lifecycle must be investigated before secondary dimensions. The detected View→Cart decline is a funnel-stage signal with no affected segment specified, so lifecycle is the appropriate first bounded investigation.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "No dimensions have been investigated yet, and lifecycle must be investigated before secondary dimensions. The detected View→Cart decline is a funnel-stage signal with no affected segment specified, so lifecycle is the appropriate first bounded investigation.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null
+          }
+        },
+        {
+          "step_order": 5,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "device",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension. The decline is concentrated in new users, so investigate device within the new-user segment to check whether the View→Cart decline is device-specific.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension. The decline is concentrated in new users, so investigate device within the new-user segment to check whether the View→Cart decline is device-specific.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "device",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 6,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With two investigations remaining and the decline concentrated in new users, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline is tied to a particular acquisition source or campaign mix.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With two investigations remaining and the decline concentrated in new users, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline is tied to a particular acquisition source or campaign mix.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 7,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "category",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle, device, and acquisition have already been investigated, and the remaining budget is 1. The decline is concentrated in new users and is broad across devices and acquisition sources, so the only remaining allowed dimension is category. Investigating category for the new-user segment is a bounded next step to check whether the decline is concentrated in specific product categories rather than a broad new-user phenomenon.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle, device, and acquisition have already been investigated, and the remaining budget is 1. The decline is concentrated in new users and is broad across devices and acquisition sources, so the only remaining allowed dimension is category. Investigating category for the new-user segment is a bounded next step to check whether the decline is concentrated in specific product categories rather than a broad new-user phenomenon.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "category",
+            "lifecycle_filter": "new"
+          }
+        }
+      ],
+      "proposal_count": 4,
+      "guard_accepted_count": 4,
+      "guard_rejected_count": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposal_count": 0,
+      "duplicate_proposal_count": 0,
+      "premature_stop_count": 0,
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED",
+      "signal_confidence": "HIGH",
+      "root_cause_confidence": "LOW",
+      "recommended_status": "NEEDS_EVIDENCE",
+      "recommended_action_type": "EVIDENCE_COLLECTION",
+      "unsupported_causal_claim": false,
+      "live_proposal_accepted": true,
+      "run_passed": true,
+      "final_output": {
+        "evidence": [
+          "Strict session view_item→add_to_cart conversion declined by 8.68 percentage points.",
+          "The decline is concentrated in New Users.",
+          "Returning Users remained broadly stable.",
+          "Major device types declined in parallel.",
+          "Major acquisition sources declined within-source while channel mix stayed broadly stable.",
+          "Category effects were mixed across sufficiently sampled categories."
+        ],
+        "hypotheses": [
+          "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
+          "Promotion or pricing context may contribute to the decline; this is unverified.",
+          "Landing experience differences may contribute to the decline; this is unverified.",
+          "Inventory or content differences may contribute to the decline; this is unverified."
+        ],
+        "unknowns": [
+          "Mixed category movements do not establish a single category root cause.",
+          "Landing page changes and page version are unknown.",
+          "Pricing history and promotion configuration are unknown.",
+          "Inventory and content availability are unknown.",
+          "Page performance is unknown.",
+          "User feedback explaining the observed behavior is unavailable."
+        ]
+      }
+    },
+    {
+      "run_id": "case-01-live-5",
+      "planner_guard_log": [
+        {
+          "step_order": 4,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null,
+            "rationale": "No dimensions have been investigated yet, and lifecycle must be investigated before secondary dimensions. The detected View→Cart decline with no affected segment identified warrants a lifecycle breakdown to localize the drop.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "No dimensions have been investigated yet, and lifecycle must be investigated before secondary dimensions. The detected View→Cart decline with no affected segment identified warrants a lifecycle breakdown to localize the drop.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "lifecycle",
+            "lifecycle_filter": null
+          }
+        },
+        {
+          "step_order": 5,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "device",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check to see whether the new-user View→Cart decline is concentrated on a specific device type.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle has already been investigated. The remaining budget allows a secondary dimension; device is a bounded next check to see whether the new-user View→Cart decline is concentrated on a specific device type.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "device",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 6,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With 2 investigation units remaining and the decline concentrated in new users, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline aligns with a specific acquisition source or campaign mix.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle and device have already been investigated; device concentration was rejected because the decline is broad across major device types. With 2 investigation units remaining and the decline concentrated in new users, the next bounded step is to examine acquisition for the new-user segment to see whether the View→Cart decline aligns with a specific acquisition source or campaign mix.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "acquisition",
+            "lifecycle_filter": "new"
+          }
+        },
+        {
+          "step_order": 7,
+          "planner_proposal": {
+            "action": "INVESTIGATE",
+            "dimension": "category",
+            "lifecycle_filter": "new",
+            "rationale": "Lifecycle, device, and acquisition have already been investigated, and one investigation remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded dimension to test is category for the new-user segment.",
+            "hypothesis_code": null
+          },
+          "planner_rationale": "Lifecycle, device, and acquisition have already been investigated, and one investigation remains. The decline is concentrated in new users and is broad across devices and acquisition sources, so the remaining bounded dimension to test is category for the new-user segment.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "executed_action": {
+            "tool_name": "compare_segments",
+            "dimension": "category",
+            "lifecycle_filter": "new"
+          }
+        }
+      ],
+      "proposal_count": 4,
+      "guard_accepted_count": 4,
+      "guard_rejected_count": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposal_count": 0,
+      "duplicate_proposal_count": 0,
+      "premature_stop_count": 0,
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED",
+      "signal_confidence": "HIGH",
+      "root_cause_confidence": "LOW",
+      "recommended_status": "NEEDS_EVIDENCE",
+      "recommended_action_type": "EVIDENCE_COLLECTION",
+      "unsupported_causal_claim": false,
+      "live_proposal_accepted": true,
+      "run_passed": true,
+      "final_output": {
+        "evidence": [
+          "Strict session view_item→add_to_cart conversion declined by 8.68 percentage points.",
+          "The decline is concentrated in New Users.",
+          "Returning Users remained broadly stable.",
+          "Major device types declined in parallel.",
+          "Major acquisition sources declined within-source while channel mix stayed broadly stable.",
+          "Category effects were mixed across sufficiently sampled categories."
+        ],
+        "hypotheses": [
+          "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
+          "Promotion or pricing context may contribute to the decline; this is unverified.",
+          "Landing experience differences may contribute to the decline; this is unverified.",
+          "Inventory or content differences may contribute to the decline; this is unverified."
+        ],
+        "unknowns": [
+          "Mixed category movements do not establish a single category root cause.",
+          "Landing page changes and page version are unknown.",
+          "Pricing history and promotion configuration are unknown.",
+          "Inventory and content availability are unknown.",
+          "Page performance is unknown.",
+          "User feedback explaining the observed behavior is unavailable."
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "run_count": 5,
+    "investigation_paths": [
+      [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ],
+      [
+        "lifecycle",
+        "device",
+        "acquisition",
+        "category"
+      ]
+    ],
+    "proposal_count": 20,
+    "guard_accepted_count": 20,
+    "guard_rejected_count": 0,
+    "fallback_count": 0,
+    "fallback_reasons": {},
+    "illegal_proposal_count": 0,
+    "duplicate_proposal_count": 0,
+    "premature_stop_count": 0,
+    "final_status_consistent": true,
+    "unsupported_causal_claim_count": 0,
+    "overall_verification_result": "PASS"
+  }
+}
