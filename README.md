@@ -1,4 +1,4 @@
-# PulseOps — Milestone 1 Analytics Backend
+# PulseOps Analytics Backend
 
 PulseOps is a deterministic analytics layer for investigating user-operations
 signals in the public GA4 ecommerce sample. This milestone intentionally contains
@@ -50,6 +50,18 @@ python -m compileall -q pulseops tests
 The Case 01 fixture reproduces the verified 2020-12-07–13 baseline and
 2020-12-21–27 target interpretation. Live BigQuery execution is deliberately an
 optional integration concern.
+
+## Product API and persistence
+
+Analysis runs, bounded Agent steps, and material-signal opportunities are stored
+through SQLAlchemy. `DATABASE_URL` defaults to `sqlite:///./pulseops.db`; a
+PostgreSQL SQLAlchemy URL can be supplied later without coupling the Agent to a
+database implementation.
+
+The Product API exposes `POST /api/runs`, run and step read endpoints under
+`/api/runs`, and opportunity read endpoints under `/api/opportunities`. Runtime
+database files, `.env`, API keys, authorization headers, and raw user-level data
+are not committed or included in Product API responses.
 
 ## Manual live integration verification
 
