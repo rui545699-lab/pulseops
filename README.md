@@ -63,6 +63,39 @@ The Product API exposes `POST /api/runs`, run and step read endpoints under
 database files, `.env`, API keys, authorization headers, and raw user-level data
 are not committed or included in Product API responses.
 
+## Frontend
+
+The Next.js product UI lives in `frontend/` and reads the FastAPI Product API.
+Copy `frontend/.env.example` to `frontend/.env.local` when the backend is not at
+the default `http://localhost:8000`, then run:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The UI has Overview, Opportunity Detail, and Investigation Run views. It never
+embeds Golden Case metrics or evidence in React components; all product records
+come from the API configured by `NEXT_PUBLIC_API_BASE_URL`.
+
+## Local portfolio demo
+
+Reset and seed a presentation-only SQLite database under `work/` with one
+material-signal run, one data-quality alert, and one no-signal run:
+
+```powershell
+python -m scripts.seed_demo --database-path work/pulseops-demo.db
+$env:DATABASE_URL = "sqlite:///./work/pulseops-demo.db"
+uvicorn pulseops.backend.main:app --host 127.0.0.1 --port 8000
+```
+
+The seed uses the verified Case 01 analytics fixture rather than claiming a live
+BigQuery query. When `DEEPSEEK_API_KEY` is configured, only the material-signal
+seed run uses the real bounded DeepSeek Planner; provider failures retain the
+existing deterministic fallback. The reset command refuses database paths
+outside the ignored `work/` directory.
+
 ## Manual live integration verification
 
 Live verification is separate from ordinary `pytest`, so missing cloud credentials

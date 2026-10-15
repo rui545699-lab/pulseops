@@ -1,16 +1,29 @@
 from __future__ import annotations
 
+import re
 from datetime import date, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from pulseops.backend.persistence.models import AnalysisRun, AgentStep, Opportunity
 from pulseops.backend.persistence.service import RunService
 from pulseops.backend.schemas.analytics import DateWindows
 
 router = APIRouter(prefix="/api", tags=["product"])
+
+_REDUNDANT_HYPOTHESIS_SUFFIX = re.compile(
+    r"\s*(?:[;,:-]\s*)?\(?\s*(?:this\s+is\s+)?unverified\s*\)?[.!]?\s*$",
+    re.IGNORECASE,
+)
+
+
+def _polish_hypothesis_copy(value: str) -> str:
+    polished = _REDUNDANT_HYPOTHESIS_SUFFIX.sub("", value).rstrip()
+    if polished and polished[-1] not in ".!?":
+        polished += "."
+    return polished
 
 
 class RunCreate(DateWindows):
@@ -92,6 +105,11 @@ class OpportunityRead(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("hypotheses", mode="before")
+    @classmethod
+    def polish_hypothesis_copy(cls, values: list[str]) -> list[str]:
+        return [_polish_hypothesis_copy(value) for value in values]
 
 
 def get_run_service(request: Request) -> RunService:

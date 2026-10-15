@@ -168,7 +168,8 @@ def test_case_01_stops_with_separate_confidence_and_safe_action(case_run):
 def test_case_01_preserves_evidence_hypothesis_unknown_boundaries(case_run):
     _, state = case_run
     assert all("unverified" not in item.lower() for item in state.evidence)
-    assert state.hypotheses and all("unverified" in item.lower() for item in state.hypotheses)
+    assert state.hypotheses and all("may contribute" in item.lower() for item in state.hypotheses)
+    assert all("unverified" not in item.lower() for item in state.hypotheses)
     assert any("pricing" in item.lower() for item in state.unknowns)
     assert state.do_not_recommend_yet
     unsupported = ("caused", "导致了", "is the root cause")

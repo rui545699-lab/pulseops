@@ -65,6 +65,27 @@ def test_database_schema_contains_three_product_tables(api):
     )
 
 
+@pytest.mark.parametrize(
+    "origin",
+    ["http://localhost:3000", "http://127.0.0.1:3000"],
+)
+def test_frontend_origin_is_allowed_by_cors(api, origin):
+    client, _, _ = api
+    response = client.options(
+        "/api/runs",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    assert "POST" in response.headers["access-control-allow-methods"]
+    assert "OPTIONS" in response.headers["access-control-allow-methods"]
+    assert "Content-Type" in response.headers["access-control-allow-headers"]
+
+
 def test_case_01_persists_analysis_run(api):
     client, _, _ = api
     body = create_case(client).json()
@@ -102,12 +123,21 @@ def test_case_01_persists_expected_opportunity(api):
 
 
 def test_opportunity_preserves_evidence_discipline_fields(api):
-    client, _, _ = api
+    client, app, _ = api
     create_case(client)
+    with app.state.run_service.sessions() as session, session.begin():
+        opportunity_row = session.scalar(select(Opportunity))
+        opportunity_row.hypotheses = [
+            "Promotion or pricing context may contribute to the decline; this is unverified.",
+            "Landing experience differences may contribute to the decline; unverified",
+        ]
     opportunity = client.get("/api/opportunities").json()[0]
     assert opportunity["evidence"]
     assert any("8.68 percentage points" in item for item in opportunity["evidence"])
-    assert opportunity["hypotheses"]
+    assert opportunity["hypotheses"] == [
+        "Promotion or pricing context may contribute to the decline.",
+        "Landing experience differences may contribute to the decline.",
+    ]
     assert opportunity["unknowns"]
     assert opportunity["do_not_recommend_yet"]
     assert isinstance(opportunity["evidence"], list)

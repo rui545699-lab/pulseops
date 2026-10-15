@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import Literal
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from pulseops.backend.analytics.bigquery_client import BigQueryExecutor
@@ -56,6 +57,20 @@ def create_app(
     )
     application.state.database_engine = engine
     application.state.run_service = RunService(sessions, runner or DefaultAnalysisRunner())
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            origin.strip()
+            for origin in os.getenv(
+                "CORS_ORIGINS",
+                "http://localhost:3000,http://127.0.0.1:3000",
+            ).split(",")
+            if origin.strip()
+        ],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type"],
+    )
     application.include_router(product_router)
 
     @application.get("/health")

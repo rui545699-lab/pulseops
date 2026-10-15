@@ -1,10 +1,10 @@
 """Evidence-safe language shared by deterministic and future LLM modes."""
 
 UNVERIFIED_HYPOTHESES = (
-    "First-session purchase decision friction may contribute to the New User decline; this is unverified.",
-    "Promotion or pricing context may contribute to the decline; this is unverified.",
-    "Landing experience differences may contribute to the decline; this is unverified.",
-    "Inventory or content differences may contribute to the decline; this is unverified.",
+    "First-session purchase decision friction may contribute to the New User decline.",
+    "Promotion or pricing context may contribute to the decline.",
+    "Landing experience differences may contribute to the decline.",
+    "Inventory or content differences may contribute to the decline.",
 )
 
 ROOT_CAUSE_UNKNOWNS = (

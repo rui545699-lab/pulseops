@@ -243,4 +243,5 @@ def test_final_output_contains_no_unsupported_causal_statement():
     )
     final_text = " ".join(state.evidence + state.hypotheses + state.unknowns).lower()
     assert "caused the decline" not in final_text
-    assert all("unverified" in item.lower() for item in state.hypotheses)
+    assert all("may contribute" in item.lower() for item in state.hypotheses)
+    assert all("unverified" not in item.lower() for item in state.hypotheses)
