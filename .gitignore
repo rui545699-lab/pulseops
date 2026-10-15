@@ -4,7 +4,14 @@ __pycache__/
 .pytest_cache/
 venv/
 .venv/
-.env
-/pulseops.db
+.env*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+credentials*.json
+service-account*.json
+service_account*.json
+google-credentials*.json
 work/
 pytest-cache-files-*/
