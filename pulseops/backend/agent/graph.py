@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+from json import JSONDecodeError
 from typing import Protocol
 from uuid import uuid4
 
+from pydantic import ValidationError
+
+from pulseops.backend.agent.guard import GuardStatus, PolicyGuard
+from pulseops.backend.agent.planner import (
+    DeterministicPlanner,
+    PlannerAction,
+    PlannerMode,
+    PlannerProposal,
+    PlannerProtocol,
+    parse_planner_output,
+)
 from pulseops.backend.agent.policies import (
     apply_segment_policy,
     finalize_needs_evidence,
@@ -74,11 +86,21 @@ class AnalyticsToolset:
 
 
 class InvestigationAgent:
-    def __init__(self, tools: InvestigationTools, investigation_budget: int = 4) -> None:
+    def __init__(
+        self,
+        tools: InvestigationTools,
+        investigation_budget: int = 4,
+        planner_mode: PlannerMode | str = PlannerMode.DETERMINISTIC,
+        planner: PlannerProtocol | None = None,
+    ) -> None:
         if not 0 <= investigation_budget <= len(ALLOWED_DIMENSIONS):
             raise ValueError("investigation_budget must be between 0 and 4")
         self.tools = tools
         self.investigation_budget = investigation_budget
+        self.planner_mode = PlannerMode(planner_mode)
+        self.planner = planner
+        self.deterministic_planner = DeterministicPlanner()
+        self.guard = PolicyGuard()
 
     def run(self, windows: DateWindows, run_id: str | None = None) -> AgentState:
         state = AgentState(
@@ -97,14 +119,83 @@ class InvestigationAgent:
         events = next(list(pair) for name, pair in FUNNEL_PAIRS if name == signal.name)
         self._analyze_signal(state, windows, events)
 
-        while (dimension := next_dimension(state)) is not None:
-            self._investigate_dimension(state, windows, dimension)
+        while next_dimension(state) is not None:
+            proposal, planning = self._planning_decision(state)
+            if proposal.action == PlannerAction.STOP:
+                break
+            self._investigate_dimension(
+                state,
+                windows,
+                proposal.dimension,
+                proposal.lifecycle_filter,
+                planning,
+            )
 
         finalize_needs_evidence(state)
         state.stop_reason = _investigation_stop_reason(state)
         reason = continuation_reason(state, None)
         self._log(state, "STOP_DRILLDOWN", None, {}, {}, "STOP", reason)
         return state
+
+    def _planning_decision(self, state: AgentState) -> tuple[PlannerProposal, dict]:
+        if self.planner_mode == PlannerMode.DETERMINISTIC:
+            proposal = self.deterministic_planner.plan(state)
+            return proposal, {
+                "planner_mode": self.planner_mode.value,
+                "planner_proposal": _proposal_summary(proposal),
+                "planner_rationale": proposal.rationale,
+                "guard_status": GuardStatus.ACCEPTED.value,
+                "guard_reason": "DETERMINISTIC_POLICY",
+                "fallback_used": False,
+                "fallback_reason": None,
+            }
+
+        fallback = self.deterministic_planner.plan(state)
+        if self.planner is None:
+            return fallback, _fallback_trace(
+                self.planner_mode, None, "NO_PLANNER_CONFIGURED"
+            )
+        try:
+            raw = self.planner.plan(state.model_copy(deep=True))
+        except Exception as exc:  # provider boundary must never crash the investigation
+            return fallback, _fallback_trace(
+                self.planner_mode,
+                None,
+                f"PROVIDER_ERROR:{type(exc).__name__}",
+            )
+
+        raw_summary = _raw_proposal_summary(raw)
+        try:
+            proposal = parse_planner_output(raw)
+        except JSONDecodeError:
+            return fallback, _fallback_trace(
+                self.planner_mode, raw_summary, "INVALID_JSON"
+            )
+        except (ValidationError, TypeError, ValueError):
+            return fallback, _fallback_trace(
+                self.planner_mode, raw_summary, "SCHEMA_VALIDATION_FAILURE"
+            )
+
+        guard = self.guard.validate(state, proposal)
+        if guard.status == GuardStatus.REJECTED:
+            return fallback, {
+                "planner_mode": self.planner_mode.value,
+                "planner_proposal": _proposal_summary(proposal),
+                "planner_rationale": proposal.rationale,
+                "guard_status": guard.status.value,
+                "guard_reason": guard.reason.value,
+                "fallback_used": True,
+                "fallback_reason": guard.reason.value,
+            }
+        return proposal, {
+            "planner_mode": self.planner_mode.value,
+            "planner_proposal": _proposal_summary(proposal),
+            "planner_rationale": proposal.rationale,
+            "guard_status": guard.status.value,
+            "guard_reason": guard.reason.value,
+            "fallback_used": False,
+            "fallback_reason": None,
+        }
 
     def _validate(self, state: AgentState, windows: DateWindows) -> None:
         result = self.tools.validate_data(windows)
@@ -188,9 +279,15 @@ class InvestigationAgent:
         )
 
     def _investigate_dimension(
-        self, state: AgentState, windows: DateWindows, dimension: str
+        self,
+        state: AgentState,
+        windows: DateWindows,
+        dimension: str | None,
+        lifecycle_filter: str | None,
+        planning: dict,
     ) -> None:
-        lifecycle_filter = "new" if dimension != "lifecycle" and state.affected_segment == "new_users" else None
+        if dimension is None:
+            raise ValueError("accepted INVESTIGATE proposal requires a dimension")
         result = self.tools.compare_segments(dimension, windows, lifecycle_filter)
         state.segment_results[dimension] = result
         state.investigated_dimensions.append(dimension)
@@ -225,6 +322,7 @@ class InvestigationAgent:
             reason,
             hypothesis.code if hypothesis else None,
             hypothesis.status if hypothesis else None,
+            **planning,
         )
 
     @staticmethod
@@ -238,6 +336,13 @@ class InvestigationAgent:
         reason: str,
         hypothesis: str | None = None,
         hypothesis_status=None,
+        planner_mode: str | None = None,
+        planner_proposal: dict | None = None,
+        planner_rationale: str | None = None,
+        guard_status: str | None = None,
+        guard_reason: str | None = None,
+        fallback_used: bool = False,
+        fallback_reason: str | None = None,
     ) -> None:
         state.agent_steps.append(
             AgentStep(
@@ -251,12 +356,48 @@ class InvestigationAgent:
                 hypothesis=hypothesis,
                 hypothesis_status=hypothesis_status,
                 remaining_budget=state.remaining_investigation_budget,
+                planner_mode=planner_mode,
+                planner_proposal=planner_proposal,
+                planner_rationale=planner_rationale,
+                guard_status=guard_status,
+                guard_reason=guard_reason,
+                fallback_used=fallback_used,
+                fallback_reason=fallback_reason,
             )
         )
 
 
 def _window_input(windows: DateWindows) -> dict[str, str]:
     return {name: value.isoformat() for name, value in windows.model_dump().items()}
+
+
+def _proposal_summary(proposal: PlannerProposal) -> dict:
+    return proposal.model_dump(mode="json")
+
+
+def _raw_proposal_summary(raw) -> dict | None:
+    if isinstance(raw, PlannerProposal):
+        return _proposal_summary(raw)
+    if not isinstance(raw, dict):
+        return None
+    allowed = {"action", "dimension", "lifecycle_filter", "rationale", "hypothesis_code"}
+    return {key: raw[key] for key in allowed if key in raw}
+
+
+def _fallback_trace(
+    mode: PlannerMode,
+    proposed: dict | None,
+    reason: str,
+) -> dict:
+    return {
+        "planner_mode": mode.value,
+        "planner_proposal": proposed,
+        "planner_rationale": proposed.get("rationale") if proposed else None,
+        "guard_status": GuardStatus.FALLBACK.value,
+        "guard_reason": reason,
+        "fallback_used": True,
+        "fallback_reason": reason,
+    }
 
 
 def _investigation_stop_reason(state: AgentState) -> StopReason:

@@ -20,3 +20,15 @@ DO_NOT_RECOMMEND = (
     "Do not perform a full-audience recall before a causal mechanism is validated.",
     "Do not make broad page changes before landing-page, version, and performance evidence is reviewed.",
 )
+
+
+PLANNER_SYSTEM_PROMPT = """You are an investigation planner, not a metric calculator.
+Propose only INVESTIGATE or STOP. Investigation dimensions are limited to lifecycle,
+device, acquisition, and category. Never choose an already investigated dimension,
+and respect the remaining investigation budget. Lifecycle must be investigated before
+secondary dimensions. Base proposals on the supplied Evidence, rejected hypotheses,
+and Unknowns. Do not modify tool facts, metrics, user counts, conversion rates,
+confidence, status, or recommendations. Do not claim an unverified causal relationship.
+When evidence is insufficient, propose bounded evidence collection or STOP rather than
+inventing a root cause. Return only the requested structured proposal.
+"""

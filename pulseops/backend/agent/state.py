@@ -55,6 +55,13 @@ class AgentStep(BaseModel):
     hypothesis: str | None = None
     hypothesis_status: HypothesisStatus | None = None
     remaining_budget: int
+    planner_mode: str | None = None
+    planner_proposal: dict[str, Any] | None = None
+    planner_rationale: str | None = None
+    guard_status: str | None = None
+    guard_reason: str | None = None
+    fallback_used: bool = False
+    fallback_reason: str | None = None
 
 
 class AgentState(BaseModel):
