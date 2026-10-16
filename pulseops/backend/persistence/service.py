@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from inspect import signature
 from uuid import uuid4
 
 from sqlalchemy import select
@@ -21,10 +22,18 @@ class RunService:
         self.sessions = sessions
         self.runner = runner
 
-    def execute(self, windows: DateWindows, planner_mode: str) -> AnalysisRun:
+    def execute(
+        self,
+        windows: DateWindows,
+        planner_mode: str,
+        analysis_type: str = "CONVERSION",
+    ) -> AnalysisRun:
         run_id = str(uuid4())
         started_at = datetime.now(timezone.utc)
-        execution = self.runner.run(windows, planner_mode, run_id)
+        if "analysis_type" in signature(self.runner.run).parameters:
+            execution = self.runner.run(windows, planner_mode, run_id, analysis_type)
+        else:  # Backward-compatible adapter boundary for existing local runners.
+            execution = self.runner.run(windows, planner_mode, run_id)
         completed_at = datetime.now(timezone.utc)
 
         run = self._run_from_state(
@@ -85,19 +94,41 @@ class RunService:
         completed_at: datetime,
     ) -> AnalysisRun:
         funnel = state.funnel_result
+        retention = state.retention_result
+        recovery = state.recovery_result
+        if retention is not None:
+            overall_baseline_rate = retention.baseline.return_rate_7d
+            overall_target_rate = retention.target.return_rate_7d
+            overall_delta_pp = retention.delta_pp
+        else:
+            overall_baseline_rate = funnel.baseline.session_conversion_rate if funnel else None
+            overall_target_rate = funnel.target.session_conversion_rate if funnel else None
+            overall_delta_pp = funnel.session_delta_pp if funnel else None
         return AnalysisRun(
             id=state.run_id,
+            analysis_type=_value(state.investigation_profile),
             baseline_start=state.baseline_start,
             baseline_end=state.baseline_end,
             target_start=state.target_start,
             target_end=state.target_end,
+            post_start=state.post_start,
+            post_end=state.post_end,
             planner_mode=planner_mode,
             provider=provider,
             model_identifier=model_identifier,
             detected_signal=state.detected_signal,
-            overall_baseline_rate=(funnel.baseline.session_conversion_rate if funnel else None),
-            overall_target_rate=(funnel.target.session_conversion_rate if funnel else None),
-            overall_delta_pp=(funnel.session_delta_pp if funnel else None),
+            overall_baseline_rate=overall_baseline_rate,
+            overall_target_rate=overall_target_rate,
+            overall_delta_pp=overall_delta_pp,
+            post_rate=(retention.post.return_rate_7d if retention else None),
+            target_to_post_delta_pp=(retention.target_to_post_delta_pp if retention else None),
+            baseline_to_post_delta_pp=(retention.baseline_to_post_delta_pp if retention else None),
+            recovery_ratio=(recovery.recovery_ratio_pct if recovery else None),
+            risk_pattern=(_value(recovery.risk_pattern) if recovery else None),
+            return_timing=(
+                state.return_timing_result.model_dump(mode="json")
+                if state.return_timing_result else None
+            ),
             affected_segment=state.affected_segment,
             signal_confidence=_value(state.signal_confidence),
             root_cause_confidence=_value(state.root_cause_confidence),
@@ -140,19 +171,56 @@ class RunService:
 
     @staticmethod
     def _opportunity_from_state(state: AgentState) -> Opportunity | None:
-        if state.detected_signal is None or state.funnel_result is None:
+        if state.detected_signal is None or (
+            state.funnel_result is None and state.retention_result is None
+        ):
             return None
         baseline_rate, target_rate, delta_pp = _opportunity_rates(state)
+        lifecycle = state.retention_result is not None
+        recovery = state.recovery_result
+        hypothesis_records = [
+            item.model_dump(mode="json")
+            for item in (
+                state.rejected_hypotheses
+                + state.supported_hypotheses
+                + state.insufficient_hypotheses
+            )
+        ]
         return Opportunity(
             id=str(uuid4()),
             run_id=state.run_id,
-            title=f"{state.detected_signal} decline for {state.affected_segment or 'all users'}",
-            opportunity_type="CONVERSION_DECLINE",
+            title=(
+                _lifecycle_opportunity_title(_value(recovery.risk_pattern) if recovery else None)
+                if lifecycle
+                else f"{state.detected_signal} decline for {state.affected_segment or 'all users'}"
+            ),
+            opportunity_type=state.opportunity_type,
             affected_segment=state.affected_segment,
             metric=state.detected_signal,
             baseline_rate=baseline_rate,
             target_rate=target_rate,
             delta_pp=delta_pp,
+            post_rate=(state.retention_result.post.return_rate_7d if lifecycle else None),
+            target_to_post_delta_pp=(
+                state.retention_result.target_to_post_delta_pp if lifecycle else None
+            ),
+            baseline_to_post_delta_pp=(
+                state.retention_result.baseline_to_post_delta_pp if lifecycle else None
+            ),
+            recovery_ratio=(recovery.recovery_ratio_pct if recovery else None),
+            risk_pattern=(_value(recovery.risk_pattern) if recovery else None),
+            return_timing=(
+                state.return_timing_result.model_dump(mode="json")
+                if state.return_timing_result else None
+            ),
+            segment_analysis=(
+                {
+                    name: result.model_dump(mode="json")
+                    for name, result in state.lifecycle_segment_results.items()
+                }
+                if lifecycle else None
+            ),
+            hypothesis_records=hypothesis_records or None,
             signal_confidence=_value(state.signal_confidence),
             root_cause_confidence=_value(state.root_cause_confidence),
             evidence=list(state.evidence),
@@ -168,6 +236,13 @@ class RunService:
 
 def _opportunity_rates(state: AgentState) -> tuple[float, float, float]:
     """Use localized lifecycle rates when the Agent identified an affected segment."""
+    if state.retention_result is not None:
+        return (
+            state.retention_result.baseline.return_rate_7d,
+            state.retention_result.target.return_rate_7d,
+            state.retention_result.delta_pp,
+        )
+
     lifecycle_segment = {
         "new_users": "new",
         "returning_users": "returning",
@@ -192,3 +267,12 @@ def _opportunity_rates(state: AgentState) -> tuple[float, float, float]:
         funnel.target.session_conversion_rate,
         funnel.session_delta_pp,
     )
+
+
+def _lifecycle_opportunity_title(risk_pattern: str | None) -> str:
+    if risk_pattern is None:
+        return "New-user 7-day return risk"
+    recovery = risk_pattern.lower().replace("_", " ")
+    if recovery == "no recovery":
+        recovery = "no observed recovery"
+    return f"New-user 7-day return risk with {recovery}"

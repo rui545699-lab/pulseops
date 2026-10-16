@@ -1,0 +1,215 @@
+{
+  "case_02_status": "SUITABLE",
+  "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*",
+  "metric_definition": {
+    "metric": "New-user 7-day Return Rate",
+    "return_event": "At least one session_start on day 1 through day 7 after first_visit",
+    "day_0_excluded": true,
+    "complete_observation_window_required": true
+  },
+  "periods": {
+    "baseline": {
+      "start": "2020-11-30",
+      "end": "2020-12-13",
+      "eligible_new_users": 48753,
+      "returned_users_7d": 4060,
+      "return_rate_7d": 8.3277
+    },
+    "target": {
+      "start": "2020-12-21",
+      "end": "2021-01-03",
+      "eligible_new_users": 33313,
+      "returned_users_7d": 1703,
+      "return_rate_7d": 5.1121
+    },
+    "post": {
+      "start": "2021-01-04",
+      "end": "2021-01-24",
+      "eligible_new_users": 63686,
+      "returned_users_7d": 4397,
+      "return_rate_7d": 6.9042
+    }
+  },
+  "period_changes_pp": {
+    "baseline_to_target": -3.2156,
+    "target_to_post": 1.7921,
+    "baseline_to_post": -1.4235
+  },
+  "recovery": {
+    "classification": "PARTIAL_RECOVERY",
+    "recovered_fraction_of_decline_pct": 55.73,
+    "rule": "NO_RECOVERY when Post is not materially and statistically above Target; FULL_RECOVERY when Post reaches/exceeds Baseline or is not statistically below it; PARTIAL_RECOVERY when Post is statistically above Target and statistically below Baseline.",
+    "target_to_post_z": 10.92,
+    "baseline_to_post_z": -8.97,
+    "interpretation": "Post recovered significantly from Target but remained significantly below Baseline."
+  },
+  "return_timing": {
+    "baseline": {
+      "eligible_new_users": 48753,
+      "d1_returned_users": 2243,
+      "d1_return_rate": 4.6007,
+      "d1_3_returned_users": 3221,
+      "d1_3_cumulative_return_rate": 6.6068,
+      "d1_7_returned_users": 4060,
+      "d1_7_cumulative_return_rate": 8.3277
+    },
+    "target": {
+      "eligible_new_users": 33313,
+      "d1_returned_users": 966,
+      "d1_return_rate": 2.8998,
+      "d1_3_returned_users": 1371,
+      "d1_3_cumulative_return_rate": 4.1155,
+      "d1_7_returned_users": 1703,
+      "d1_7_cumulative_return_rate": 5.1121
+    },
+    "post": {
+      "eligible_new_users": 63686,
+      "d1_returned_users": 2424,
+      "d1_return_rate": 3.8062,
+      "d1_3_returned_users": 3495,
+      "d1_3_cumulative_return_rate": 5.4879,
+      "d1_7_returned_users": 4397,
+      "d1_7_cumulative_return_rate": 6.9042
+    },
+    "baseline_to_target_change_pp": {
+      "d1": -1.7009,
+      "d1_3_cumulative": -2.4913,
+      "d1_7_cumulative": -3.2156
+    },
+    "decline_contribution_pct": {
+      "day_1": 52.90,
+      "days_2_3_increment": 24.58,
+      "days_4_7_increment": 22.52
+    },
+    "interpretation": "The largest component appeared on day 1, but lower returns continued to accumulate through days 2-7; the pattern is not confined to first-day return."
+  },
+  "acquisition": {
+    "segments": [
+      {"source_medium": "(direct) / (none)", "baseline_users": 11530, "baseline_returned": 992, "baseline_rate": 8.6036, "baseline_share": 23.6498, "target_users": 7879, "target_returned": 404, "target_rate": 5.1276, "target_share": 23.6514, "change_pp": -3.4760, "share_change_pp": 0.0016},
+      {"source_medium": "<Other> / <Other>", "baseline_users": 8771, "baseline_returned": 734, "baseline_rate": 8.3685, "baseline_share": 17.9907, "target_users": 6046, "target_returned": 287, "target_rate": 4.7469, "target_share": 18.1491, "change_pp": -3.6216, "share_change_pp": 0.1584},
+      {"source_medium": "<Other> / organic", "baseline_users": 1590, "baseline_returned": 136, "baseline_rate": 8.5535, "baseline_share": 3.2613, "target_users": 1103, "target_returned": 61, "target_rate": 5.5304, "target_share": 3.3110, "change_pp": -3.0231, "share_change_pp": 0.0497},
+      {"source_medium": "<Other> / referral", "baseline_users": 4503, "baseline_returned": 353, "baseline_rate": 7.8392, "baseline_share": 9.2364, "target_users": 3173, "target_returned": 153, "target_rate": 4.8219, "target_share": 9.5248, "change_pp": -3.0173, "share_change_pp": 0.2884},
+      {"source_medium": "google / cpc", "baseline_users": 2781, "baseline_returned": 226, "baseline_rate": 8.1266, "baseline_share": 5.7043, "target_users": 1778, "target_returned": 94, "target_rate": 5.2868, "target_share": 5.3373, "change_pp": -2.8398, "share_change_pp": -0.3670},
+      {"source_medium": "google / organic", "baseline_users": 17128, "baseline_returned": 1427, "baseline_rate": 8.3314, "baseline_share": 35.1322, "target_users": 11735, "target_returned": 624, "target_rate": 5.3174, "target_share": 35.2265, "change_pp": -3.0140, "share_change_pp": 0.0943},
+      {"source_medium": "shop.googlemerchandisestore.com / referral", "baseline_users": 2445, "baseline_returned": 191, "baseline_rate": 7.8119, "baseline_share": 5.0151, "target_users": 1595, "target_returned": 80, "target_rate": 5.0157, "target_share": 4.7879, "change_pp": -2.7962, "share_change_pp": -0.2272}
+    ],
+    "major_segment_coverage_pct": {
+      "baseline": 99.9897,
+      "target": 99.9880
+    },
+    "mix_counterfactual_rate": 8.3272,
+    "composition_effect_pp": 0.0007,
+    "within_source_effect_pp": -3.2144,
+    "hypothesis_status": "REJECTED",
+    "hypothesis": "ACQUISITION_MIX_EXPLANATION",
+    "interpretation": "Major-source shares were nearly unchanged, while every material source/medium group declined. Acquisition composition does not explain the aggregate decline."
+  },
+  "device": {
+    "segments": [
+      {"device": "desktop", "baseline_users": 28484, "baseline_returned": 2397, "baseline_rate": 8.4153, "baseline_share": 58.4251, "target_users": 19434, "target_returned": 994, "target_rate": 5.1147, "target_share": 58.3376, "change_pp": -3.3006, "share_change_pp": -0.0875},
+      {"device": "mobile", "baseline_users": 19178, "baseline_returned": 1563, "baseline_rate": 8.1500, "baseline_share": 39.3371, "target_users": 13099, "target_returned": 666, "target_rate": 5.0844, "target_share": 39.3210, "change_pp": -3.0656, "share_change_pp": -0.0161},
+      {"device": "tablet", "baseline_users": 1091, "baseline_returned": 100, "baseline_rate": 9.1659, "baseline_share": 2.2378, "target_users": 780, "target_returned": 43, "target_rate": 5.5128, "target_share": 2.3414, "change_pp": -3.6531, "share_change_pp": 0.1036}
+    ],
+    "mix_counterfactual_rate": 8.3285,
+    "composition_effect_pp": 0.0008,
+    "within_device_effect_pp": -3.2164,
+    "hypothesis_status": "REJECTED",
+    "hypothesis": "DEVICE_CONCENTRATION",
+    "interpretation": "Desktop and mobile both declined by roughly three percentage points while their shares were stable. Tablet follows the same direction but is not used as a primary conclusion because of its smaller sample."
+  },
+  "first_session_activation_depth": {
+    "bucket_definition": {
+      "SHALLOW": "First session has session_start and no view_item.",
+      "BROWSE": "First session has view_item and no add_to_cart.",
+      "INTENT": "First session has add_to_cart; later checkout or purchase may also occur."
+    },
+    "mutually_exclusive": true,
+    "unclassified_users": {
+      "baseline": 0,
+      "target": 0
+    },
+    "segments": [
+      {"bucket": "SHALLOW", "baseline_users": 38545, "baseline_returned": 2508, "baseline_rate": 6.5067, "baseline_share": 79.0618, "target_users": 28263, "target_returned": 1190, "target_rate": 4.2105, "target_share": 84.8408, "change_pp": -2.2962, "share_change_pp": 5.7790},
+      {"bucket": "BROWSE", "baseline_users": 7025, "baseline_returned": 977, "baseline_rate": 13.9075, "baseline_share": 14.4094, "target_users": 4151, "target_returned": 371, "target_rate": 8.9376, "target_share": 12.4606, "change_pp": -4.9699, "share_change_pp": -1.9488},
+      {"bucket": "INTENT", "baseline_users": 3183, "baseline_returned": 575, "baseline_rate": 18.0647, "baseline_share": 6.5288, "target_users": 899, "target_returned": 142, "target_rate": 15.7953, "target_share": 2.6986, "change_pp": -2.2694, "share_change_pp": -3.8302}
+    ],
+    "mix_counterfactual_rate": 7.7408,
+    "composition_effect_pp": -0.5869,
+    "within_segment_effect_pp": -2.6287,
+    "composition_share_of_total_decline_pct": 18.25,
+    "within_segment_share_of_total_decline_pct": 81.75,
+    "hypothesis_status": "SUPPORTED",
+    "hypothesis": "ACTIVATION_DEPTH_SHIFT",
+    "interpretation": "Target users shifted toward SHALLOW (+5.78pp share), which explains about 0.59pp of the 3.22pp overall decline. Return rate also fell inside every activation bucket, explaining about 2.63pp. Activation composition is relevant but not sufficient as a root-cause explanation."
+  },
+  "data_quality": {
+    "primary_metric_passed": true,
+    "days_checked_from_baseline_start_through_observation_end": 63,
+    "first_visit_zero_days": 0,
+    "session_start_zero_days": 0,
+    "add_to_cart_zero_days": 0,
+    "minimum_daily_first_visit_events": 1916,
+    "minimum_daily_session_start_events": 2289,
+    "minimum_daily_add_to_cart_events": 229,
+    "right_censored_cohorts_included": false,
+    "note": "The earlier add_to_cart anomaly ended before the fixed Baseline. Baseline and Target both lie in the stable collection period used for activation-depth analysis."
+  },
+  "calendar_context": "Calendar seasonality may contribute, but the current dataset cannot establish causality.",
+  "evidence": [
+    "New-user D7 return rate declined from 8.33% in Baseline to 5.11% in Target (-3.22pp) across large, fully observed cohorts.",
+    "Post recovered to 6.90%, significantly above Target but significantly below Baseline, meeting the data-driven PARTIAL_RECOVERY rule.",
+    "The decline begins on D1 and continues to accumulate through D7; 52.90% of the total gap is present on D1.",
+    "Acquisition and device composition were stable, while return rates declined within every material source and both major device groups.",
+    "The SHALLOW share increased by 5.78pp and the INTENT share decreased by 3.83pp; this activation mix shift explains about 0.59pp of the total decline.",
+    "Within-activation-bucket declines explain about 2.63pp, so composition alone is insufficient."
+  ],
+  "hypotheses": [
+    "Calendar seasonality may contribute to the temporary component of the decline.",
+    "Lower first-session activation depth may contribute to part of the aggregate risk.",
+    "A broader period-specific factor may have reduced return propensity within acquisition, device, and activation segments."
+  ],
+  "unknowns": [
+    "The dataset cannot establish whether Christmas or New Year timing caused the decline.",
+    "The cause of lower return rates within each activation bucket is unknown.",
+    "Obfuscated acquisition values may conceal narrower source-level changes.",
+    "Campaign, pricing, inventory, merchandising, UX, performance, consent, and identity-resolution changes are not observed in this analysis.",
+    "Longer-window retention and year-over-year behavior are not available in the selected public-data window."
+  ],
+  "agent_investigation_design": {
+    "recommended_path": [
+      "VALIDATE_DATA",
+      "ANALYZE_RETENTION",
+      "CHECK_RETURN_TIMING",
+      "CHECK_RECOVERY",
+      "CHECK_ACQUISITION",
+      "CHECK_DEVICE",
+      "CHECK_ACTIVATION_DEPTH",
+      "STOP"
+    ],
+    "step_guidance": [
+      {"step": "VALIDATE_DATA", "required": true, "reason": "Confirm complete D7 windows and stable first_visit/session_start collection before interpreting risk."},
+      {"step": "ANALYZE_RETENTION", "required": true, "reason": "Establish the Baseline-to-Target signal and sample size."},
+      {"step": "CHECK_RETURN_TIMING", "required": true, "reason": "Separate D1, D2-3, and D4-7 contributions without assigning cause."},
+      {"step": "CHECK_RECOVERY", "required": true, "reason": "Classify the risk as PARTIAL_RECOVERY using Post-period data."},
+      {"step": "CHECK_ACQUISITION", "required": true, "early_stop_after_result": true, "reason": "Reject ACQUISITION_MIX_EXPLANATION when stable shares and broad within-source declines are confirmed; do not drill into unsupported acquisition dimensions."},
+      {"step": "CHECK_DEVICE", "required": true, "early_stop_after_result": true, "reason": "Reject DEVICE_CONCENTRATION after desktop and mobile both decline; do not over-interpret tablet."},
+      {"step": "CHECK_ACTIVATION_DEPTH", "required": true, "reason": "Quantify both the supported composition shift and the larger within-bucket decline."},
+      {"step": "STOP", "required": true, "reason": "Stop with evidence, hypotheses, and unknowns once allowed dimensions are exhausted; do not promote the localized activation association to causal root cause."}
+    ],
+    "recommended_stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+  },
+  "final_candidate": {
+    "title": "New-user 7-day return risk with partial recovery",
+    "opportunity_type": "LIFECYCLE_RISK",
+    "metric": "New-user 7-day Return Rate",
+    "baseline_rate": 8.33,
+    "target_rate": 5.11,
+    "delta_pp": -3.22,
+    "affected_population": "New users whose first_visit occurred from 2020-12-21 through 2021-01-03",
+    "risk_pattern": "PARTIAL_RECOVERY",
+    "signal_confidence": "HIGH",
+    "root_cause_confidence": "LOW",
+    "recommended_status": "NEEDS_EVIDENCE",
+    "recommended_action_type": "EVIDENCE_COLLECTION"
+  }
+}

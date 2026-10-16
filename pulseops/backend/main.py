@@ -52,7 +52,7 @@ def create_app(
 
     application = FastAPI(
         title="PulseOps Analytics Backend",
-        version="0.4.0",
+        version="0.5.0",
         lifespan=lifespan,
     )
     application.state.database_engine = engine

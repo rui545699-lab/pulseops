@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { OpportunityDetailView } from "@/components/opportunity-detail";
-import { opportunity, run } from "@/test/fixtures";
+import { lifecycleOpportunity, lifecycleRun, opportunity, run } from "@/test/fixtures";
 
 describe("Opportunity Detail", () => {
   it("renders the localized opportunity metric", () => {
@@ -51,5 +51,31 @@ describe("Opportunity Detail", () => {
     render(<OpportunityDetailView opportunity={opportunity} run={run} />);
     expect(screen.getByText("Do not recommend yet")).toBeInTheDocument();
     expect(screen.getByText("Broad discounts or coupons")).toBeInTheDocument();
+  });
+
+  it("renders lifecycle recovery and return timing without causalizing calendar context", () => {
+    render(<OpportunityDetailView opportunity={lifecycleOpportunity} run={lifecycleRun} />);
+    expect(screen.getByRole("heading", { name: "New-user 7-day return risk with partial recovery" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Partial Recovery relative to Baseline" })).toBeInTheDocument();
+    expect(screen.getByText("55.73%")).toBeInTheDocument();
+    const timing = screen.getByRole("heading", { name: "Return Timing" }).parentElement;
+    expect(timing).toHaveTextContent("4.60%");
+    expect(timing).toHaveTextContent("2.90%");
+    expect(timing).toHaveTextContent("6.90%");
+    expect(screen.getByText(/Calendar timing remains a hypothesis, not a proven cause/)).toBeInTheDocument();
+  });
+
+  it("derives lifecycle recovery labels from the stored risk pattern", () => {
+    render(
+      <OpportunityDetailView
+        opportunity={{
+          ...lifecycleOpportunity,
+          title: "New-user 7-day return risk with no observed recovery",
+          risk_pattern: "NO_RECOVERY",
+        }}
+        run={{ ...lifecycleRun, risk_pattern: "NO_RECOVERY" }}
+      />,
+    );
+    expect(screen.getByRole("heading", { name: "No Recovery relative to Baseline" })).toBeInTheDocument();
   });
 });

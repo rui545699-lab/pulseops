@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-from pulseops.backend.agent.state import AgentState
+from pulseops.backend.agent.state import AgentState, InvestigationProfile
 
 ALLOWED_DIMENSIONS = ("lifecycle", "device", "acquisition", "category")
+LIFECYCLE_RISK_DIMENSIONS = ("acquisition", "device", "activation_depth")
+
+
+def allowed_dimensions(state: AgentState) -> tuple[str, ...]:
+    if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
+        return LIFECYCLE_RISK_DIMENSIONS
+    return ALLOWED_DIMENSIONS
 
 
 def next_dimension(state: AgentState) -> str | None:
@@ -11,16 +18,16 @@ def next_dimension(state: AgentState) -> str | None:
         return None
     if state.data_quality_status != "PASS" or state.detected_signal is None:
         return None
-    if state.supported_hypotheses:
+    if state.supported_hypotheses and state.investigation_profile == InvestigationProfile.CONVERSION:
         return None
     investigated = set(state.investigated_dimensions)
-    return next((item for item in ALLOWED_DIMENSIONS if item not in investigated), None)
+    return next((item for item in allowed_dimensions(state) if item not in investigated), None)
 
 
 def continuation_reason(state: AgentState, dimension: str | None) -> str:
-    if state.supported_hypotheses:
+    if state.supported_hypotheses and state.investigation_profile == InvestigationProfile.CONVERSION:
         return "A focused pattern is supported; stop broad drilldown and collect evidence for that hypothesis."
-    remaining = [item for item in ALLOWED_DIMENSIONS if item not in state.investigated_dimensions]
+    remaining = [item for item in allowed_dimensions(state) if item not in state.investigated_dimensions]
     if not remaining:
         return "All permitted dimensions are complete; no confirmed root cause supports further drilldown."
     if state.remaining_investigation_budget <= 0:
@@ -29,6 +36,8 @@ def continuation_reason(state: AgentState, dimension: str | None) -> str:
         return "All permitted dimensions are complete; no confirmed root cause supports further drilldown."
     if dimension == "lifecycle":
         return "A material signal exists; identify whether the decline is concentrated by lifecycle."
+    if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
+        return f"Lifecycle risk remains causal-unconfirmed; investigate {dimension}."
     if state.affected_segment:
         return f"Root cause remains unconfirmed; investigate {dimension} within {state.affected_segment}."
     return f"Root cause remains unconfirmed; investigate the next permitted dimension: {dimension}."

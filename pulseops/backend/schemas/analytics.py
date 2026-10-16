@@ -39,6 +39,19 @@ class DateWindows(BaseModel):
         return self
 
 
+class LifecycleWindows(DateWindows):
+    post_start: date
+    post_end: date
+
+    @model_validator(mode="after")
+    def validate_post_range(self) -> "LifecycleWindows":
+        if self.post_start > self.post_end:
+            raise ValueError("post_start must be on or before post_end")
+        if self.post_start <= self.target_end:
+            raise ValueError("post period must start after target_end")
+        return self
+
+
 class WarningItem(BaseModel):
     code: str
     message: str
@@ -110,4 +123,77 @@ class OperationalAssessment(BaseModel):
     evidence: list[str]
     hypotheses: list[str]
     unknowns: list[str]
+
+
+class RiskPattern(str, Enum):
+    NO_RECOVERY = "NO_RECOVERY"
+    PARTIAL_RECOVERY = "PARTIAL_RECOVERY"
+    FULL_RECOVERY = "FULL_RECOVERY"
+
+
+class RetentionPeriodResult(BaseModel):
+    eligible_new_users: int
+    returned_users_7d: int
+    return_rate_7d: float
+
+
+class RetentionComparison(BaseModel):
+    metric_name: str = "New-user 7-day Return Rate"
+    baseline: RetentionPeriodResult
+    target: RetentionPeriodResult
+    post: RetentionPeriodResult
+    delta_pp: float
+    relative_change_pct: float | None
+    target_to_post_delta_pp: float
+    baseline_to_post_delta_pp: float
+
+
+class ReturnTimingPeriod(BaseModel):
+    eligible_new_users: int
+    returned_users_d1: int
+    return_rate_d1: float
+    returned_users_d3: int
+    return_rate_d3: float
+    returned_users_d7: int
+    return_rate_d7: float
+
+
+class ReturnTimingAnalysis(BaseModel):
+    baseline: ReturnTimingPeriod
+    target: ReturnTimingPeriod
+    post: ReturnTimingPeriod
+    d1_decline_contribution_pct: float
+    d2_3_decline_contribution_pct: float
+    d4_7_decline_contribution_pct: float
+
+
+class RecoveryAnalysis(BaseModel):
+    risk_pattern: RiskPattern
+    recovery_ratio_pct: float
+    target_to_post_delta_pp: float
+    baseline_to_post_delta_pp: float
+
+
+class LifecycleSegmentResult(BaseModel):
+    segment: str
+    baseline_users: int
+    baseline_returned_users: int
+    baseline_rate: float
+    baseline_share: float
+    target_users: int
+    target_returned_users: int
+    target_rate: float
+    target_share: float
+    change_pp: float
+    share_change_pp: float
+    sample_sufficient: bool = True
+
+
+class LifecycleSegmentComparison(BaseModel):
+    dimension: str
+    segments: list[LifecycleSegmentResult]
+    composition_effect_pp: float
+    within_segment_effect_pp: float
+    composition_share_of_total_decline_pct: float | None = None
+    within_segment_share_of_total_decline_pct: float | None = None
 

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { OverviewClient, OverviewView } from "@/components/overview";
-import { overviewData } from "@/test/fixtures";
+import { multiOpportunityOverview, overviewData } from "@/test/fixtures";
 
 describe("Overview", () => {
   it("loads an opportunity from the supplied API loader", async () => {
@@ -44,6 +44,13 @@ describe("Overview", () => {
     render(<OverviewView data={overviewData} />);
     expect(screen.getByText("Root Cause LOW")).toBeInTheDocument();
     expect(screen.queryByText("Cause LOW")).not.toBeInTheDocument();
+  });
+
+  it("distinguishes conversion and lifecycle opportunity types", () => {
+    render(<OverviewView data={multiOpportunityOverview} />);
+    expect(screen.getByText("Lifecycle Risk")).toBeInTheDocument();
+    expect(screen.getByText("Conversion / Activation")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "New-user 7-day return risk with partial recovery" })).toBeInTheDocument();
   });
 
   it("renders a truthful empty state", () => {

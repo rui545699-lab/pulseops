@@ -1,0 +1,73 @@
+{
+  "provenance": {
+    "kind": "GOLDEN_FIXTURE",
+    "derived_from": "Verified GA4 BigQuery Phase A/B outputs",
+    "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*"
+  },
+  "windows": {
+    "baseline_start": "2020-11-30",
+    "baseline_end": "2020-12-13",
+    "target_start": "2020-12-21",
+    "target_end": "2021-01-03",
+    "post_start": "2021-01-04",
+    "post_end": "2021-01-24"
+  },
+  "retention": {
+    "metric_name": "New-user 7-day Return Rate",
+    "baseline": {"eligible_new_users": 48753, "returned_users_7d": 4060, "return_rate_7d": 8.33},
+    "target": {"eligible_new_users": 33313, "returned_users_7d": 1703, "return_rate_7d": 5.11},
+    "post": {"eligible_new_users": 63686, "returned_users_7d": 4397, "return_rate_7d": 6.90},
+    "delta_pp": -3.22,
+    "relative_change_pct": -38.61,
+    "target_to_post_delta_pp": 1.79,
+    "baseline_to_post_delta_pp": -1.42
+  },
+  "timing": {
+    "baseline": {"eligible_new_users": 48753, "returned_users_d1": 2243, "return_rate_d1": 4.60, "returned_users_d3": 3221, "return_rate_d3": 6.61, "returned_users_d7": 4060, "return_rate_d7": 8.33},
+    "target": {"eligible_new_users": 33313, "returned_users_d1": 966, "return_rate_d1": 2.90, "returned_users_d3": 1371, "return_rate_d3": 4.12, "returned_users_d7": 1703, "return_rate_d7": 5.11},
+    "post": {"eligible_new_users": 63686, "returned_users_d1": 2424, "return_rate_d1": 3.81, "returned_users_d3": 3495, "return_rate_d3": 5.49, "returned_users_d7": 4397, "return_rate_d7": 6.90},
+    "d1_decline_contribution_pct": 52.90,
+    "d2_3_decline_contribution_pct": 24.58,
+    "d4_7_decline_contribution_pct": 22.52
+  },
+  "recovery": {
+    "risk_pattern": "PARTIAL_RECOVERY",
+    "recovery_ratio_pct": 55.73,
+    "target_to_post_delta_pp": 1.79,
+    "baseline_to_post_delta_pp": -1.42
+  },
+  "segments": {
+    "acquisition": {
+      "dimension": "acquisition",
+      "composition_effect_pp": 0.00,
+      "within_segment_effect_pp": -3.21,
+      "segments": [
+        {"segment": "(direct) / (none)", "baseline_users": 11530, "baseline_returned_users": 992, "baseline_rate": 8.60, "baseline_share": 23.65, "target_users": 7879, "target_returned_users": 404, "target_rate": 5.13, "target_share": 23.65, "change_pp": -3.48, "share_change_pp": 0.00},
+        {"segment": "<Other> / <Other>", "baseline_users": 8771, "baseline_returned_users": 734, "baseline_rate": 8.37, "baseline_share": 17.99, "target_users": 6046, "target_returned_users": 287, "target_rate": 4.75, "target_share": 18.15, "change_pp": -3.62, "share_change_pp": 0.16},
+        {"segment": "google / organic", "baseline_users": 17128, "baseline_returned_users": 1427, "baseline_rate": 8.33, "baseline_share": 35.13, "target_users": 11735, "target_returned_users": 624, "target_rate": 5.32, "target_share": 35.23, "change_pp": -3.01, "share_change_pp": 0.09}
+      ]
+    },
+    "device": {
+      "dimension": "device",
+      "composition_effect_pp": 0.00,
+      "within_segment_effect_pp": -3.22,
+      "segments": [
+        {"segment": "desktop", "baseline_users": 28484, "baseline_returned_users": 2397, "baseline_rate": 8.42, "baseline_share": 58.43, "target_users": 19434, "target_returned_users": 994, "target_rate": 5.11, "target_share": 58.34, "change_pp": -3.30, "share_change_pp": -0.09},
+        {"segment": "mobile", "baseline_users": 19178, "baseline_returned_users": 1563, "baseline_rate": 8.15, "baseline_share": 39.34, "target_users": 13099, "target_returned_users": 666, "target_rate": 5.08, "target_share": 39.32, "change_pp": -3.07, "share_change_pp": -0.02},
+        {"segment": "tablet", "baseline_users": 1091, "baseline_returned_users": 100, "baseline_rate": 9.17, "baseline_share": 2.24, "target_users": 780, "target_returned_users": 43, "target_rate": 5.51, "target_share": 2.34, "change_pp": -3.65, "share_change_pp": 0.10}
+      ]
+    },
+    "activation_depth": {
+      "dimension": "activation_depth",
+      "composition_effect_pp": -0.59,
+      "within_segment_effect_pp": -2.63,
+      "composition_share_of_total_decline_pct": 18.25,
+      "within_segment_share_of_total_decline_pct": 81.75,
+      "segments": [
+        {"segment": "SHALLOW", "baseline_users": 38545, "baseline_returned_users": 2508, "baseline_rate": 6.51, "baseline_share": 79.06, "target_users": 28263, "target_returned_users": 1190, "target_rate": 4.21, "target_share": 84.84, "change_pp": -2.30, "share_change_pp": 5.78},
+        {"segment": "BROWSE", "baseline_users": 7025, "baseline_returned_users": 977, "baseline_rate": 13.91, "baseline_share": 14.41, "target_users": 4151, "target_returned_users": 371, "target_rate": 8.94, "target_share": 12.46, "change_pp": -4.97, "share_change_pp": -1.95},
+        {"segment": "INTENT", "baseline_users": 3183, "baseline_returned_users": 575, "baseline_rate": 18.06, "baseline_share": 6.53, "target_users": 899, "target_returned_users": 142, "target_rate": 15.80, "target_share": 2.70, "change_pp": -2.27, "share_change_pp": -3.83}
+      ]
+    }
+  }
+}

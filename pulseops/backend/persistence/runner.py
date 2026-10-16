@@ -7,7 +7,7 @@ from typing import Protocol
 from pulseops.backend.agent.graph import AnalyticsToolset, InvestigationAgent
 from pulseops.backend.agent.planner import PlannerMode
 from pulseops.backend.agent.providers.deepseek import DeepSeekPlanner, DeepSeekPlannerConfig
-from pulseops.backend.agent.state import AgentState
+from pulseops.backend.agent.state import AgentState, InvestigationProfile
 from pulseops.backend.analytics.bigquery_client import BigQueryExecutor
 from pulseops.backend.schemas.analytics import DateWindows
 
@@ -20,13 +20,19 @@ class RunExecution:
 
 
 class AnalysisRunner(Protocol):
-    def run(self, windows: DateWindows, planner_mode: str, run_id: str) -> RunExecution: ...
+    def run(
+        self, windows: DateWindows, planner_mode: str, run_id: str,
+        analysis_type: str = "CONVERSION",
+    ) -> RunExecution: ...
 
 
 class DefaultAnalysisRunner:
     """Connects the existing bounded agent to production adapters."""
 
-    def run(self, windows: DateWindows, planner_mode: str, run_id: str) -> RunExecution:
+    def run(
+        self, windows: DateWindows, planner_mode: str, run_id: str,
+        analysis_type: str = "CONVERSION",
+    ) -> RunExecution:
         tools = AnalyticsToolset(BigQueryExecutor(project=os.getenv("GOOGLE_CLOUD_PROJECT")))
         planner = None
         provider = None
@@ -48,7 +54,11 @@ class DefaultAnalysisRunner:
             tools,
             planner_mode=agent_mode,
             planner=planner,
-        ).run(windows, run_id=run_id)
+        ).run(
+            windows,
+            run_id=run_id,
+            investigation_profile=InvestigationProfile(analysis_type),
+        )
         if planner is not None:
             model_identifier = planner.model_identifier
         return RunExecution(state, provider, model_identifier)

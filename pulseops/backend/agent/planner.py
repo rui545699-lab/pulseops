@@ -8,7 +8,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ConfigDict, Field
 
 from pulseops.backend.agent.router import next_dimension
-from pulseops.backend.agent.state import AgentState
+from pulseops.backend.agent.state import AgentState, InvestigationProfile
 
 
 class PlannerMode(str, Enum):
@@ -46,9 +46,17 @@ class DeterministicPlanner:
                 rationale="Deterministic stop policy found no permitted next investigation.",
             )
         lifecycle_filter = None
-        if dimension != "lifecycle" and state.affected_segment == "new_users":
+        if (
+            state.investigation_profile == InvestigationProfile.CONVERSION
+            and dimension != "lifecycle"
+            and state.affected_segment == "new_users"
+        ):
             lifecycle_filter = "new"
-        elif dimension != "lifecycle" and state.affected_segment == "returning_users":
+        elif (
+            state.investigation_profile == InvestigationProfile.CONVERSION
+            and dimension != "lifecycle"
+            and state.affected_segment == "returning_users"
+        ):
             lifecycle_filter = "returning"
         return PlannerProposal(
             action=PlannerAction.INVESTIGATE,

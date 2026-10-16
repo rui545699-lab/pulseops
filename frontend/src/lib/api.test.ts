@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import type { RunRequest } from "@/lib/types";
 
 const payload: RunRequest = {
+  analysis_type: "CONVERSION",
   baseline_start: "2020-12-07",
   baseline_end: "2020-12-13",
   target_start: "2020-12-21",

@@ -74,17 +74,25 @@ export function OverviewView({ data }: { data: OverviewData }) {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge value={opportunity.status} />
+                    <StatusBadge
+                      value={opportunity.opportunity_type}
+                      label={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : "Conversion / Activation"}
+                    />
                     <span className="text-[11px] text-[#8a8a84]">{dateTimeLabel(opportunity.created_at)}</span>
                   </div>
-                  <h3 className="mt-3 text-xl font-semibold tracking-[-0.025em]">{opportunityTitle(opportunity.metric, opportunity.affected_segment)}</h3>
+                  <h3 className="mt-3 text-xl font-semibold tracking-[-0.025em]">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}</h3>
                   <p className="mt-1.5 text-sm text-[#72726c]">Affected segment: <span className="font-medium text-[#343431]">{segmentLabel(opportunity.affected_segment)}</span></p>
                 </div>
-                <MetricScope eyebrow="Localized opportunity" baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} />
+                <MetricScope eyebrow={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle risk" : "Localized opportunity"} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} />
                 <div className="border-l-0 border-[#e8e8e4] lg:border-l lg:pl-7">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a8a84]">Overall detected signal</p>
-                  <p className="mt-2 text-sm font-medium">{run?.detected_signal ?? opportunity.metric}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a8a84]">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Recovery" : "Overall detected signal"}</p>
+                  <p className="mt-2 text-sm font-medium">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? opportunity.risk_pattern?.replaceAll("_", " ") : (run?.detected_signal ?? opportunity.metric)}</p>
                   <p className="mt-1 text-sm tabular-nums text-[#686862]">
-                    {formatRate(run?.overall_baseline_rate ?? null)} → {formatRate(run?.overall_target_rate ?? null)} <span className="ml-1 text-[#984a3e]">{formatDelta(run?.overall_delta_pp ?? null)}</span>
+                    {opportunity.opportunity_type === "LIFECYCLE_RISK" ? (
+                      <>Target {formatRate(opportunity.target_rate)} → Post {formatRate(opportunity.post_rate)}</>
+                    ) : (
+                      <>{formatRate(run?.overall_baseline_rate ?? null)} → {formatRate(run?.overall_target_rate ?? null)} <span className="ml-1 text-[#984a3e]">{formatDelta(run?.overall_delta_pp ?? null)}</span></>
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center justify-between gap-5 lg:justify-end">

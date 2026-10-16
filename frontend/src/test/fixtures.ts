@@ -2,10 +2,13 @@ import type { AgentStep, AnalysisRun, Opportunity, OverviewData } from "@/lib/ty
 
 export const run: AnalysisRun = {
   id: "run-01",
+  analysis_type: "CONVERSION",
   baseline_start: "2020-12-07",
   baseline_end: "2020-12-13",
   target_start: "2020-12-21",
   target_end: "2020-12-27",
+  post_start: null,
+  post_end: null,
   planner_mode: "deepseek",
   provider: "deepseek",
   model_identifier: "planner-model",
@@ -13,6 +16,12 @@ export const run: AnalysisRun = {
   overall_baseline_rate: 31.6,
   overall_target_rate: 22.92,
   overall_delta_pp: -8.68,
+  post_rate: null,
+  target_to_post_delta_pp: null,
+  baseline_to_post_delta_pp: null,
+  recovery_ratio: null,
+  risk_pattern: null,
+  return_timing: null,
   affected_segment: "new_users",
   signal_confidence: "HIGH",
   root_cause_confidence: "LOW",
@@ -35,6 +44,14 @@ export const opportunity: Opportunity = {
   baseline_rate: 31.04,
   target_rate: 19.48,
   delta_pp: -11.56,
+  post_rate: null,
+  target_to_post_delta_pp: null,
+  baseline_to_post_delta_pp: null,
+  recovery_ratio: null,
+  risk_pattern: null,
+  return_timing: null,
+  segment_analysis: null,
+  hypothesis_records: null,
   signal_confidence: "HIGH",
   root_cause_confidence: "LOW",
   evidence: [
@@ -203,6 +220,92 @@ export const steps: AgentStep[] = [
 export const overviewData: OverviewData = {
   opportunities: [{ opportunity, run }],
   runs: [run],
+};
+
+export const lifecycleRun: AnalysisRun = {
+  ...run,
+  id: "run-02",
+  analysis_type: "LIFECYCLE_RISK",
+  baseline_start: "2020-11-30",
+  baseline_end: "2020-12-13",
+  target_start: "2020-12-21",
+  target_end: "2021-01-03",
+  post_start: "2021-01-04",
+  post_end: "2021-01-24",
+  detected_signal: "New-user 7-day Return Rate",
+  overall_baseline_rate: 8.33,
+  overall_target_rate: 5.11,
+  overall_delta_pp: -3.22,
+  post_rate: 6.9,
+  target_to_post_delta_pp: 1.79,
+  baseline_to_post_delta_pp: -1.42,
+  recovery_ratio: 55.73,
+  risk_pattern: "PARTIAL_RECOVERY",
+  return_timing: {
+    baseline: { eligible_new_users: 48753, returned_users_d1: 2243, return_rate_d1: 4.6, returned_users_d3: 3221, return_rate_d3: 6.61, returned_users_d7: 4060, return_rate_d7: 8.33 },
+    target: { eligible_new_users: 33313, returned_users_d1: 966, return_rate_d1: 2.9, returned_users_d3: 1371, return_rate_d3: 4.12, returned_users_d7: 1703, return_rate_d7: 5.11 },
+    post: { eligible_new_users: 63686, returned_users_d1: 2424, return_rate_d1: 3.81, returned_users_d3: 3495, return_rate_d3: 5.49, returned_users_d7: 4397, return_rate_d7: 6.9 },
+    d1_decline_contribution_pct: 52.9,
+    d2_3_decline_contribution_pct: 24.58,
+    d4_7_decline_contribution_pct: 22.52,
+  },
+  affected_segment: "new_users",
+};
+
+export const lifecycleOpportunity: Opportunity = {
+  ...opportunity,
+  id: "opportunity-02",
+  run_id: lifecycleRun.id,
+  title: "New-user 7-day return risk with partial recovery",
+  opportunity_type: "LIFECYCLE_RISK",
+  metric: "New-user 7-day Return Rate",
+  baseline_rate: 8.33,
+  target_rate: 5.11,
+  delta_pp: -3.22,
+  post_rate: 6.9,
+  target_to_post_delta_pp: 1.79,
+  baseline_to_post_delta_pp: -1.42,
+  recovery_ratio: 55.73,
+  risk_pattern: "PARTIAL_RECOVERY",
+  return_timing: lifecycleRun.return_timing,
+  segment_analysis: {
+    activation_depth: { composition_effect_pp: -0.59, within_segment_effect_pp: -2.63 },
+  },
+  hypothesis_records: [
+    { code: "ACQUISITION_MIX_EXPLANATION", reason: "mix stable", status: "REJECTED" },
+    { code: "DEVICE_CONCENTRATION", reason: "parallel decline", status: "REJECTED" },
+    { code: "ACTIVATION_DEPTH_SHIFT", reason: "shallower mix observed", status: "SUPPORTED" },
+  ],
+  evidence: [
+    "D7 Return Rate declined from 8.33% to 5.11%.",
+    "Post recovered to 6.90% but remained below Baseline.",
+  ],
+  hypotheses: [
+    "First-session activation becoming shallower may contribute.",
+    "Calendar seasonality may contribute to the temporary component.",
+  ],
+  unknowns: ["Whether Christmas or New Year timing caused the change is unknown."],
+  recommended_next_action: "Collect campaign, UX, performance, consent, and identity evidence before selecting an intervention.",
+  do_not_recommend_yet: ["Do not launch a coupon blast or broad reactivation campaign."],
+};
+
+export const lifecycleSteps: AgentStep[] = [
+  step({ id: "l2-validate", step_order: 1, node: "VALIDATE_DATA", tool_output_summary: { status: "PASS" } }),
+  step({ id: "l2-retention", step_order: 2, node: "ANALYZE_RETENTION", tool_output_summary: { baseline: { return_rate_7d: 8.33 }, target: { return_rate_7d: 5.11 }, delta_pp: -3.22 } }),
+  step({ id: "l2-timing", step_order: 3, node: "CHECK_RETURN_TIMING", tool_output_summary: { baseline: { return_rate_d1: 4.6 }, target: { return_rate_d1: 2.9 }, conclusion: "The decline begins at D1 and persists through D7." } }),
+  step({ id: "l2-recovery", step_order: 4, node: "CHECK_RECOVERY", tool_output_summary: { post_rate: 6.9, risk_pattern: "PARTIAL_RECOVERY" } }),
+  step({ id: "l2-acquisition", step_order: 5, node: "CHECK_ACQUISITION", hypothesis: "ACQUISITION_MIX_EXPLANATION", hypothesis_status: "REJECTED" }),
+  step({ id: "l2-device", step_order: 6, node: "CHECK_DEVICE", hypothesis: "DEVICE_CONCENTRATION", hypothesis_status: "REJECTED", tool_output_summary: { segments: [{ segment: "desktop", change_pp: -3.3 }, { segment: "mobile", change_pp: -3.07 }] } }),
+  step({ id: "l2-activation", step_order: 7, node: "CHECK_ACTIVATION_DEPTH", hypothesis: "ACTIVATION_DEPTH_SHIFT", hypothesis_status: "SUPPORTED", tool_output_summary: { composition_effect_pp: -0.59, within_segment_effect_pp: -2.63 } }),
+  step({ id: "l2-stop", step_order: 8, node: "STOP_DRILLDOWN", decision: "STOP", decision_reason: "Allowed lifecycle evidence dimensions are exhausted.", remaining_budget: 1 }),
+].map((item) => ({ ...item, run_id: lifecycleRun.id }));
+
+export const multiOpportunityOverview: OverviewData = {
+  opportunities: [
+    { opportunity, run },
+    { opportunity: lifecycleOpportunity, run: lifecycleRun },
+  ],
+  runs: [run, lifecycleRun],
 };
 
 export const dataQualityRun: AnalysisRun = {

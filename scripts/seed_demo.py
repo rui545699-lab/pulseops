@@ -9,13 +9,22 @@ from typing import Any
 from pulseops.backend.agent.graph import InvestigationAgent
 from pulseops.backend.agent.planner import PlannerMode
 from pulseops.backend.agent.providers.deepseek import DeepSeekPlanner, DeepSeekPlannerConfig
+from pulseops.backend.agent.state import InvestigationProfile
+from pulseops.backend.fixtures.lifecycle import CASE_02, Case02GoldenTools
 from pulseops.backend.persistence.database import create_database, init_database
 from pulseops.backend.persistence.runner import RunExecution
 from pulseops.backend.persistence.service import RunService
-from pulseops.backend.schemas.analytics import AnalysisStatus, DateWindows, ValidationResult, WarningItem
+from pulseops.backend.schemas.analytics import (
+    AnalysisStatus,
+    DateWindows,
+    LifecycleWindows,
+    ValidationResult,
+    WarningItem,
+)
 from scripts.verify_live_planner import Case01FixtureTools, ROOT, WINDOWS, _env_value
 
 DEFAULT_DATABASE_PATH = ROOT / "work" / "pulseops-demo.db"
+LIFECYCLE_WINDOWS = LifecycleWindows.model_validate(CASE_02["windows"])
 
 
 class DemoFixtureTools(Case01FixtureTools):
@@ -61,10 +70,16 @@ class DemoFixtureTools(Case01FixtureTools):
 
 @dataclass
 class DemoRunner:
-    tools: DemoFixtureTools
+    tools: Any
     api_key: str | None = None
 
-    def run(self, windows: DateWindows, planner_mode: str, run_id: str) -> RunExecution:
+    def run(
+        self,
+        windows: DateWindows,
+        planner_mode: str,
+        run_id: str,
+        analysis_type: str = "CONVERSION",
+    ) -> RunExecution:
         planner = None
         provider = None
         model_identifier = None
@@ -92,7 +107,11 @@ class DemoRunner:
             self.tools,
             planner_mode=agent_mode,
             planner=planner,
-        ).run(windows, run_id=run_id)
+        ).run(
+            windows,
+            run_id=run_id,
+            investigation_profile=InvestigationProfile(analysis_type),
+        )
         if planner is not None:
             model_identifier = planner.model_identifier
         return RunExecution(state, provider, model_identifier)
@@ -112,6 +131,13 @@ def seed_demo(database_path: Path, *, api_key: str | None) -> dict[str, Any]:
             DemoRunner(DemoFixtureTools(), api_key=api_key),
         )
         material = material_service.execute(WINDOWS, "deepseek")
+
+        lifecycle_service = RunService(sessions, DemoRunner(Case02GoldenTools()))
+        lifecycle = lifecycle_service.execute(
+            LIFECYCLE_WINDOWS,
+            "deterministic",
+            "LIFECYCLE_RISK",
+        )
 
         data_quality_service = RunService(
             sessions,
@@ -144,12 +170,16 @@ def seed_demo(database_path: Path, *, api_key: str | None) -> dict[str, Any]:
             },
             "runs": [
                 _run_summary(material, "material_signal"),
+                _run_summary(lifecycle, "lifecycle_risk"),
                 _run_summary(data_quality, "data_quality_alert"),
                 _run_summary(no_signal, "no_significant_signal"),
             ],
             "opportunity_count": len(opportunities),
             "material_opportunity_id": (
                 material.opportunity.id if material.opportunity is not None else None
+            ),
+            "lifecycle_opportunity_id": (
+                lifecycle.opportunity.id if lifecycle.opportunity is not None else None
             ),
             "planner": {
                 "provider": material.provider,

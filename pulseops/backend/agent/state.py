@@ -14,7 +14,17 @@ from pulseops.backend.schemas.analytics import (
     RecommendedStatus,
     SegmentComparison,
     ValidationResult,
+    LifecycleSegmentComparison,
+    RecoveryAnalysis,
+    RetentionComparison,
+    ReturnTimingAnalysis,
+    RiskPattern,
 )
+
+
+class InvestigationProfile(str, Enum):
+    CONVERSION = "CONVERSION"
+    LIFECYCLE_RISK = "LIFECYCLE_RISK"
 
 
 class RecommendedActionType(str, Enum):
@@ -70,6 +80,11 @@ class AgentState(BaseModel):
     baseline_end: date
     target_start: date
     target_end: date
+    post_start: date | None = None
+    post_end: date | None = None
+    investigation_profile: InvestigationProfile = InvestigationProfile.CONVERSION
+    opportunity_type: str = "CONVERSION_DECLINE"
+    metric_name: str | None = None
 
     data_quality_status: AnalysisStatus | None = None
     detected_signal: str | None = None
@@ -95,3 +110,9 @@ class AgentState(BaseModel):
     metrics_result: MetricsScanResult | None = Field(default=None, exclude=True)
     funnel_result: FunnelComparison | None = Field(default=None, exclude=True)
     segment_results: dict[str, SegmentComparison] = Field(default_factory=dict, exclude=True)
+    retention_result: RetentionComparison | None = Field(default=None, exclude=True)
+    return_timing_result: ReturnTimingAnalysis | None = Field(default=None, exclude=True)
+    recovery_result: RecoveryAnalysis | None = Field(default=None, exclude=True)
+    lifecycle_segment_results: dict[str, LifecycleSegmentComparison] = Field(
+        default_factory=dict, exclude=True
+    )

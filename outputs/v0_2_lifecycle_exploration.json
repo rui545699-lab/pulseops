@@ -1,0 +1,113 @@
+{
+  "case_02_status": "SUITABLE",
+  "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*",
+  "data_range": {
+    "start": "2020-11-01",
+    "end": "2021-01-31",
+    "eligible_cohort_end": "2021-01-24"
+  },
+  "metric_definition": {
+    "name": "New-user 7-day Return Rate",
+    "new_user": "A user on the date of their first_visit event.",
+    "eligible_cohort": "first_visit_date <= 2021-01-24, allowing a complete seven-day observation window.",
+    "returned_within_7_days": "At least one session_start on day 1 through day 7 after first_visit; same-day sessions are excluded.",
+    "formula": "returned_users_7d / eligible_new_users"
+  },
+  "data_quality": {
+    "primary_metric_passed": true,
+    "days_checked": 92,
+    "first_visit_zero_days": 0,
+    "session_start_zero_days": 0,
+    "minimum_daily_first_visit_users": 1520,
+    "median_daily_first_visit_users": 2668.0,
+    "minimum_daily_session_start_users": 1890,
+    "median_daily_session_start_users": 3363.5,
+    "collection_break_detected_for_primary_events": false,
+    "right_censored_cohorts_included": false,
+    "partial_weeks_excluded_from_candidate_selection": [
+      "2020-10-26"
+    ],
+    "auxiliary_event_warning": "add_to_cart had 18 zero-volume days between 2020-11-02 and 2020-11-24. This does not affect the return-rate definition. The recommended baseline begins after the anomaly, so first-session activation comparisons use a clean interval."
+  },
+  "weekly_cohorts": [
+    {"cohort_week": "2020-10-26", "eligible_new_users": 1946, "returned_users_7d": 119, "return_rate_7d": 6.12, "view_item_users_7d": 410, "add_to_cart_users_7d": 0, "purchase_users_7d": 9, "complete_natural_week": false},
+    {"cohort_week": "2020-11-02", "eligible_new_users": 16500, "returned_users_7d": 1500, "return_rate_7d": 9.09, "view_item_users_7d": 3860, "add_to_cart_users_7d": 0, "purchase_users_7d": 136, "complete_natural_week": true},
+    {"cohort_week": "2020-11-09", "eligible_new_users": 14590, "returned_users_7d": 1491, "return_rate_7d": 10.22, "view_item_users_7d": 3784, "add_to_cart_users_7d": 26, "purchase_users_7d": 192, "complete_natural_week": true},
+    {"cohort_week": "2020-11-16", "eligible_new_users": 16906, "returned_users_7d": 1747, "return_rate_7d": 10.33, "view_item_users_7d": 4636, "add_to_cart_users_7d": 407, "purchase_users_7d": 217, "complete_natural_week": true},
+    {"cohort_week": "2020-11-23", "eligible_new_users": 18734, "returned_users_7d": 1687, "return_rate_7d": 9.01, "view_item_users_7d": 4473, "add_to_cart_users_7d": 967, "purchase_users_7d": 287, "complete_natural_week": true},
+    {"cohort_week": "2020-11-30", "eligible_new_users": 21195, "returned_users_7d": 2045, "return_rate_7d": 9.65, "view_item_users_7d": 5559, "add_to_cart_users_7d": 1906, "purchase_users_7d": 412, "complete_natural_week": true},
+    {"cohort_week": "2020-12-07", "eligible_new_users": 27558, "returned_users_7d": 2015, "return_rate_7d": 7.31, "view_item_users_7d": 5503, "add_to_cart_users_7d": 1816, "purchase_users_7d": 462, "complete_natural_week": true},
+    {"cohort_week": "2020-12-14", "eligible_new_users": 24221, "returned_users_7d": 1593, "return_rate_7d": 6.58, "view_item_users_7d": 4825, "add_to_cart_users_7d": 1335, "purchase_users_7d": 341, "complete_natural_week": true},
+    {"cohort_week": "2020-12-21", "eligible_new_users": 17013, "returned_users_7d": 897, "return_rate_7d": 5.27, "view_item_users_7d": 2928, "add_to_cart_users_7d": 604, "purchase_users_7d": 124, "complete_natural_week": true},
+    {"cohort_week": "2020-12-28", "eligible_new_users": 16300, "returned_users_7d": 806, "return_rate_7d": 4.94, "view_item_users_7d": 2357, "add_to_cart_users_7d": 421, "purchase_users_7d": 68, "complete_natural_week": true},
+    {"cohort_week": "2021-01-04", "eligible_new_users": 22458, "returned_users_7d": 1454, "return_rate_7d": 6.47, "view_item_users_7d": 3316, "add_to_cart_users_7d": 662, "purchase_users_7d": 116, "complete_natural_week": true},
+    {"cohort_week": "2021-01-11", "eligible_new_users": 21008, "returned_users_7d": 1390, "return_rate_7d": 6.62, "view_item_users_7d": 3652, "add_to_cart_users_7d": 727, "purchase_users_7d": 143, "complete_natural_week": true},
+    {"cohort_week": "2021-01-18", "eligible_new_users": 20220, "returned_users_7d": 1553, "return_rate_7d": 7.68, "view_item_users_7d": 4899, "add_to_cart_users_7d": 808, "purchase_users_7d": 293, "complete_natural_week": true}
+  ],
+  "candidate_decline": {
+    "exists": true,
+    "pattern": "Return rate declined across multiple consecutive weekly cohorts, reached 5.27% and 4.94% in the two target weeks, then partially recovered in January.",
+    "materiality": "The recommended target is 3.22 percentage points below the conservative baseline, a 38.61% relative decline.",
+    "statistical_check": "Approximate 95% confidence interval for target minus baseline: -3.56 to -2.87 percentage points."
+  },
+  "recommended_windows": {
+    "baseline": {
+      "cohort_start": "2020-11-30",
+      "cohort_end": "2020-12-13",
+      "eligible_new_users": 48753,
+      "returned_users_7d": 4060,
+      "return_rate_7d": 8.33
+    },
+    "target": {
+      "cohort_start": "2020-12-21",
+      "cohort_end": "2021-01-03",
+      "eligible_new_users": 33313,
+      "returned_users_7d": 1703,
+      "return_rate_7d": 5.11
+    },
+    "delta_pp": -3.22,
+    "relative_change_pct": -38.61,
+    "selection_rationale": "Both windows contain two complete natural cohort weeks with full seven-day observation. The baseline begins after the add_to_cart collection anomaly and includes the already-weaker 2020-12-07 cohort, making the comparison conservative. The target contains two consecutive low weeks rather than one isolated minimum; 2020-12-14 is retained as a transition week."
+  },
+  "initial_segment_findings": {
+    "acquisition": [
+      {"segment": "(direct) / (none)", "baseline_rate_7d": 8.60, "target_rate_7d": 5.13, "delta_pp": -3.47, "baseline_users": 11530, "target_users": 7879},
+      {"segment": "<Other> / <Other>", "baseline_rate_7d": 8.37, "target_rate_7d": 4.75, "delta_pp": -3.62, "baseline_users": 8771, "target_users": 6046},
+      {"segment": "<Other> / organic", "baseline_rate_7d": 8.55, "target_rate_7d": 5.53, "delta_pp": -3.02, "baseline_users": 1590, "target_users": 1103},
+      {"segment": "<Other> / referral", "baseline_rate_7d": 7.84, "target_rate_7d": 4.82, "delta_pp": -3.02, "baseline_users": 4503, "target_users": 3173},
+      {"segment": "google / cpc", "baseline_rate_7d": 8.13, "target_rate_7d": 5.29, "delta_pp": -2.84, "baseline_users": 2781, "target_users": 1778},
+      {"segment": "google / organic", "baseline_rate_7d": 8.33, "target_rate_7d": 5.32, "delta_pp": -3.01, "baseline_users": 17128, "target_users": 11735},
+      {"segment": "shop.googlemerchandisestore.com / referral", "baseline_rate_7d": 7.81, "target_rate_7d": 5.02, "delta_pp": -2.79, "baseline_users": 2445, "target_users": 1595}
+    ],
+    "device": [
+      {"segment": "desktop", "baseline_rate_7d": 8.42, "target_rate_7d": 5.11, "delta_pp": -3.31, "baseline_users": 28484, "target_users": 19434},
+      {"segment": "mobile", "baseline_rate_7d": 8.15, "target_rate_7d": 5.08, "delta_pp": -3.07, "baseline_users": 19178, "target_users": 13099},
+      {"segment": "tablet", "baseline_rate_7d": 9.17, "target_rate_7d": 5.51, "delta_pp": -3.66, "baseline_users": 1091, "target_users": 780}
+    ],
+    "first_session_activation_depth": [
+      {"segment": "reached_add_to_cart", "baseline_rate_7d": 18.08, "target_rate_7d": 15.78, "delta_pp": -2.30, "baseline_users": 3192, "target_users": 900},
+      {"segment": "reached_view_item", "baseline_rate_7d": 13.96, "target_rate_7d": 8.98, "delta_pp": -4.98, "baseline_users": 7032, "target_users": 4155},
+      {"segment": "shallow", "baseline_rate_7d": 6.49, "target_rate_7d": 4.20, "delta_pp": -2.29, "baseline_users": 38529, "target_users": 28258}
+    ],
+    "interpretation": "The decline is broad across acquisition and device rather than localized to one large segment. Deeper first-session activation remains associated with higher return rates in both periods, while the reached-view-item segment shows the largest observed decline. These are descriptive associations, not causal findings."
+  },
+  "evidence": [
+    "The two target cohorts contain 33,313 eligible new users and 1,703 seven-day returners.",
+    "Target return rate was 5.11% versus 8.33% in the conservative baseline, a -3.22 percentage-point change.",
+    "Both target weeks were low (5.27% and 4.94%), so the finding is not based on a single day or week.",
+    "first_visit and session_start were present on all 92 dates, with no primary-event collection break detected.",
+    "Declines appeared across all material acquisition and device segments examined."
+  ],
+  "hypotheses": [
+    "Holiday-period intent or seasonality may contribute to lower return behavior.",
+    "A change in new-user engagement quality may be associated with the decline, given weaker return rates among users who reached view_item as well as shallow users.",
+    "Broad changes affecting multiple traffic sources and devices may be more plausible than a single-channel or single-device issue."
+  ],
+  "unknowns": [
+    "Whether the decline reflects holiday seasonality, campaign mix, merchandising, pricing, UX, or another external factor.",
+    "Whether source values obfuscated as <Other> conceal meaningful acquisition changes.",
+    "Whether consent, identity, or tracking changes altered cross-session user recognition without creating a visible event-volume break.",
+    "Whether the same pattern persists under longer return windows or year-over-year controls."
+  ],
+  "productization_assessment": "Strong enough to productize as a bounded Lifecycle Risk case: the decline is material, sustained across two target cohorts, statistically clear, and based on large, fully observed cohorts. The product must preserve evidence discipline: this is a detected and segmented risk, not a causal root cause, and holiday seasonality remains an important unknown."
+}

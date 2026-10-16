@@ -5,11 +5,11 @@ from datetime import date, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from pulseops.backend.persistence.models import AnalysisRun, AgentStep, Opportunity
 from pulseops.backend.persistence.service import RunService
-from pulseops.backend.schemas.analytics import DateWindows
+from pulseops.backend.schemas.analytics import DateWindows, LifecycleWindows
 
 router = APIRouter(prefix="/api", tags=["product"])
 
@@ -28,16 +28,30 @@ def _polish_hypothesis_copy(value: str) -> str:
 
 class RunCreate(DateWindows):
     planner_mode: Literal["deterministic", "deepseek"] = "deterministic"
+    analysis_type: Literal["CONVERSION", "LIFECYCLE_RISK"] = "CONVERSION"
+    post_start: date | None = None
+    post_end: date | None = None
+
+    @model_validator(mode="after")
+    def validate_profile_windows(self) -> "RunCreate":
+        if self.analysis_type == "LIFECYCLE_RISK" and (
+            self.post_start is None or self.post_end is None
+        ):
+            raise ValueError("LIFECYCLE_RISK requires post_start and post_end")
+        return self
 
 
 class RunRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
+    analysis_type: str
     baseline_start: date
     baseline_end: date
     target_start: date
     target_end: date
+    post_start: date | None
+    post_end: date | None
     planner_mode: str
     provider: str | None
     model_identifier: str | None
@@ -45,6 +59,12 @@ class RunRead(BaseModel):
     overall_baseline_rate: float | None
     overall_target_rate: float | None
     overall_delta_pp: float | None
+    post_rate: float | None
+    target_to_post_delta_pp: float | None
+    baseline_to_post_delta_pp: float | None
+    recovery_ratio: float | None
+    risk_pattern: str | None
+    return_timing: dict[str, Any] | None
     affected_segment: str | None
     signal_confidence: str
     root_cause_confidence: str
@@ -93,6 +113,14 @@ class OpportunityRead(BaseModel):
     baseline_rate: float
     target_rate: float
     delta_pp: float
+    post_rate: float | None
+    target_to_post_delta_pp: float | None
+    baseline_to_post_delta_pp: float | None
+    recovery_ratio: float | None
+    risk_pattern: str | None
+    return_timing: dict[str, Any] | None
+    segment_analysis: dict[str, Any] | None
+    hypothesis_records: list[dict[str, Any]] | None
     signal_confidence: str
     root_cause_confidence: str
     evidence: list[str]
@@ -118,8 +146,12 @@ def get_run_service(request: Request) -> RunService:
 
 @router.post("/runs", response_model=RunRead, status_code=status.HTTP_201_CREATED)
 def create_run(payload: RunCreate, service: RunService = Depends(get_run_service)) -> AnalysisRun:
-    windows = DateWindows.model_validate(payload.model_dump(exclude={"planner_mode"}))
-    return service.execute(windows, payload.planner_mode)
+    values = payload.model_dump(exclude={"planner_mode", "analysis_type"})
+    if payload.analysis_type == "LIFECYCLE_RISK":
+        windows = LifecycleWindows.model_validate(values)
+    else:
+        windows = DateWindows.model_validate(values, extra="ignore")
+    return service.execute(windows, payload.planner_mode, payload.analysis_type)
 
 
 @router.get("/runs", response_model=list[RunRead])

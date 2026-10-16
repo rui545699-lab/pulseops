@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { RunInvestigation } from "@/components/run-investigation";
-import { dataQualityRun, noSignalRun, opportunity, run } from "@/test/fixtures";
+import { dataQualityRun, lifecycleOpportunity, lifecycleRun, noSignalRun, opportunity, run } from "@/test/fixtures";
 
 describe("Run Investigation", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -13,7 +13,7 @@ describe("Run Investigation", () => {
     const createRun = vi.fn().mockResolvedValue(run);
     render(<RunInvestigation createRun={createRun} listOpportunities={async () => [opportunity]} onNavigate={navigate} />);
     await fillAndSubmit();
-    await waitFor(() => expect(createRun).toHaveBeenCalledWith(expect.objectContaining({ planner_mode: "deterministic" })));
+    await waitFor(() => expect(createRun).toHaveBeenCalledWith(expect.objectContaining({ planner_mode: "deterministic", analysis_type: "CONVERSION" })));
     expect(navigate).toHaveBeenCalledWith("/opportunities/opportunity-01");
   });
 
@@ -41,6 +41,25 @@ describe("Run Investigation", () => {
     render(<RunInvestigation createRun={async () => { throw new Error("Service unavailable"); }} />);
     await fillAndSubmit();
     expect(await screen.findByRole("alert")).toHaveTextContent("Service unavailable");
+  });
+
+  it("includes Post dates for a Lifecycle Risk investigation", async () => {
+    const createRun = vi.fn().mockResolvedValue(lifecycleRun);
+    render(<RunInvestigation createRun={createRun} listOpportunities={async () => [lifecycleOpportunity]} onNavigate={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "New investigation" }));
+    await userEvent.selectOptions(screen.getByLabelText("Analysis Type"), "LIFECYCLE_RISK");
+    fireEvent.change(screen.getByLabelText("Baseline Start"), { target: { value: "2020-11-30" } });
+    fireEvent.change(screen.getByLabelText("Baseline End"), { target: { value: "2020-12-13" } });
+    fireEvent.change(screen.getByLabelText("Target Start"), { target: { value: "2020-12-21" } });
+    fireEvent.change(screen.getByLabelText("Target End"), { target: { value: "2021-01-03" } });
+    fireEvent.change(screen.getByLabelText("Post Start"), { target: { value: "2021-01-04" } });
+    fireEvent.change(screen.getByLabelText("Post End"), { target: { value: "2021-01-24" } });
+    await userEvent.click(screen.getByRole("button", { name: "Run investigation" }));
+    await waitFor(() => expect(createRun).toHaveBeenCalledWith(expect.objectContaining({
+      analysis_type: "LIFECYCLE_RISK",
+      post_start: "2021-01-04",
+      post_end: "2021-01-24",
+    })));
   });
 });
 

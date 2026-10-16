@@ -8,9 +8,9 @@ PulseOps is an AI user-operations agent that proactively detects meaningful beha
 
 Unlike a generic AI analytics assistant, PulseOps keeps **Evidence**, **Hypotheses**, and **Unknowns** separate. When the available data cannot establish a root cause, it recommends additional evidence collection instead of inventing one.
 
-`GA4 BigQuery` · `DeepSeek Planner` · `Policy Guard` · `FastAPI` · `Next.js` · `102 automated tests`
+`GA4 BigQuery` · `DeepSeek Planner` · `Policy Guard` · `FastAPI` · `Next.js` · `116 backend + 33 frontend tests`
 
-V0.1 delivers an end-to-end conversion-opportunity investigation: verified analytics, a guarded planner, traceable run state, persistence and API layers, and a product UI for operators.
+V0.2 delivers two bounded investigation profiles: Conversion / Activation Anomaly and Lifecycle Risk. Both use verified analytics, one guarded Investigation Agent, traceable run state, persistence and API layers, and a product UI for operators.
 
 ## Product Demo
 
@@ -72,6 +72,27 @@ The Agent confirmed what changed and who was affected, but did not fabricate a c
 
 Live Analytics was independently verified against BigQuery. The local portfolio demo uses a verified analytics fixture so it can run without cloud credentials; it does not claim to query BigQuery on every local run.
 
+## Case 02 · New-user 7-day Return Risk
+
+Case 02 uses real BigQuery cohort analysis to identify a material New-user 7-day Return Rate decline.
+
+| Measure | Result |
+| --- | ---: |
+| Baseline | **8.33%** |
+| Target | **5.11%** |
+| Delta | **-3.22pp** (-38.61% relative) |
+| Post | **6.90%** |
+| Recovery | **55.73%** |
+| Risk Pattern | **PARTIAL_RECOVERY** |
+| Signal Confidence | **HIGH** |
+| Root-cause Confidence | **LOW** |
+| Status | **NEEDS_EVIDENCE** |
+| Recommended Action | **EVIDENCE_COLLECTION** |
+
+The decline starts at D1 and persists through D7. Acquisition mix was rejected as an explanation, device concentration was rejected, and an activation-depth shift was observed. Activation composition explains only part of the decline; the root cause remains unconfirmed.
+
+The Case 02 lifecycle investigation is bounded by deterministic retention, timing, and recovery preflight, followed by acquisition, device, and activation-depth evidence collection. It does not claim Christmas, New Year, or holiday effects as proven causes.
+
 ## How the Agent Works
 
 ```mermaid
@@ -102,6 +123,8 @@ SQL and Python calculate the facts:
 - data-quality and significance checks
 
 ### LLM Planner
+
+The single Investigation Agent uses a profile-specific flow. For Conversion / Activation anomalies, deterministic preflight localizes the signal before the Planner can choose among lifecycle, device, acquisition, and category. For Lifecycle Risk, deterministic preflight handles retention, return timing, and recovery; the Planner then chooses among acquisition, device, and activation_depth.
 
 DeepSeek proposes:
 
@@ -147,7 +170,7 @@ Information the current dataset cannot establish.
 
 ## Why this is an Agent
 
-PulseOps is not a chatbot and not a static dashboard.
+PulseOps is not a chatbot and not a static dashboard. It uses one Investigation Agent across both supported profiles.
 
 The Planner observes structured investigation state, proposes the next useful investigation, passes that proposal through a Guard, invokes only bounded analytics tools, updates the shared state, and decides whether further investigation is justified. Each step is recorded so an operator can inspect what was checked, what was rejected, and why the Agent stopped.
 
@@ -160,7 +183,7 @@ flowchart TD
     A[GA4 BigQuery] --> B[Analytics Layer]
     B --> C
 
-    subgraph C[Investigation Agent]
+    subgraph C[One Investigation Agent]
         direction LR
         P[Planner] --> G[Guard]
         G --> S[State / Router]
@@ -191,12 +214,12 @@ docs/assets/        Public product screenshots
 
 ## Validation
 
-The V0.1 release has **102 automated tests passing**: 75 backend tests and 27 frontend tests.
+The current V0.2 baseline has **116 backend tests and 33 frontend tests passing**.
 
 - live validation against the GA4 public ecommerce dataset
-- validation coverage across 4.29M+ events and 270k+ pseudonymous users
-- Golden Case regression tests for Case 01
-- five-run live DeepSeek Planner verification
+- Case 01 real BigQuery validation and real DeepSeek Planner validation
+- Case 02 real BigQuery Phase A/B validation and real DeepSeek Planner validation
+- latest Lifecycle live verification: 3 runs, 9 proposals, 9 accepted, 0 rejected, 0 fallback, 0 illegal proposals, 0 premature stops, 0 unsupported causal claims, and 0 intervention-boundary violations
 - adversarial Guard tests for illegal, duplicate, mis-filtered, over-budget, and premature-stop proposals
 - Data Quality Fail and No Significant Signal paths
 - transaction rollback tests
@@ -204,7 +227,7 @@ The V0.1 release has **102 automated tests passing**: 75 backend tests and 27 fr
 - frontend component and API-client tests
 - successful Next.js production build
 
-The recorded live Planner verification completed five consistent Case 01 runs without unsupported causal claims. Ordinary tests remain offline and never depend on DeepSeek or Google Cloud credentials.
+Ordinary tests remain offline and never depend on DeepSeek or Google Cloud credentials. Live Planner verification is an explicit, separate check.
 
 ## Product Decisions
 
@@ -216,7 +239,7 @@ The recorded live Planner verification completed five consistent Case 01 runs wi
 
 ## Current Scope
 
-### V0.1 · Conversion Opportunity Investigation
+### V0.1 · Conversion / Activation Anomaly
 
 - [x] Data quality validation
 - [x] Funnel anomaly detection
@@ -228,11 +251,17 @@ The recorded live Planner verification completed five consistent Case 01 runs wi
 - [x] Product UI
 - [x] Live DeepSeek Planner verification
 
-## Roadmap
-
 ### V0.2 · Lifecycle Risk
 
-Identify cohorts at risk of reduced return or engagement.
+- [x] New-user 7-day Return Risk investigation
+- [x] Real BigQuery Phase A/B validation
+- [x] Live DeepSeek Planner verification
+
+## Roadmap
+
+### V0.1 · Conversion / Activation Anomaly ✅
+
+### V0.2 · Lifecycle Risk ✅
 
 ### V0.3 · Positive Growth Opportunity
 
@@ -242,7 +271,7 @@ Detect sustained positive lifts and investigate whether they are reproducible.
 
 Use linked or appropriately scoped qualitative feedback as an additional evidence source.
 
-Roadmap items are planned directions, not implemented V0.1 capabilities.
+Roadmap items beyond V0.2 are planned directions, not implemented capabilities.
 
 ## Local Development
 

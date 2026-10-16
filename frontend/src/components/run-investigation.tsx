@@ -26,6 +26,7 @@ export function RunInvestigation({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
+  const [analysisType, setAnalysisType] = useState<RunRequest["analysis_type"]>("CONVERSION");
   const [result, setResult] = useState<ResultState>({ kind: "idle" });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -34,11 +35,18 @@ export function RunInvestigation({
     setResult({ kind: "idle" });
     const form = new FormData(event.currentTarget);
     const payload: RunRequest = {
+      analysis_type: String(form.get("analysis_type")) as RunRequest["analysis_type"],
       baseline_start: String(form.get("baseline_start")),
       baseline_end: String(form.get("baseline_end")),
       target_start: String(form.get("target_start")),
       target_end: String(form.get("target_end")),
       planner_mode: String(form.get("planner_mode")) as RunRequest["planner_mode"],
+      ...(analysisType === "LIFECYCLE_RISK"
+        ? {
+            post_start: String(form.get("post_start")),
+            post_end: String(form.get("post_end")),
+          }
+        : {}),
     };
 
     try {
@@ -93,11 +101,29 @@ export function RunInvestigation({
 
       {open ? (
         <form onSubmit={handleSubmit} className="border-t border-white/10 px-6 py-5 sm:px-7">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <label className="space-y-2 text-xs font-medium text-[#d2d2cc]">
+              <span>Analysis Type</span>
+              <select
+                name="analysis_type"
+                value={analysisType}
+                onChange={(event) => setAnalysisType(event.target.value as RunRequest["analysis_type"])}
+                className="h-11 w-full rounded-lg border border-white/15 bg-[#292927] px-3 text-sm text-white outline-none focus:border-[#68ad9f]"
+              >
+                <option value="CONVERSION">Conversion / Activation</option>
+                <option value="LIFECYCLE_RISK">Lifecycle Risk</option>
+              </select>
+            </label>
             <DateField name="baseline_start" label="Baseline Start" />
             <DateField name="baseline_end" label="Baseline End" />
             <DateField name="target_start" label="Target Start" />
             <DateField name="target_end" label="Target End" />
+            {analysisType === "LIFECYCLE_RISK" ? (
+              <>
+                <DateField name="post_start" label="Post Start" />
+                <DateField name="post_end" label="Post End" />
+              </>
+            ) : null}
             <label className="space-y-2 text-xs font-medium text-[#d2d2cc]">
               <span>Planner Mode</span>
               <select name="planner_mode" defaultValue="deterministic" className="h-11 w-full rounded-lg border border-white/15 bg-[#292927] px-3 text-sm text-white outline-none focus:border-[#68ad9f]">

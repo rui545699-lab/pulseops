@@ -68,7 +68,8 @@ export function RunDetailView({ run, steps }: RunDetailData) {
           <h1 className="mt-5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Investigation Run</h1>
           <p className="mt-3 text-sm text-[#6f6f69]">{run.baseline_start}–{run.baseline_end} compared with {run.target_start}–{run.target_end}</p>
         </div>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3 rounded-xl border border-[#dfdfda] bg-white px-5 py-4 text-xs sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-3 rounded-xl border border-[#dfdfda] bg-white px-5 py-4 text-xs sm:grid-cols-4">
+          <Technical label="Analysis Type" value={run.analysis_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : "Conversion / Activation"} />
           <Technical label="Planner Mode" value={plannerLabel(run.planner_mode)} />
           <Technical label="Provider" value={providerLabel(run.provider)} />
           <Technical label="Model" value={run.model_identifier ?? "—"} wide />
@@ -76,11 +77,12 @@ export function RunDetailView({ run, steps }: RunDetailData) {
       </header>
 
       {run.detected_signal ? (
-        <section className="grid gap-4 rounded-xl border border-[#deded9] bg-white p-5 sm:grid-cols-4 sm:p-6" aria-label="Detected signal summary">
+        <section className={`grid gap-4 rounded-xl border border-[#deded9] bg-white p-5 sm:p-6 ${run.analysis_type === "LIFECYCLE_RISK" ? "sm:grid-cols-5" : "sm:grid-cols-4"}`} aria-label="Detected signal summary">
           <div><p className="meta-label">Detected Signal</p><p className="mt-2 text-sm font-semibold">{run.detected_signal}</p></div>
           <div><p className="meta-label">Overall Movement</p><p className="mt-2 text-sm font-semibold tabular-nums">{formatRate(run.overall_baseline_rate)} → {formatRate(run.overall_target_rate)}</p></div>
           <div><p className="meta-label">Delta</p><p className="mt-2 text-sm font-semibold text-[#9a4438]">{formatDelta(run.overall_delta_pp)}</p></div>
           <div><p className="meta-label">Affected Segment</p><p className="mt-2 text-sm font-semibold">{segmentLabel(run.affected_segment)}</p></div>
+          {run.analysis_type === "LIFECYCLE_RISK" ? <div><p className="meta-label">Post / Recovery</p><p className="mt-2 text-sm font-semibold tabular-nums">{formatRate(run.post_rate)} · {humanize(run.risk_pattern)}</p></div> : null}
         </section>
       ) : null}
 
@@ -169,6 +171,8 @@ function TraceBlock({ icon, label, children, className = "" }: { icon: React.Rea
 function StopSummary({ run }: { run: AnalysisRun }) {
   const reason = run.stop_reason === "ALLOWED_DIMENSIONS_EXHAUSTED"
     ? "All permitted dimensions were investigated. No confirmed root cause supports further drill-down."
+    : run.stop_reason === "BUDGET_EXHAUSTED"
+      ? "Investigation budget was exhausted while permitted dimensions remained."
     : run.stop_reason === "DATA_QUALITY_FAIL"
       ? "Data quality did not support behavioral interpretation."
       : run.stop_reason === "NO_SIGNIFICANT_SIGNAL"
@@ -199,6 +203,12 @@ function stepTitle(node: string): string {
     VALIDATE_DATA: "Validate Data",
     SCAN_METRICS: "Scan Metrics",
     ANALYZE_FUNNEL: "Strict Funnel",
+    ANALYZE_RETENTION: "Analyze Retention",
+    CHECK_RETURN_TIMING: "Return Timing",
+    CHECK_RECOVERY: "Recovery",
+    CHECK_ACQUISITION: "Acquisition",
+    CHECK_DEVICE: "Device",
+    CHECK_ACTIVATION_DEPTH: "Activation Depth",
     COMPARE_SEGMENTS_LIFECYCLE: "Lifecycle",
     COMPARE_SEGMENTS_DEVICE: "Device",
     COMPARE_SEGMENTS_ACQUISITION: "Acquisition",
@@ -222,6 +232,37 @@ function stepSummary(step: AgentStep): string {
     const target = numberValue(step.tool_output_summary.target_rate);
     const strictOrdering = step.tool_output_summary.strict_identity_session_order === true;
     return `${formatRate(baseline)} → ${formatRate(target)}.${strictOrdering ? " Signal confirmed using strict same-user / same-session ordering." : ""}`;
+  }
+  if (step.node === "ANALYZE_RETENTION") {
+    const baseline = objectValue(step.tool_output_summary.baseline);
+    const target = objectValue(step.tool_output_summary.target);
+    return `D7 Return ${formatRate(numberValue(baseline?.return_rate_7d))} → ${formatRate(numberValue(target?.return_rate_7d))}, ${formatDelta(numberValue(step.tool_output_summary.delta_pp))}.`;
+  }
+  if (step.node === "CHECK_RETURN_TIMING") {
+    const conclusion = step.tool_output_summary.conclusion;
+    if (typeof conclusion === "string") return conclusion;
+    const baseline = objectValue(step.tool_output_summary.baseline);
+    const target = objectValue(step.tool_output_summary.target);
+    return timingSummary(baseline, target);
+  }
+  if (step.node === "CHECK_RECOVERY") {
+    const postRate = formatRate(numberValue(step.tool_output_summary.post_rate));
+    const riskPattern = humanize(typeof step.tool_output_summary.risk_pattern === "string" ? step.tool_output_summary.risk_pattern : null);
+    return `Post D7 Return: ${postRate}. Recovery classification: ${riskPattern}.`;
+  }
+  if (step.node === "CHECK_ACQUISITION") {
+    return `Major sources declined within-source while mix stayed stable. ${hypothesisOutcome(step, "Acquisition-mix explanation")}`;
+  }
+  if (step.node === "CHECK_DEVICE") {
+    const segments = segmentSummaries(step);
+    const desktop = findSegment(segments, "desktop");
+    const mobile = findSegment(segments, "mobile");
+    return `Desktop: ${formatDelta(desktop?.change_pp ?? null)} · Mobile: ${formatDelta(mobile?.change_pp ?? null)}. ${hypothesisOutcome(step, "Device concentration")}`;
+  }
+  if (step.node === "CHECK_ACTIVATION_DEPTH") {
+    const composition = numberValue(step.tool_output_summary.composition_effect_pp);
+    const within = numberValue(step.tool_output_summary.within_segment_effect_pp);
+    return `Users shifted shallower (${formatDelta(composition)} composition), while within-bucket decline dominated (${formatDelta(within)}). Observed association supported; root cause unconfirmed.`;
   }
   if (step.node === "COMPARE_SEGMENTS_LIFECYCLE") {
     const segments = segmentSummaries(step);
@@ -257,9 +298,24 @@ function stepSummary(step: AgentStep): string {
     if (mixed) return `Category effects were mixed. ${hypothesisOutcome(step, "Category-concentration explanation")}`;
   }
   if (step.node === "STOP_DRILLDOWN" && step.decision === "STOP") {
-    return "All permitted dimensions were investigated. No confirmed root cause supports further drill-down.";
+    return step.decision_reason;
   }
   return step.decision_reason;
+}
+
+function timingSummary(
+  baseline: Record<string, unknown> | null,
+  target: Record<string, unknown> | null,
+): string {
+  const d1Gap = (numberValue(baseline?.return_rate_d1) ?? 0) - (numberValue(target?.return_rate_d1) ?? 0);
+  const d2To3Gap = ((numberValue(baseline?.return_rate_d3) ?? 0) - (numberValue(baseline?.return_rate_d1) ?? 0))
+    - ((numberValue(target?.return_rate_d3) ?? 0) - (numberValue(target?.return_rate_d1) ?? 0));
+  const d4To7Gap = ((numberValue(baseline?.return_rate_d7) ?? 0) - (numberValue(baseline?.return_rate_d3) ?? 0))
+    - ((numberValue(target?.return_rate_d7) ?? 0) - (numberValue(target?.return_rate_d3) ?? 0));
+  if (d1Gap > 0) return "The decline begins at D1 and persists through D7.";
+  if (d2To3Gap > 0) return "Return is not lower at D1; the decline emerges during D2–3 and persists through D7.";
+  if (d4To7Gap > 0) return "Return is not lower through D3; the decline emerges during D4–7.";
+  return "Return timing does not show a clear cumulative decline through D7.";
 }
 
 type SegmentSummary = {
@@ -290,4 +346,8 @@ function hypothesisOutcome(step: AgentStep, label: string): string {
 
 function numberValue(value: unknown): number | null {
   return typeof value === "number" ? value : null;
+}
+
+function objectValue(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null ? value as Record<string, unknown> : null;
 }

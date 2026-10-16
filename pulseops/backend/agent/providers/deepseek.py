@@ -7,7 +7,8 @@ from urllib.request import Request, urlopen
 
 from pulseops.backend.agent.planner import PlannerProtocol
 from pulseops.backend.agent.prompts import PLANNER_SYSTEM_PROMPT
-from pulseops.backend.agent.state import AgentState
+from pulseops.backend.agent.router import allowed_dimensions, next_dimension
+from pulseops.backend.agent.state import AgentState, InvestigationProfile
 
 
 @dataclass(frozen=True)
@@ -54,24 +55,51 @@ class DeepSeekPlanner(PlannerProtocol):
         return content
 
     def _request_payload(self, state: AgentState) -> dict[str, Any]:
+        allowed = allowed_dimensions(state)
+        remaining_dimensions = [
+            dimension for dimension in allowed if dimension not in state.investigated_dimensions
+        ]
+        required_lifecycle_filter = _required_lifecycle_filter(state)
+        stop_allowed = next_dimension(state) is None
+        if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
+            profile_rules = (
+                "This is LIFECYCLE_RISK. Deterministic preflight already completed the lifecycle "
+                "prerequisite. Valid bounded evidence dimensions are acquisition, device, and "
+                "activation_depth. Propose only from remaining_dimensions. lifecycle_filter MUST be "
+                "null, even when affected_segment is new_users."
+            )
+        else:
+            profile_rules = (
+                "This is CONVERSION. Follow the supplied required_lifecycle_filter exactly for the "
+                "chosen dimension."
+            )
         system = (
             PLANNER_SYSTEM_PROMPT
             + "\nReturn one JSON object with exactly these fields: action, dimension, "
             "lifecycle_filter, rationale, hypothesis_code. Example JSON: "
-            '{"action":"INVESTIGATE","dimension":"lifecycle",'
-            '"lifecycle_filter":null,"rationale":"Investigate lifecycle first.",'
+            '{"action":"INVESTIGATE","dimension":"device",'
+            '"lifecycle_filter":null,"rationale":"Investigate whether the pattern is concentrated by device.",'
             '"hypothesis_code":null}'
-            "\nLifecycle filter rules: use null when dimension is lifecycle. For secondary "
-            "dimensions, if affected_segment is new_users use exactly \"new\"; if it is "
-            "returning_users use exactly \"returning\"; otherwise use null. Never use "
-            "new_users or returning_users as lifecycle_filter values."
+            f"\n{profile_rules} "
+            "Use required_lifecycle_filter exactly. Never use new_users or returning_users as "
+            "lifecycle_filter values."
         )
         planner_state = {
             "run_id": state.run_id,
             "detected_signal": state.detected_signal,
             "affected_segment": state.affected_segment,
             "investigated_dimensions": state.investigated_dimensions,
+            "remaining_dimensions": remaining_dimensions,
             "remaining_investigation_budget": state.remaining_investigation_budget,
+            "required_lifecycle_filter": required_lifecycle_filter,
+            "stop_allowed": stop_allowed,
+            "stop_preconditions": {
+                "no_legal_next_dimension": stop_allowed,
+                "remaining_dimensions": remaining_dimensions,
+                "remaining_investigation_budget": state.remaining_investigation_budget,
+                "policy": "STOP is legal only when no legal next dimension exists.",
+            },
+            "root_cause_confidence": state.root_cause_confidence.value,
             "evidence": state.evidence,
             "rejected_hypotheses": [item.model_dump(mode="json") for item in state.rejected_hypotheses],
             "supported_hypotheses": [item.model_dump(mode="json") for item in state.supported_hypotheses],
@@ -79,6 +107,10 @@ class DeepSeekPlanner(PlannerProtocol):
                 item.model_dump(mode="json") for item in state.insufficient_hypotheses
             ],
             "unknowns": state.unknowns,
+            "investigation_profile": state.investigation_profile.value,
+            "risk_pattern": (
+                state.recovery_result.risk_pattern.value if state.recovery_result else None
+            ),
         }
         return {
             "model": self.config.model,
@@ -96,3 +128,13 @@ class DeepSeekPlanner(PlannerProtocol):
             "max_tokens": self.config.max_tokens,
             "stream": False,
         }
+
+
+def _required_lifecycle_filter(state: AgentState) -> str | None:
+    if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
+        return None
+    if state.affected_segment == "new_users":
+        return "new"
+    if state.affected_segment == "returning_users":
+        return "returning"
+    return None

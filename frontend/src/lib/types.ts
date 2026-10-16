@@ -2,10 +2,13 @@ export type PlannerMode = "deterministic" | "deepseek";
 
 export interface AnalysisRun {
   id: string;
+  analysis_type: "CONVERSION" | "LIFECYCLE_RISK" | string;
   baseline_start: string;
   baseline_end: string;
   target_start: string;
   target_end: string;
+  post_start: string | null;
+  post_end: string | null;
   planner_mode: PlannerMode;
   provider: string | null;
   model_identifier: string | null;
@@ -13,6 +16,12 @@ export interface AnalysisRun {
   overall_baseline_rate: number | null;
   overall_target_rate: number | null;
   overall_delta_pp: number | null;
+  post_rate: number | null;
+  target_to_post_delta_pp: number | null;
+  baseline_to_post_delta_pp: number | null;
+  recovery_ratio: number | null;
+  risk_pattern: string | null;
+  return_timing: ReturnTiming | null;
   affected_segment: string | null;
   signal_confidence: string;
   root_cause_confidence: string;
@@ -63,6 +72,14 @@ export interface Opportunity {
   baseline_rate: number;
   target_rate: number;
   delta_pp: number;
+  post_rate: number | null;
+  target_to_post_delta_pp: number | null;
+  baseline_to_post_delta_pp: number | null;
+  recovery_ratio: number | null;
+  risk_pattern: string | null;
+  return_timing: ReturnTiming | null;
+  segment_analysis: Record<string, unknown> | null;
+  hypothesis_records: Array<{ code: string; reason: string; status: string }> | null;
   signal_confidence: string;
   root_cause_confidence: string;
   evidence: string[];
@@ -78,11 +95,33 @@ export interface Opportunity {
 }
 
 export interface RunRequest {
+  analysis_type: "CONVERSION" | "LIFECYCLE_RISK";
   baseline_start: string;
   baseline_end: string;
   target_start: string;
   target_end: string;
+  post_start?: string;
+  post_end?: string;
   planner_mode: PlannerMode;
+}
+
+export interface ReturnTimingPeriod {
+  eligible_new_users: number;
+  returned_users_d1: number;
+  return_rate_d1: number;
+  returned_users_d3: number;
+  return_rate_d3: number;
+  returned_users_d7: number;
+  return_rate_d7: number;
+}
+
+export interface ReturnTiming {
+  baseline: ReturnTimingPeriod;
+  target: ReturnTimingPeriod;
+  post: ReturnTimingPeriod;
+  d1_decline_contribution_pct: number;
+  d2_3_decline_contribution_pct: number;
+  d4_7_decline_contribution_pct: number;
 }
 
 export interface OpportunityWithRun {

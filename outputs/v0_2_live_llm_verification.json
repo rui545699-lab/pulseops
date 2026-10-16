@@ -1,0 +1,590 @@
+{
+  "verification": "V0.2 Lifecycle Risk Live DeepSeek Planner Verification",
+  "generated_at": "2026-10-16T02:54:18.676440+00:00",
+  "provider": "deepseek",
+  "configured_model": "deepseek-flash",
+  "response_model_identifier": "deepseek-flash",
+  "analytics_source": {
+    "kind": "GOLDEN_FIXTURE",
+    "derived_from": "Verified GA4 BigQuery Phase A/B outputs",
+    "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*"
+  },
+  "windows": {
+    "baseline_start": "2020-11-30",
+    "baseline_end": "2020-12-13",
+    "target_start": "2020-12-21",
+    "target_end": "2021-01-03",
+    "post_start": "2021-01-04",
+    "post_end": "2021-01-24"
+  },
+  "runs": [
+    {
+      "run_id": "case-02-live-1",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_RETENTION",
+        "CHECK_RETURN_TIMING",
+        "CHECK_RECOVERY"
+      ],
+      "planner_sequence": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "investigation_order": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 5,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return-rate decline is concentrated in specific acquisition sources or cohorts, since composition changes in acquisition may be associated with the observed pattern; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user D7 return decline is concentrated in particular device segments, since acquisition mix was stable and within-source declines were observed; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "activation_depth",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return decline is concentrated in particular activation-depth tiers, since acquisition mix and device composition were stable and evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "activation_depth",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "root_cause_confidence": "LOW"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "intervention_boundary_violations": 0,
+      "filter_inconsistent": 0,
+      "guard_false_positives": 0,
+      "provider_rationale_causal_claim": false,
+      "final_content_causal_claim": false,
+      "final_content_intervention_recommendation": false,
+      "final_facts": {
+        "baseline_rate": 8.33,
+        "target_rate": 5.11,
+        "delta_pp": -3.22,
+        "post_rate": 6.9,
+        "recovery_ratio": 55.73,
+        "risk_pattern": "PARTIAL_RECOVERY",
+        "signal_confidence": "HIGH",
+        "root_cause_confidence": "LOW",
+        "recommended_status": "NEEDS_EVIDENCE",
+        "recommended_action_type": "EVIDENCE_COLLECTION",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "evidence": [
+        "D7 Return Rate declined from 8.33% to 5.11% (-3.22pp).",
+        "The decline begins at D1 and persists through D7.",
+        "Post-period D7 Return improved to 6.90% and remained statistically below Baseline.",
+        "Acquisition mix stayed stable while major sources declined within-source.",
+        "Material device segments declined in parallel while device mix stayed stable.",
+        "SHALLOW share increased 5.78pp and INTENT share decreased 3.83pp; composition explains about 18.25% of the decline while within-segment decline explains 81.75%."
+      ],
+      "hypotheses": [
+        "First-session activation becoming shallower may contribute to part of the decline.",
+        "Calendar seasonality may contribute to the temporary component.",
+        "Broader period-specific factors may affect return behavior."
+      ],
+      "unknowns": [
+        "Whether calendar or period-specific effects contributed to the change is unknown.",
+        "Why return declined inside every activation bucket is unknown.",
+        "Campaign, pricing, inventory, UX, performance, consent, and identity-resolution changes are unknown.",
+        "Longer-window retention and year-over-year behavior are unknown."
+      ],
+      "passed": true
+    },
+    {
+      "run_id": "case-02-live-2",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_RETENTION",
+        "CHECK_RETURN_TIMING",
+        "CHECK_RECOVERY"
+      ],
+      "planner_sequence": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "investigation_order": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 5,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return-rate decline is concentrated in specific acquisition sources or campaigns, since composition changes in acquisition may be associated with the observed pattern; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user D7 Return Rate decline is concentrated in specific device segments, since acquisition mix was stable and within-source declines were observed; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "activation_depth",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return decline is concentrated in particular activation-depth tiers, since acquisition mix and device mix were stable and evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "activation_depth",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "root_cause_confidence": "LOW"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "intervention_boundary_violations": 0,
+      "filter_inconsistent": 0,
+      "guard_false_positives": 0,
+      "provider_rationale_causal_claim": false,
+      "final_content_causal_claim": false,
+      "final_content_intervention_recommendation": false,
+      "final_facts": {
+        "baseline_rate": 8.33,
+        "target_rate": 5.11,
+        "delta_pp": -3.22,
+        "post_rate": 6.9,
+        "recovery_ratio": 55.73,
+        "risk_pattern": "PARTIAL_RECOVERY",
+        "signal_confidence": "HIGH",
+        "root_cause_confidence": "LOW",
+        "recommended_status": "NEEDS_EVIDENCE",
+        "recommended_action_type": "EVIDENCE_COLLECTION",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "evidence": [
+        "D7 Return Rate declined from 8.33% to 5.11% (-3.22pp).",
+        "The decline begins at D1 and persists through D7.",
+        "Post-period D7 Return improved to 6.90% and remained statistically below Baseline.",
+        "Acquisition mix stayed stable while major sources declined within-source.",
+        "Material device segments declined in parallel while device mix stayed stable.",
+        "SHALLOW share increased 5.78pp and INTENT share decreased 3.83pp; composition explains about 18.25% of the decline while within-segment decline explains 81.75%."
+      ],
+      "hypotheses": [
+        "First-session activation becoming shallower may contribute to part of the decline.",
+        "Calendar seasonality may contribute to the temporary component.",
+        "Broader period-specific factors may affect return behavior."
+      ],
+      "unknowns": [
+        "Whether calendar or period-specific effects contributed to the change is unknown.",
+        "Why return declined inside every activation bucket is unknown.",
+        "Campaign, pricing, inventory, UX, performance, consent, and identity-resolution changes are unknown.",
+        "Longer-window retention and year-over-year behavior are unknown."
+      ],
+      "passed": true
+    },
+    {
+      "run_id": "case-02-live-3",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_RETENTION",
+        "CHECK_RETURN_TIMING",
+        "CHECK_RECOVERY"
+      ],
+      "planner_sequence": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "investigation_order": [
+        "acquisition",
+        "device",
+        "activation_depth"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 5,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return-rate pattern is concentrated in specific acquisition sources or campaigns, since composition changes in acquisition mix may be associated with the observed decline. Evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return-rate decline is concentrated by device, since acquisition mix was rejected and device composition may be associated with the within-source decline.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "activation_depth"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "activation_depth",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the new-user return decline is concentrated in particular activation-depth cohorts, since acquisition mix and device composition were stable and evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_lifecycle_segments",
+          "executed_dimension": "activation_depth",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "activation_depth"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "root_cause_confidence": "LOW"
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "acquisition",
+              "device",
+              "activation_depth"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "root_cause_confidence": "LOW"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "intervention_boundary_violations": 0,
+      "filter_inconsistent": 0,
+      "guard_false_positives": 0,
+      "provider_rationale_causal_claim": false,
+      "final_content_causal_claim": false,
+      "final_content_intervention_recommendation": false,
+      "final_facts": {
+        "baseline_rate": 8.33,
+        "target_rate": 5.11,
+        "delta_pp": -3.22,
+        "post_rate": 6.9,
+        "recovery_ratio": 55.73,
+        "risk_pattern": "PARTIAL_RECOVERY",
+        "signal_confidence": "HIGH",
+        "root_cause_confidence": "LOW",
+        "recommended_status": "NEEDS_EVIDENCE",
+        "recommended_action_type": "EVIDENCE_COLLECTION",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "evidence": [
+        "D7 Return Rate declined from 8.33% to 5.11% (-3.22pp).",
+        "The decline begins at D1 and persists through D7.",
+        "Post-period D7 Return improved to 6.90% and remained statistically below Baseline.",
+        "Acquisition mix stayed stable while major sources declined within-source.",
+        "Material device segments declined in parallel while device mix stayed stable.",
+        "SHALLOW share increased 5.78pp and INTENT share decreased 3.83pp; composition explains about 18.25% of the decline while within-segment decline explains 81.75%."
+      ],
+      "hypotheses": [
+        "First-session activation becoming shallower may contribute to part of the decline.",
+        "Calendar seasonality may contribute to the temporary component.",
+        "Broader period-specific factors may affect return behavior."
+      ],
+      "unknowns": [
+        "Whether calendar or period-specific effects contributed to the change is unknown.",
+        "Why return declined inside every activation bucket is unknown.",
+        "Campaign, pricing, inventory, UX, performance, consent, and identity-resolution changes are unknown.",
+        "Longer-window retention and year-over-year behavior are unknown."
+      ],
+      "passed": true
+    }
+  ],
+  "summary": {
+    "run_count": 3,
+    "total_proposals": 9,
+    "accepted_proposals": 9,
+    "rejected_proposals": 0,
+    "fallback_count": 0,
+    "illegal_proposals": 0,
+    "duplicate_proposals": 0,
+    "premature_stops": 0,
+    "unsupported_causal_claims": 0,
+    "intervention_boundary_violations": 0,
+    "filter_inconsistent": 0,
+    "guard_false_positives": 0,
+    "final_state_consistent": true,
+    "overall_result": "PASS"
+  }
+}

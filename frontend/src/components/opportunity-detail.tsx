@@ -8,7 +8,7 @@ import { MetricScope } from "@/components/metric-scope";
 import { ErrorState, PageLoading } from "@/components/states";
 import { StatusBadge } from "@/components/status-badge";
 import { loadOpportunityDetail } from "@/lib/api";
-import { humanize, opportunityTitle, segmentLabel } from "@/lib/format";
+import { formatDelta, humanize, opportunityTitle, segmentLabel } from "@/lib/format";
 import type { AnalysisRun, Opportunity } from "@/lib/types";
 
 export interface OpportunityDetailData {
@@ -51,6 +51,7 @@ export function OpportunityDetailClient({
 }
 
 export function OpportunityDetailView({ opportunity, run }: OpportunityDetailData) {
+  const lifecycle = opportunity.opportunity_type === "LIFECYCLE_RISK";
   return (
     <div className="space-y-10">
       <nav aria-label="Breadcrumb" className="text-xs text-[#85857f]">
@@ -63,13 +64,16 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <StatusBadge value={opportunity.status} />
+            <StatusBadge value={opportunity.opportunity_type} label={lifecycle ? "Lifecycle Risk" : "Conversion / Activation"} />
             <span className="text-xs text-[#7e7e78]">Affected segment · {segmentLabel(opportunity.affected_segment)}</span>
           </div>
           <h1 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-0.04em] sm:text-5xl">
-            {opportunityTitle(opportunity.metric, opportunity.affected_segment)}
+            {lifecycle ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-[#6c6c66]">
-            A material conversion decline is localized to this segment. The behavioral signal is strong; the causal mechanism remains unconfirmed.
+            {lifecycle
+              ? "A material new-user return risk partially recovered in the Post period. The signal is strong; the causal mechanism remains unconfirmed."
+              : "A material conversion decline is localized to this segment. The behavioral signal is strong; the causal mechanism remains unconfirmed."}
           </p>
         </div>
         <Link href={`/runs/${run.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#2f655a] hover:text-[#194d43]">
@@ -78,14 +82,26 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
       </header>
 
       <section aria-label="Metric scope comparison" className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-        <MetricScope eyebrow={`Localized opportunity · ${segmentLabel(opportunity.affected_segment)}`} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} emphasized />
-        <div className="rounded-xl border border-[#e1e1dc] bg-[#f1f1ee] p-5 sm:p-6">
-          <MetricScope eyebrow={`Overall detected signal · ${run.detected_signal ?? opportunity.metric}`} baseline={run.overall_baseline_rate} target={run.overall_target_rate} delta={run.overall_delta_pp} />
-          <p className="mt-4 border-t border-[#deded8] pt-4 text-xs leading-5 text-[#777771]">
-            Overall strict-session movement triggered the investigation. Localized rates describe the affected segment above.
-          </p>
-        </div>
+        <MetricScope eyebrow={`${lifecycle ? "Metric summary" : "Localized opportunity"} · ${segmentLabel(opportunity.affected_segment)}`} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} emphasized />
+        {lifecycle ? (
+          <div className="rounded-xl border border-[#e1e1dc] bg-[#f1f1ee] p-5 sm:p-6">
+            <p className="meta-label">Affected Population</p>
+            <p className="mt-3 text-xl font-semibold">New users</p>
+            <p className="mt-2 text-sm text-[#686862]">{run.target_start} – {run.target_end}</p>
+            <p className="mt-4 border-t border-[#deded8] pt-4 text-xs leading-5 text-[#777771]">
+              {opportunity.return_timing?.target.eligible_new_users.toLocaleString() ?? "—"} eligible users with a complete seven-day observation window.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[#e1e1dc] bg-[#f1f1ee] p-5 sm:p-6">
+            <MetricScope eyebrow={`Overall detected signal · ${run.detected_signal ?? opportunity.metric}`} baseline={run.overall_baseline_rate} target={run.overall_target_rate} delta={run.overall_delta_pp} />
+            <p className="mt-4 border-t border-[#deded8] pt-4 text-xs leading-5 text-[#777771]">Overall strict-session movement triggered the investigation. Localized rates describe the affected segment above.</p>
+          </div>
+        )}
       </section>
+
+      {lifecycle ? <LifecycleRecovery opportunity={opportunity} /> : null}
+      {lifecycle && opportunity.return_timing ? <ReturnTiming timing={opportunity.return_timing} /> : null}
 
       <section aria-labelledby="confidence-heading" className="grid gap-5 rounded-xl border border-[#deded9] bg-white p-5 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-6">
         <div>
@@ -121,6 +137,47 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
         </div>
       </section>
     </div>
+  );
+}
+
+function LifecycleRecovery({ opportunity }: { opportunity: Opportunity }) {
+  const recoveryLabel = humanize(opportunity.risk_pattern ?? "RECOVERY_ANALYSIS");
+  return (
+    <section aria-labelledby="recovery-heading" className="rounded-xl border border-[#d7e2de] bg-[#f4f8f7] p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><p className="meta-label">Recovery</p><h2 id="recovery-heading" className="mt-2 text-xl font-semibold">{recoveryLabel} relative to Baseline</h2></div>
+        {opportunity.risk_pattern ? <StatusBadge value={opportunity.risk_pattern} /> : null}
+      </div>
+      <dl className="mt-6 grid gap-5 sm:grid-cols-3">
+        <div><dt className="meta-label">Target</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{opportunity.target_rate.toFixed(2)}%</dd></div>
+        <div><dt className="meta-label">Post</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{opportunity.post_rate?.toFixed(2)}%</dd></div>
+        <div><dt className="meta-label">Lost rate recovered</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{opportunity.recovery_ratio?.toFixed(2)}%</dd></div>
+      </dl>
+      <p className="mt-5 text-xs leading-5 text-[#61716d]">Target → Post {formatDelta(opportunity.target_to_post_delta_pp ?? null)} · Baseline → Post {formatDelta(opportunity.baseline_to_post_delta_pp ?? null)}. Calendar timing remains a hypothesis, not a proven cause.</p>
+    </section>
+  );
+}
+
+function ReturnTiming({ timing }: { timing: NonNullable<Opportunity["return_timing"]> }) {
+  const periods = [
+    ["Baseline", timing.baseline],
+    ["Target", timing.target],
+    ["Post", timing.post],
+  ] as const;
+  return (
+    <section aria-labelledby="return-timing-heading" className="rounded-xl border border-[#deded9] bg-white p-5 sm:p-6">
+      <p className="meta-label">Timing evidence</p>
+      <h2 id="return-timing-heading" className="mt-2 text-xl font-semibold">Return Timing</h2>
+      <div className="mt-5 overflow-x-auto">
+        <table className="w-full min-w-[34rem] text-left text-sm">
+          <thead className="text-xs text-[#777771]"><tr><th className="pb-3">Period</th><th className="pb-3">D1</th><th className="pb-3">D1–3</th><th className="pb-3">D1–7</th></tr></thead>
+          <tbody className="divide-y divide-[#ecece8]">
+            {periods.map(([label, period]) => <tr key={label}><th className="py-3 font-medium">{label}</th><td className="py-3 tabular-nums">{period.return_rate_d1.toFixed(2)}%</td><td className="py-3 tabular-nums">{period.return_rate_d3.toFixed(2)}%</td><td className="py-3 tabular-nums">{period.return_rate_d7.toFixed(2)}%</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-5 text-xs leading-5 text-[#777771]">Observed decline contribution: D1 {timing.d1_decline_contribution_pct.toFixed(2)}% · D2–3 {timing.d2_3_decline_contribution_pct.toFixed(2)}% · D4–7 {timing.d4_7_decline_contribution_pct.toFixed(2)}%. Timing is evidence, not causal proof.</p>
+    </section>
   );
 }
 

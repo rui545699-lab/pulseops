@@ -17,6 +17,7 @@ from pulseops.backend.schemas.analytics import (
     MetricResult,
     RecommendedStatus,
     SegmentComparison,
+    LifecycleSegmentComparison,
 )
 
 
@@ -150,3 +151,100 @@ def finalize_needs_evidence(state: AgentState) -> None:
         "inventory, performance telemetry, and user feedback before choosing an intervention."
     )
     state.do_not_recommend_yet = list(DO_NOT_RECOMMEND)
+
+
+def apply_lifecycle_segment_policy(
+    state: AgentState, result: LifecycleSegmentComparison
+) -> HypothesisRecord:
+    if result.dimension == "acquisition":
+        material = [segment for segment in result.segments if segment.sample_sufficient]
+        rejected = bool(material) and all(segment.change_pp < 0 for segment in material) and abs(
+            result.composition_effect_pp
+        ) < 0.5
+        record = HypothesisRecord(
+            code="ACQUISITION_MIX_EXPLANATION",
+            reason=(
+                "composition was stable while material sources declined within-source"
+                if rejected
+                else "acquisition evidence does not isolate a stable mix explanation"
+            ),
+            status=(HypothesisStatus.REJECTED if rejected else HypothesisStatus.INSUFFICIENT_EVIDENCE),
+        )
+        (state.rejected_hypotheses if rejected else state.insufficient_hypotheses).append(record)
+        if rejected:
+            state.evidence.append("Acquisition mix stayed stable while major sources declined within-source.")
+        return record
+    if result.dimension == "device":
+        material = [segment for segment in result.segments if segment.sample_sufficient]
+        rejected = len(material) >= 2 and all(segment.change_pp < 0 for segment in material) and abs(
+            result.composition_effect_pp
+        ) < 0.5
+        record = HypothesisRecord(
+            code="DEVICE_CONCENTRATION",
+            reason=(
+                "material device segments declined in parallel while device mix stayed stable"
+                if rejected
+                else "device evidence does not establish a concentrated explanation"
+            ),
+            status=(HypothesisStatus.REJECTED if rejected else HypothesisStatus.INSUFFICIENT_EVIDENCE),
+        )
+        (state.rejected_hypotheses if rejected else state.insufficient_hypotheses).append(record)
+        if rejected:
+            state.evidence.append("Material device segments declined in parallel while device mix stayed stable.")
+        return record
+    if result.dimension == "activation_depth":
+        by_segment = {segment.segment: segment for segment in result.segments}
+        shallow = by_segment.get("SHALLOW")
+        intent = by_segment.get("INTENT")
+        supported = (
+            shallow is not None
+            and intent is not None
+            and shallow.share_change_pp > 0
+            and intent.share_change_pp < 0
+            and result.composition_effect_pp < 0
+        )
+        record = HypothesisRecord(
+            code="ACTIVATION_DEPTH_SHIFT",
+            reason=(
+                "the observed first-session composition shifted toward SHALLOW users"
+                if supported
+                else "activation-depth evidence does not establish a directional composition shift"
+            ),
+            status=(HypothesisStatus.SUPPORTED if supported else HypothesisStatus.INSUFFICIENT_EVIDENCE),
+        )
+        (state.supported_hypotheses if supported else state.insufficient_hypotheses).append(record)
+        if supported:
+            state.evidence.append(
+                f"SHALLOW share increased {shallow.share_change_pp:.2f}pp and INTENT share "
+                f"decreased {abs(intent.share_change_pp):.2f}pp; composition explains about "
+                f"{result.composition_share_of_total_decline_pct:.2f}% of the decline while "
+                f"within-segment decline explains {result.within_segment_share_of_total_decline_pct:.2f}%."
+            )
+        return record
+    raise ValueError(f"unsupported lifecycle investigation dimension: {result.dimension}")
+
+
+def finalize_lifecycle_needs_evidence(state: AgentState) -> None:
+    state.root_cause_confidence = Confidence.LOW
+    state.recommended_status = RecommendedStatus.NEEDS_EVIDENCE
+    state.recommended_action_type = RecommendedActionType.EVIDENCE_COLLECTION
+    state.hypotheses = [
+        "First-session activation becoming shallower may contribute to part of the decline.",
+        "Calendar seasonality may contribute to the temporary component.",
+        "Broader period-specific factors may affect return behavior.",
+    ]
+    state.unknowns = [
+        "Whether calendar or period-specific effects contributed to the change is unknown.",
+        "Why return declined inside every activation bucket is unknown.",
+        "Campaign, pricing, inventory, UX, performance, consent, and identity-resolution changes are unknown.",
+        "Longer-window retention and year-over-year behavior are unknown.",
+    ]
+    state.recommended_next_action = (
+        "Collect campaign, merchandising, UX, performance, consent, and identity evidence "
+        "before selecting a lifecycle intervention."
+    )
+    state.do_not_recommend_yet = [
+        "Do not launch a coupon blast or broad reactivation campaign.",
+        "Do not send notification spam or a full-audience promotion.",
+        "Do not redesign the UX before the within-segment decline is explained.",
+    ]
