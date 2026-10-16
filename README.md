@@ -1,197 +1,150 @@
 # PulseOps
 
-> **Evidence-bounded AI User Operations Agent**
+> Evidence-bounded AI User Operations Agent
 >
 > Discover what changed, who it affects, and what to do next.
 
-PulseOps is an AI user-operations agent that proactively detects meaningful behavioral shifts, localizes the affected users, investigates competing explanations with bounded analytics tools, and stops when the evidence is no longer sufficient.
+PulseOps detects meaningful changes in user behavior, identifies the affected users, investigates bounded competing explanations, and stops when the available evidence is insufficient.
 
-Unlike a generic AI analytics assistant, PulseOps keeps **Evidence**, **Hypotheses**, and **Unknowns** separate. When the available data cannot establish a root cause, it recommends additional evidence collection instead of inventing one.
-
-`GA4 BigQuery` · `DeepSeek Planner` · `Policy Guard` · `FastAPI` · `Next.js` · `116 backend + 33 frontend tests`
-
-V0.2 delivers two bounded investigation profiles: Conversion / Activation Anomaly and Lifecycle Risk. Both use verified analytics, one guarded Investigation Agent, traceable run state, persistence and API layers, and a product UI for operators.
+It currently handles two user-operations problems: **Conversion / Activation Anomaly** and **Lifecycle Risk**. Both use the same guarded Investigation Agent, so operators can see the evidence behind a decision without turning an early signal into an unsupported intervention.
 
 ## Product Demo
 
-### Overview
+### 1. Overview
 
 See active opportunities, completed runs, evidence needs, and high-confidence signals.
 
 ![PulseOps overview](docs/assets/overview.png)
 
-### Opportunity Detail
+### 2. Case 01 · Conversion Anomaly
 
-Separate localized opportunity metrics from the overall detected signal, while keeping Evidence, Hypotheses, and Unknowns distinct.
+An opportunity detail keeps the localized New User metric separate from the overall detected signal, then shows the resulting Evidence, Hypotheses, and Unknowns.
 
-![PulseOps opportunity detail](docs/assets/opportunity-detail.png)
+![Case 01 opportunity detail](docs/assets/opportunity-detail.png)
 
-### Investigation Run
+### 3. Case 02 · Lifecycle Risk
 
-Trace how the Agent investigated, rejected explanations, and decided when to stop.
+![Case 02 lifecycle risk](docs/assets/case-02-lifecycle-risk.png)
 
-![PulseOps investigation run](docs/assets/investigation-run.png)
+New-user 7-day Return Rate fell from 8.33% to 5.11%, then partially recovered to 6.90%. PulseOps kept Signal Confidence HIGH and Root-cause Confidence LOW, so the recommended action remained Evidence Collection.
 
-## Problem
+### 4. Investigation Timeline
 
-Product and User Operations teams often know that a metric changed, but still need to answer:
+Trace which explanations the Agent checked, which were rejected, and why the investigation stopped.
 
-- Is the signal real or a tracking issue?
+![Investigation timeline](docs/assets/investigation-run.png)
+
+## The Product Problem
+
+When user behavior changes, product and User Operations teams need four answers:
+
+- Is the signal real or a data-quality issue?
 - Which users are actually affected?
-- Is the change explained by device, acquisition, or category mix?
-- What is evidence versus an unverified explanation?
-- When should analysis stop?
-- What should be investigated before launching an intervention?
+- What evidence supports or rejects each explanation?
+- When should analysis stop before intervention becomes guesswork?
 
-The traditional path is often:
+Without a bounded workflow, the path is often **manual monitoring → repeated segmentation → inconsistent diagnosis → premature action**. PulseOps turns that path into a traceable, evidence-bounded decision.
 
-**manual monitoring → repeated segmentation → inconsistent diagnosis → premature operational actions**
+## Two Real Cases
 
-PulseOps is designed to shorten the path from seeing a metric change to reaching an evidence-bounded operational decision.
+### Case 01 · New-user View→Cart decline
 
-## Case 01 · New-user View→Cart decline
+**Signal**
 
-Case 01 uses the Google Analytics 4 public ecommerce sample in BigQuery. The comparison covers a baseline of **2020-12-07 to 2020-12-13** and a target of **2020-12-21 to 2020-12-27**.
+The overall strict-session View→Cart rate declined from **31.60%** to **22.92%** (**-8.68pp**) between 2020-12-07–13 and 2020-12-21–27.
 
-| Scope | Baseline | Target | Change |
-| --- | ---: | ---: | ---: |
-| Overall strict-session View→Cart | 31.60% | 22.92% | -8.68pp |
-| New Users | 31.04% | 19.48% | -11.56pp |
-| Returning Users | — | — | Broadly stable |
+**Affected Users**
 
-After localizing the decline to New Users, the Agent investigated **Device**, **Acquisition**, and **Category**. Those checks did not establish a causal explanation.
+The decline localized to **New Users**: **31.04% → 19.48%** (**-11.56pp**). Returning Users were broadly stable.
 
-| Decision output | Result |
+**Investigation**
+
+The Agent investigated **Device**, **Acquisition**, and **Category**. None established a causal explanation.
+
+**Decision**
+
+| Output | Result |
 | --- | --- |
 | Signal Confidence | **HIGH** |
 | Root-cause Confidence | **LOW** |
 | Status | **NEEDS_EVIDENCE** |
 | Recommended Action | **EVIDENCE_COLLECTION** |
 
-The Agent confirmed what changed and who was affected, but did not fabricate a causal explanation.
+The signal and its affected users are well supported; the root cause is not. Case 01 was independently validated against the GA4 BigQuery public dataset and with the real DeepSeek Planner. The local demo uses its verified fixture, so it does not claim to query BigQuery on every run.
 
-Live Analytics was independently verified against BigQuery. The local portfolio demo uses a verified analytics fixture so it can run without cloud credentials; it does not claim to query BigQuery on every local run.
+### Case 02 · New-user 7-day Return Risk
 
-## Case 02 · New-user 7-day Return Risk
+**Signal**
 
-Case 02 uses real BigQuery cohort analysis to identify a material New-user 7-day Return Rate decline.
+The New-user 7-day Return Rate declined from **8.33%** to **5.11%** (**-3.22pp**, **-38.61% relative**).
 
-| Measure | Result |
-| --- | ---: |
-| Baseline | **8.33%** |
-| Target | **5.11%** |
-| Delta | **-3.22pp** (-38.61% relative) |
-| Post | **6.90%** |
-| Recovery | **55.73%** |
+**Affected Users**
+
+New users in the target cohort, each with a complete seven-day observation window.
+
+**Investigation**
+
+Deterministic checks covered **Return Timing** and **Recovery**, followed by bounded investigation of **Acquisition**, **Device**, and **Activation Depth**. The decline begins at D1 and persists through D7. Acquisition mix and device concentration were rejected; an activation-depth shift was observed, but its composition explains only part of the decline. The root cause remains unconfirmed.
+
+**Decision**
+
+| Output | Result |
+| --- | --- |
+| Post-period rate | **6.90%** |
 | Risk Pattern | **PARTIAL_RECOVERY** |
 | Signal Confidence | **HIGH** |
 | Root-cause Confidence | **LOW** |
 | Status | **NEEDS_EVIDENCE** |
 | Recommended Action | **EVIDENCE_COLLECTION** |
 
-The decline starts at D1 and persists through D7. Acquisition mix was rejected as an explanation, device concentration was rejected, and an activation-depth shift was observed. Activation composition explains only part of the decline; the root cause remains unconfirmed.
+The post-period improvement is evidence of partial recovery, not proof of a causal mechanism. The investigation does not attribute the change to calendar, holiday, promotion, or reactivation effects without further evidence.
 
-The Case 02 lifecycle investigation is bounded by deterministic retention, timing, and recovery preflight, followed by acquisition, device, and activation-depth evidence collection. It does not claim Christmas, New Year, or holiday effects as proven causes.
+## Why this is an Agent
 
-## How the Agent Works
+PulseOps uses **one Investigation Agent** across both profiles. Deterministic analytics own the facts; the LLM Planner has proposal authority over the next allowed investigation, while the Policy Guard has execution authority.
+
+The Planner's order can change with the investigation state. Invalid, duplicate, unsafe, or premature proposals are rejected. If the provider is unavailable, deterministic fallback remains available. The Agent stops when its bounded evidence is exhausted rather than extending analysis into guesswork.
 
 ```mermaid
-flowchart TD
-    A[Behavior Data] --> B[Validate Data]
-    B --> C[Detect Signal]
-    C --> D[Strict Funnel Verification]
-    D --> E[Localize Segment]
-    E --> F[LLM Planner proposes next investigation]
-    F --> G{Policy Guard validates}
-    G -->|Accepted| H[Analytics Tool executes]
-    G -->|Rejected| I[Deterministic fallback]
-    I --> H
-    H --> J[Update Evidence]
-    J --> K{Continue or Stop}
-    K -->|Continue| F
-    K -->|Stop| L[Recommended Next Action]
+flowchart LR
+    A[Behavior Data] --> B[Deterministic Validation]
+    B --> C[Detect / Localize Signal]
+    C --> D[LLM Planner]
+    D --> E[Policy Guard]
+    E --> F[Analytics Tool]
+    F --> G[Update Evidence]
+    G --> H{Continue / Stop}
+    H --> I[Recommended Next Action]
+    H -->|Continue| D
 ```
-
-### Deterministic Analytics
-
-SQL and Python calculate the facts:
-
-- users and sample sizes
-- conversion rates
-- strict funnels
-- segment-level changes
-- data-quality and significance checks
-
-### LLM Planner
-
-The single Investigation Agent uses a profile-specific flow. For Conversion / Activation anomalies, deterministic preflight localizes the signal before the Planner can choose among lifecycle, device, acquisition, and category. For Lifecycle Risk, deterministic preflight handles retention, return timing, and recovery; the Planner then chooses among acquisition, device, and activation_depth.
-
-DeepSeek proposes:
-
-- which allowed dimension to investigate next
-- why that investigation is useful given the current state
-
-The planner does not calculate or overwrite metrics.
-
-### Policy Guard
-
-The Guard prevents:
-
-- unsupported dimensions
-- duplicate investigations
-- incorrect lifecycle filters
-- budget violations
-- premature stopping
-- unsupported causal claims entering the final assessment
-
-**The LLM has proposal authority, not execution authority.**
 
 ## Evidence Discipline
 
 ### Evidence
 
-Facts confirmed by Analytics Tools.
-
-> The strict same-session View→Cart rate declined by 8.68 percentage points, and the decline was concentrated in New Users.
+Facts confirmed by bounded Analytics Tools.
 
 ### Hypotheses
 
-Plausible explanations that remain unverified.
-
-> Promotion or pricing context may contribute to the decline.
+Plausible explanations that are not established facts.
 
 ### Unknowns
 
-Information the current dataset cannot establish.
+Information the current data cannot establish.
 
-> Promotion configuration, landing-page history, performance telemetry, and explanatory user feedback are unavailable.
+PulseOps is designed to know not only what it knows, but also what it does not know.
 
-**PulseOps is designed to know not only what it knows, but also what it does not know.**
+## Technical Credibility
 
-## Why this is an Agent
-
-PulseOps is not a chatbot and not a static dashboard. It uses one Investigation Agent across both supported profiles.
-
-The Planner observes structured investigation state, proposes the next useful investigation, passes that proposal through a Guard, invokes only bounded analytics tools, updates the shared state, and decides whether further investigation is justified. Each step is recorded so an operator can inspect what was checked, what was rejected, and why the Agent stopped.
-
-If the provider is unavailable or its proposal is invalid, the existing deterministic planner takes over. The workflow therefore remains executable without giving the LLM direct control over analytics or business decisions.
-
-## Architecture
+### Architecture
 
 ```mermaid
-flowchart TD
+flowchart LR
     A[GA4 BigQuery] --> B[Analytics Layer]
-    B --> C
-
-    subgraph C[One Investigation Agent]
-        direction LR
-        P[Planner] --> G[Guard]
-        G --> S[State / Router]
-    end
-
+    B --> C[One Investigation Agent]
     C --> D[(Persistence)]
     D --> E[FastAPI]
-    E --> F[Next.js Product UI]
+    E --> F[Next.js]
 ```
 
 | Layer | Technology |
@@ -199,7 +152,49 @@ flowchart TD
 | Backend | Python, FastAPI, SQLAlchemy, BigQuery |
 | Agent | DeepSeek Planner, bounded Policy Guard, deterministic fallback |
 | Frontend | Next.js, TypeScript, Tailwind CSS |
-| Persistence | SQLite for local V0.1; the database layer remains portable |
+| Persistence | SQLite for local use; database layer remains portable |
+
+### Validation
+
+The V0.2 baseline has **116 backend tests** and **33 frontend tests** passing.
+
+- Case 01: real BigQuery validation and real DeepSeek Planner validation
+- Case 02: real BigQuery Phase A/B validation and real DeepSeek Planner validation
+- Lifecycle live verification: **3 runs**, **9 proposals**, **9 accepted**, **0 rejected**, **0 fallback**, **0 illegal proposals**, **0 premature stops**, **0 unsupported causal claims**, and **0 intervention-boundary violations**
+- Guard, data-quality, no-signal, transaction rollback, Product API, frontend component/API-client, and Next.js production-build coverage
+
+Ordinary tests remain offline and never depend on DeepSeek or Google Cloud credentials. Live Planner verification is an explicit, separate check.
+
+## Product Decisions
+
+- **Strict same-session funnels instead of simple user-count ratios.** A valid conversion preserves user identity, session identity, and event order.
+- **Signal Confidence and Root-cause Confidence are separate.** Strong evidence that a metric changed does not prove why it changed.
+- **The Agent may stop.** Continuing after legal dimensions are exhausted creates noise rather than knowledge.
+- **Unknown causes lead to Evidence Collection.** PulseOps does not recommend broad coupons, discounts, or page changes until missing evidence is collected.
+- **The LLM cannot own business metrics.** Analytics Tools calculate facts; the Planner can only propose the next bounded investigation.
+
+## Scope and Roadmap
+
+### V0.1 · Conversion / Activation Anomaly ✅
+
+- Data-quality validation and funnel anomaly detection
+- Lifecycle localization and Device / Acquisition / Category investigation
+- Guarded LLM Planner, evidence discipline, persistence, API, and product UI
+
+### V0.2 · Lifecycle Risk ✅
+
+- New-user 7-day Return Risk investigation
+- Real BigQuery Phase A/B validation and live DeepSeek Planner validation
+
+### V0.3 · Positive Growth Opportunity ☐
+
+Planned, not implemented: detect sustained positive lifts and investigate whether they are reproducible.
+
+### Optional · Feedback Evidence
+
+Planned, not implemented: use linked or appropriately scoped qualitative feedback as an additional evidence source.
+
+## Engineering Reference
 
 ### Repository Layout
 
@@ -212,70 +207,9 @@ outputs/            Sanitized live-planner verification reports
 docs/assets/        Public product screenshots
 ```
 
-## Validation
+### Local Development
 
-The current V0.2 baseline has **116 backend tests and 33 frontend tests passing**.
-
-- live validation against the GA4 public ecommerce dataset
-- Case 01 real BigQuery validation and real DeepSeek Planner validation
-- Case 02 real BigQuery Phase A/B validation and real DeepSeek Planner validation
-- latest Lifecycle live verification: 3 runs, 9 proposals, 9 accepted, 0 rejected, 0 fallback, 0 illegal proposals, 0 premature stops, 0 unsupported causal claims, and 0 intervention-boundary violations
-- adversarial Guard tests for illegal, duplicate, mis-filtered, over-budget, and premature-stop proposals
-- Data Quality Fail and No Significant Signal paths
-- transaction rollback tests
-- Product API tests
-- frontend component and API-client tests
-- successful Next.js production build
-
-Ordinary tests remain offline and never depend on DeepSeek or Google Cloud credentials. Live Planner verification is an explicit, separate check.
-
-## Product Decisions
-
-- **Strict same-session funnels instead of simple user-count ratios.** A valid conversion must preserve user identity, session identity, and event order, avoiding inflated or ambiguous funnel rates.
-- **Signal Confidence and Root-cause Confidence are separate.** Strong evidence that a metric changed does not prove why it changed.
-- **The Agent is allowed to stop.** Continuing to segment after the legal dimensions are exhausted creates noise rather than knowledge.
-- **Unknown causes lead to Evidence Collection.** PulseOps does not recommend broad coupons, discounts, or page changes until the missing evidence is collected.
-- **The LLM cannot own business metrics.** Analytics Tools calculate facts; the Planner can only propose the next bounded investigation.
-
-## Current Scope
-
-### V0.1 · Conversion / Activation Anomaly
-
-- [x] Data quality validation
-- [x] Funnel anomaly detection
-- [x] Lifecycle localization
-- [x] Device / Acquisition / Category investigation
-- [x] Guarded LLM Planner
-- [x] Evidence / Hypotheses / Unknowns
-- [x] Persistence + API
-- [x] Product UI
-- [x] Live DeepSeek Planner verification
-
-### V0.2 · Lifecycle Risk
-
-- [x] New-user 7-day Return Risk investigation
-- [x] Real BigQuery Phase A/B validation
-- [x] Live DeepSeek Planner verification
-
-## Roadmap
-
-### V0.1 · Conversion / Activation Anomaly ✅
-
-### V0.2 · Lifecycle Risk ✅
-
-### V0.3 · Positive Growth Opportunity
-
-Detect sustained positive lifts and investigate whether they are reproducible.
-
-### Optional · Feedback Evidence
-
-Use linked or appropriately scoped qualitative feedback as an additional evidence source.
-
-Roadmap items beyond V0.2 are planned directions, not implemented capabilities.
-
-## Local Development
-
-### Backend
+#### Backend
 
 Requires Python 3.11 or later.
 
@@ -286,18 +220,9 @@ python -m pip install -r requirements.txt
 uvicorn pulseops.backend.main:app --reload
 ```
 
-The Product API exposes:
+The Product API exposes `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `GET /api/runs/{id}/steps`, `GET /api/opportunities`, and `GET /api/opportunities/{id}`. Analysis runs, bounded Agent steps, and material-signal opportunities are stored through SQLAlchemy. `DATABASE_URL` defaults to `sqlite:///./pulseops.db`; another SQLAlchemy database URL can be supplied without coupling the Agent to a particular database implementation.
 
-- `POST /api/runs`
-- `GET /api/runs`
-- `GET /api/runs/{id}`
-- `GET /api/runs/{id}/steps`
-- `GET /api/opportunities`
-- `GET /api/opportunities/{id}`
-
-Analysis runs, bounded Agent steps, and material-signal opportunities are stored through SQLAlchemy. `DATABASE_URL` defaults to `sqlite:///./pulseops.db`; another SQLAlchemy database URL can be supplied without coupling the Agent to a particular database implementation.
-
-### Frontend
+#### Frontend
 
 ```powershell
 cd frontend
@@ -307,9 +232,9 @@ npm run dev
 
 The frontend reads the FastAPI Product API. Copy `frontend/.env.example` to `frontend/.env.local` only when the backend is not available at the configured default URL.
 
-### Local portfolio demo
+#### Local portfolio demo
 
-Reset and seed a presentation-only SQLite database under the ignored `work/` directory:
+Seed a presentation-only SQLite database under the ignored `work/` directory:
 
 ```powershell
 python -m scripts.seed_demo --database-path work/pulseops-demo.db
@@ -317,11 +242,11 @@ $env:DATABASE_URL = "sqlite:///./work/pulseops-demo.db"
 uvicorn pulseops.backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-The demo creates one material-signal run, one data-quality alert, and one no-signal run. It uses the verified Case 01 fixture. When `DEEPSEEK_API_KEY` is configured, only the material-signal run uses the real bounded DeepSeek Planner; otherwise the deterministic fallback remains available. The reset command refuses database paths outside `work/`.
+The demo creates verified Case 01 and Case 02 material-signal runs, plus data-quality and no-signal examples. It uses verified fixture analytics and does not require cloud credentials. For Case 01 only, a configured `DEEPSEEK_API_KEY` enables the real bounded DeepSeek Planner; otherwise deterministic fallback remains available. The reset command refuses database paths outside `work/`.
 
-## Offline Tests
+### Offline Tests
 
-The standard test suites do not contact Google Cloud or DeepSeek and do not require credentials.
+The standard suites do not contact Google Cloud or DeepSeek and do not require credentials.
 
 ```powershell
 python -m pytest
@@ -334,11 +259,9 @@ npm test
 npm run build
 ```
 
-The Case 01 fixture reproduces the independently verified 2020-12-07–13 baseline and 2020-12-21–27 target interpretation.
+### Live Integration Verification
 
-## Live Integration Verification
-
-### BigQuery Analytics
+#### BigQuery Analytics
 
 Configure Google Application Default Credentials and a billing project, then run:
 
@@ -348,21 +271,20 @@ $env:GOOGLE_CLOUD_PROJECT = "your-gcp-project-id"
 python -m scripts.verify_case_01 --output outputs/case_01_live.json
 ```
 
-The verifier queries `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`, applies the New User filter to Device, Acquisition, and Category drill-downs, compares live rates with the immutable fixture using a 0.15pp default tolerance, and exits non-zero on mismatch. Query dates are parameters and event names are validated before SQL generation.
+The verifier queries `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`, applies the New User filter to Device, Acquisition, and Category drill-downs, compares live rates with the immutable fixture using a 0.15pp default tolerance, and exits non-zero on mismatch. Without a billing project or valid credentials, it exits with a setup message without changing offline test results.
 
-Without a billing project or valid credentials, the script exits with a setup message without changing offline test results.
-
-### DeepSeek Planner
+#### DeepSeek Planner
 
 Live Planner verification is intentionally separate from ordinary tests:
 
 ```powershell
 python -m scripts.verify_live_planner
+python -m scripts.verify_live_lifecycle_planner
 ```
 
-The script reads `DEEPSEEK_API_KEY` only from the environment or an ignored local `.env`, runs Case 01 five times, and writes sanitized reports to `outputs/m3_5_live_llm_verification.json` and `outputs/m3_5_live_llm_verification.md`. If the key is absent, it exits cleanly without affecting the offline suite.
+The scripts read `DEEPSEEK_API_KEY` only from the environment or an ignored local `.env`, write sanitized reports, and exit cleanly when the key is absent.
 
-## Security and Privacy
+### Security and Privacy
 
 - No API keys or cloud credentials are committed.
 - No raw user-level data is exposed through the Product API.
@@ -370,4 +292,3 @@ The script reads `DEEPSEEK_API_KEY` only from the environment or an ignored loca
 - The local demo uses verified fixture analytics and requires no cloud credentials.
 - The DeepSeek provider is optional and retains a deterministic fallback.
 - Public verification reports and screenshots contain no secrets or local absolute paths.
-
