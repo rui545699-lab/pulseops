@@ -14,7 +14,7 @@ It currently handles two user-operations problems: **Conversion / Activation Ano
 
 See active opportunities, completed runs, evidence needs, and high-confidence signals.
 
-![PulseOps overview](docs/assets/overview.png)
+![PulseOps overview](docs/assets/overview-v0.2-final.png)
 
 ### 2. Case 01 · Conversion Anomaly
 
