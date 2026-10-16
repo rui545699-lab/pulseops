@@ -28,7 +28,13 @@ An opportunity detail keeps the localized New User metric separate from the over
 
 New-user 7-day Return Rate fell from 8.33% to 5.11%, then partially recovered to 6.90%. PulseOps kept Signal Confidence HIGH and Root-cause Confidence LOW, so the recommended action remained Evidence Collection.
 
-### 4. Investigation Timeline
+### 4. Case 03 · Positive Growth Opportunity
+
+![Case 03 positive growth](docs/assets/case-03-positive-growth.png)
+
+Checkout→Purchase Rate increased from 40.35% to 51.14% (+10.78pp), remained above Baseline through Confirmation and two Holdouts, and was classified as BROAD and REPRODUCED. PulseOps keeps the growth mechanism unconfirmed and recommends a bounded Replication Test rather than broad rollout.
+
+### 5. Investigation Timeline
 
 Trace which explanations the Agent checked, which were rejected, and why the investigation stopped.
 

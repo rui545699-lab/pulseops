@@ -89,6 +89,7 @@ export interface Opportunity {
   recovery_ratio: number | null;
   risk_pattern: string | null;
   return_timing: ReturnTiming | null;
+  baseline_period: GrowthPeriod | null;
   growth_period: GrowthPeriod | null;
   confirmation_period: GrowthPeriod | null;
   holdout_results: { holdout_1: GrowthPeriod; holdout_2: GrowthPeriod } | null;

@@ -234,6 +234,10 @@ class RunService:
                 state.return_timing_result.model_dump(mode="json")
                 if state.return_timing_result else None
             ),
+            baseline_period=(
+                state.growth_result.baseline.model_dump(mode="json")
+                if positive_growth else None
+            ),
             growth_period=(
                 state.growth_result.growth.model_dump(mode="json") if positive_growth else None
             ),

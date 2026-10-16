@@ -112,7 +112,7 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
 
       {lifecycle ? <LifecycleRecovery opportunity={opportunity} /> : null}
       {lifecycle && opportunity.return_timing ? <ReturnTiming timing={opportunity.return_timing} /> : null}
-      {positiveGrowth ? <GrowthPersistence opportunity={opportunity} /> : null}
+      {positiveGrowth ? <GrowthPersistence opportunity={opportunity} run={run} /> : null}
 
       <section aria-labelledby="confidence-heading" className={`grid gap-5 rounded-xl border border-[#deded9] bg-white p-5 sm:items-center sm:p-6 ${positiveGrowth ? "sm:grid-cols-[1fr_auto_auto_auto]" : "sm:grid-cols-[1fr_auto_auto]"}`}>
         <div>
@@ -176,9 +176,9 @@ function LifecycleRecovery({ opportunity }: { opportunity: Opportunity }) {
   );
 }
 
-function GrowthPersistence({ opportunity }: { opportunity: Opportunity }) {
+function GrowthPersistence({ opportunity, run }: { opportunity: Opportunity; run: AnalysisRun }) {
   const periods = [
-    ["Baseline", { checkout_sessions: 0, purchase_after_checkout_sessions: 0, conversion_rate: opportunity.baseline_rate }],
+    ["Baseline", opportunity.baseline_period ?? run.growth_analysis?.baseline ?? null],
     ["Growth", opportunity.growth_period],
     ["Confirmation", opportunity.confirmation_period],
     ["Holdout 1", opportunity.holdout_results?.holdout_1],

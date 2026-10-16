@@ -51,6 +51,7 @@ export function RunDetailClient({
 
 export function RunDetailView({ run, steps }: RunDetailData) {
   const ordered = [...steps].sort((a, b) => a.step_order - b.step_order);
+  const positiveGrowth = run.analysis_type === "POSITIVE_GROWTH";
   return (
     <div className="space-y-10">
       <nav aria-label="Breadcrumb" className="text-xs text-[#85857f]">
@@ -110,12 +111,12 @@ export function RunDetailView({ run, steps }: RunDetailData) {
                     <h3 className="mt-1.5 text-base font-semibold">{stepTitle(step.node)}</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {step.hypothesis_status ? <StatusBadge value={step.hypothesis_status} /> : null}
+                    {step.hypothesis_status ? <StatusBadge value={step.hypothesis_status} label={positiveGrowth ? positiveGrowthStatusLabel(step) : undefined} /> : null}
                   </div>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-[#686862]">{stepSummary(step)}</p>
-                {step.hypothesis ? <p className="mt-3 rounded-lg bg-[#f7f6f2] px-3 py-2 text-xs text-[#665f51]"><span className="font-semibold">Hypothesis:</span> {humanize(step.hypothesis)}</p> : null}
-                {hasPlannerTrace(step) ? <PlannerTrace step={step} /> : null}
+                <p className="mt-3 text-sm leading-6 text-[#686862]">{stepSummary(step, run.analysis_type)}</p>
+                {step.hypothesis ? <p className="mt-3 rounded-lg bg-[#f7f6f2] px-3 py-2 text-xs text-[#665f51]"><span className="font-semibold">{positiveGrowth ? "Observation:" : "Hypothesis:"}</span> {positiveGrowth ? positiveGrowthObservationLabel(step) : humanize(step.hypothesis)}</p> : null}
+                {hasPlannerTrace(step) ? <PlannerTrace step={step} analysisType={run.analysis_type} /> : null}
               </article>
             </li>
           ))}
@@ -127,7 +128,7 @@ export function RunDetailView({ run, steps }: RunDetailData) {
   );
 }
 
-function PlannerTrace({ step }: { step: AgentStep }) {
+function PlannerTrace({ step, analysisType }: { step: AgentStep; analysisType: string }) {
   const proposal = step.planner_proposal;
   return (
     <details className="group mt-4 border-t border-[#ecece8] pt-4">
@@ -152,7 +153,7 @@ function PlannerTrace({ step }: { step: AgentStep }) {
           {step.tool_input.lifecycle_filter ? <p className="text-[#777771]">filter = {String(step.tool_input.lifecycle_filter)}</p> : null}
         </TraceBlock>
         <TraceBlock className="md:col-span-2" icon={<CheckIcon className="size-4" />} label="Result">
-          <p className="text-[#777771]">{stepSummary(step)}</p>
+          <p className="text-[#777771]">{stepSummary(step, analysisType)}</p>
         </TraceBlock>
       </div>
       {step.fallback_used ? <div className="mt-3 flex items-center gap-2 text-xs text-[#806b3d]"><StatusBadge value="FALLBACK" /><span>{humanize(step.fallback_reason)}</span></div> : null}
@@ -211,6 +212,7 @@ function stepTitle(node: string): string {
     CHECK_WEEKLY_PERSISTENCE: "Weekly Persistence",
     CHECK_CONFIRMATION: "Confirmation",
     CHECK_HOLDOUT: "Holdout Reproducibility",
+    CHECK_LIFECYCLE: "Lifecycle",
     CHECK_ACQUISITION: "Acquisition",
     CHECK_DEVICE: "Device",
     CHECK_ACTIVATION_DEPTH: "Activation Depth",
@@ -223,7 +225,7 @@ function stepTitle(node: string): string {
   return names[node] ?? humanize(node);
 }
 
-function stepSummary(step: AgentStep): string {
+function stepSummary(step: AgentStep, analysisType?: string): string {
   if (step.node === "VALIDATE_DATA") return step.decision === "STOP" ? "Data validation failed; behavioral investigation did not proceed." : "Required data-quality checks passed.";
   if (step.node === "SCAN_METRICS") {
     const metrics = step.tool_output_summary.metrics;
@@ -254,6 +256,10 @@ function stepSummary(step: AgentStep): string {
     return `Confirmation Checkout→Purchase: ${formatRate(numberValue(confirmation?.conversion_rate))}.`;
   }
   if (step.node === "CHECK_HOLDOUT") return `Holdout reproducibility: ${humanize(typeof step.tool_output_summary.reproducibility === "string" ? step.tool_output_summary.reproducibility : null)}.`;
+  if (analysisType === "POSITIVE_GROWTH") {
+    const summary = positiveGrowthSegmentSummary(step);
+    if (summary) return summary;
+  }
   if (step.node === "CHECK_RETURN_TIMING") {
     const conclusion = step.tool_output_summary.conclusion;
     if (typeof conclusion === "string") return conclusion;
@@ -351,6 +357,58 @@ function segmentSummaries(step: AgentStep): SegmentSummary[] {
 
 function findSegment(segments: SegmentSummary[], name: string): SegmentSummary | undefined {
   return segments.find((item) => item.segment?.toLowerCase() === name);
+}
+
+function positiveGrowthSegmentSummary(step: AgentStep): string | null {
+  const composition = numberValue(step.tool_output_summary.composition_effect_pp);
+  const within = numberValue(step.tool_output_summary.within_segment_effect_pp);
+  const segments = segmentSummaries(step);
+  const observation = positiveGrowthObservationOutcome(step);
+
+  if (step.node === "CHECK_LIFECYCLE") {
+    const newUsers = findSegment(segments, "new_users");
+    const returningUsers = findSegment(segments, "returning_users");
+    return `New users improved ${formatDelta(newUsers?.change_pp ?? null)} and Returning users improved ${formatDelta(returningUsers?.change_pp ?? null)}. Within-segment improvement (${formatDelta(within)}) exceeded lifecycle composition effect (${formatDelta(composition)}). ${observation}`;
+  }
+  if (step.node === "CHECK_DEVICE") {
+    const desktop = findSegment(segments, "desktop");
+    const mobile = findSegment(segments, "mobile");
+    const tablet = findSegment(segments, "tablet");
+    const tabletNote = tablet?.sample_sufficient === false ? " Tablet did not meet the sample threshold." : "";
+    return `Desktop improved ${formatDelta(desktop?.change_pp ?? null)} and Mobile improved ${formatDelta(mobile?.change_pp ?? null)}. Within-device improvement (${formatDelta(within)}) dominated device composition effect (${formatDelta(composition)}).${tabletNote} ${observation}`;
+  }
+  if (step.node === "CHECK_ACQUISITION") {
+    const material = segments.filter((segment) => segment.sample_sufficient !== false);
+    const broadlyImproved = material.length >= 2 && material.every((segment) => (segment.change_pp ?? 0) > 0);
+    const sourceSummary = broadlyImproved
+      ? "Major acquisition sources broadly improved within-source."
+      : "Acquisition results were recorded observationally.";
+    return `${sourceSummary} Within-source improvement (${formatDelta(within)}) dominated acquisition composition effect (${formatDelta(composition)}). ${observation}`;
+  }
+  return null;
+}
+
+function positiveGrowthObservationOutcome(step: AgentStep): string {
+  if (step.hypothesis_status === "SUPPORTED") return "Observed breadth is supported; no causal mechanism is established.";
+  if (step.hypothesis_status === "REJECTED") return "No concentrated growth explanation is supported; no causal mechanism is established.";
+  if (step.hypothesis_status === "INSUFFICIENT_EVIDENCE") return "The available observation is insufficient to establish a mechanism.";
+  return "The observation is descriptive; no causal mechanism is established.";
+}
+
+function positiveGrowthStatusLabel(step: AgentStep): string {
+  if (step.hypothesis_status === "SUPPORTED") return "Observed breadth";
+  if (step.hypothesis_status === "REJECTED") return "No concentration";
+  if (step.hypothesis_status === "INSUFFICIENT_EVIDENCE") return "Evidence limited";
+  return "Observation";
+}
+
+function positiveGrowthObservationLabel(step: AgentStep): string {
+  const labels: Record<string, string> = {
+    CHECK_LIFECYCLE: "Broad lifecycle improvement",
+    CHECK_DEVICE: "Broad device improvement",
+    CHECK_ACQUISITION: "Broad acquisition improvement",
+  };
+  return labels[step.node] ?? humanize(step.hypothesis);
 }
 
 function hypothesisOutcome(step: AgentStep, label: string): string {

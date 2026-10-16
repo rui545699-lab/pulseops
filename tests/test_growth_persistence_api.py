@@ -48,6 +48,11 @@ def test_case_03_persistence_and_api_round_trip():
         assert opportunity["baseline_rate"] == 40.35
         assert opportunity["target_rate"] == 51.14
         assert opportunity["delta_pp"] == 10.78
+        assert opportunity["baseline_period"] == {
+            "checkout_sessions": 2592,
+            "purchase_after_checkout_sessions": 1046,
+            "conversion_rate": 40.35,
+        }
         assert opportunity["confirmation_period"]["conversion_rate"] == 55.07
         assert opportunity["holdout_results"]["holdout_1"]["conversion_rate"] == 48.74
         assert opportunity["reproducibility"] == "REPRODUCED"

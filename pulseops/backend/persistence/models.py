@@ -116,6 +116,7 @@ class Opportunity(Base):
     recovery_ratio: Mapped[float | None] = mapped_column(Float)
     risk_pattern: Mapped[str | None] = mapped_column(String(64))
     return_timing: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    baseline_period: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     growth_period: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     confirmation_period: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     holdout_results: Mapped[dict[str, Any] | None] = mapped_column(JSON)

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { RunDetailView } from "@/components/run-detail";
-import { lifecycleRun, lifecycleSteps, run, steps } from "@/test/fixtures";
+import { growthRun, growthSteps, lifecycleRun, lifecycleSteps, run, steps } from "@/test/fixtures";
 
 describe("Investigation Run", () => {
   it("sorts the timeline by step_order", () => {
@@ -80,5 +80,17 @@ describe("Investigation Run", () => {
       : step);
     render(<RunDetailView run={{ ...lifecycleRun, post_rate: 8.3, risk_pattern: "FULL_RECOVERY" }} steps={stepsWithFullRecovery} />);
     expect(screen.getByText("Post D7 Return: 8.30%. Recovery classification: Full Recovery.")).toBeInTheDocument();
+  });
+
+  it("renders positive-growth segment findings as observational breadth without negative-case leakage", () => {
+    render(<RunDetailView run={growthRun} steps={growthSteps} />);
+
+    expect(screen.getByText(/New users improved \+9.21pp and Returning users improved \+5.61pp/)).toBeInTheDocument();
+    expect(screen.getByText(/Within-device improvement \(\+10.80pp\) dominated device composition effect \(-0.02pp\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Major acquisition sources broadly improved within-source/)).toBeInTheDocument();
+    expect(screen.getAllByText("Observed breadth")).toHaveLength(3);
+    expect(screen.getAllByText(/no causal mechanism is established/)).toHaveLength(3);
+    expect(screen.queryByText(/declined within-source|device concentration supported|acquisition-mix explanation supported/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Hypothesis:")).not.toBeInTheDocument();
   });
 });

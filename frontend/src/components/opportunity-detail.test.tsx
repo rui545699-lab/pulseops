@@ -83,6 +83,7 @@ describe("Opportunity Detail", () => {
     render(<OpportunityDetailView opportunity={growthOpportunity} run={growthRun} />);
     expect(screen.getByText("Positive Growth")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Growth confirmation and holdouts" })).toBeInTheDocument();
+    expect(screen.getByText("1,046 / 2,592 sessions")).toBeInTheDocument();
     expect(screen.getByText("55.07%")).toBeInTheDocument();
     const confidence = screen.getByRole("region", { name: "Confidence" });
     expect(confidence).toHaveTextContent("Growth Signal ConfidenceHIGH");

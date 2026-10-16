@@ -145,6 +145,7 @@ class OpportunityRead(BaseModel):
     recovery_ratio: float | None
     risk_pattern: str | None
     return_timing: dict[str, Any] | None
+    baseline_period: dict[str, Any] | None
     growth_period: dict[str, Any] | None
     confirmation_period: dict[str, Any] | None
     holdout_results: dict[str, Any] | None

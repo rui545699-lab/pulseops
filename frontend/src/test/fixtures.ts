@@ -61,6 +61,7 @@ export const opportunity: Opportunity = {
   recovery_ratio: null,
   risk_pattern: null,
   return_timing: null,
+  baseline_period: null,
   growth_period: null,
   confirmation_period: null,
   holdout_results: null,
@@ -378,6 +379,7 @@ export const growthOpportunity: Opportunity = {
   baseline_rate: 40.35,
   target_rate: 51.14,
   delta_pp: 10.78,
+  baseline_period: growthRun.growth_analysis?.baseline ?? null,
   growth_period: growthRun.growth_analysis?.growth ?? null,
   confirmation_period: growthRun.growth_analysis?.confirmation ?? null,
   holdout_results: growthRun.growth_analysis ? { holdout_1: growthRun.growth_analysis.holdout_1, holdout_2: growthRun.growth_analysis.holdout_2 } : null,
@@ -396,6 +398,43 @@ export const growthOpportunity: Opportunity = {
   do_not_recommend_yet: ["Do not scale to all users before a bounded replication test."],
   status: "READY_FOR_REPLICATION_TEST",
 };
+
+export const growthSteps: AgentStep[] = [
+  step({ id: "g3-validate", step_order: 1, node: "VALIDATE_DATA", tool_output_summary: { status: "PASS" } }),
+  step({
+    id: "g3-growth", step_order: 2, node: "ANALYZE_GROWTH",
+    tool_output_summary: {
+      baseline: growthRun.growth_analysis?.baseline,
+      growth: growthRun.growth_analysis?.growth,
+      delta_pp: growthRun.growth_analysis?.delta_pp,
+    },
+  }),
+  step({ id: "g3-persistence", step_order: 3, node: "CHECK_WEEKLY_PERSISTENCE" }),
+  step({ id: "g3-confirmation", step_order: 4, node: "CHECK_CONFIRMATION", tool_output_summary: { confirmation: growthRun.growth_analysis?.confirmation } }),
+  step({ id: "g3-holdout", step_order: 5, node: "CHECK_HOLDOUT", tool_output_summary: { reproducibility: "REPRODUCED" } }),
+  step({
+    id: "g3-lifecycle", step_order: 6, node: "CHECK_LIFECYCLE", hypothesis: "LIFECYCLE_GROWTH_CONCENTRATION", hypothesis_status: "SUPPORTED",
+    tool_output_summary: {
+      composition_effect_pp: 3.45, within_segment_effect_pp: 7.33,
+      segments: [{ segment: "new_users", change_pp: 9.21, sample_sufficient: true }, { segment: "returning_users", change_pp: 5.61, sample_sufficient: true }],
+    },
+  }),
+  step({
+    id: "g3-device", step_order: 7, node: "CHECK_DEVICE", hypothesis: "DEVICE_GROWTH_CONCENTRATION", hypothesis_status: "SUPPORTED",
+    tool_output_summary: {
+      composition_effect_pp: -0.02, within_segment_effect_pp: 10.8,
+      segments: [{ segment: "desktop", change_pp: 12.91, sample_sufficient: true }, { segment: "mobile", change_pp: 8.62, sample_sufficient: true }, { segment: "tablet", change_pp: -8.37, sample_sufficient: false }],
+    },
+  }),
+  step({
+    id: "g3-acquisition", step_order: 8, node: "CHECK_ACQUISITION", hypothesis: "ACQUISITION_GROWTH_CONCENTRATION", hypothesis_status: "SUPPORTED",
+    tool_output_summary: {
+      composition_effect_pp: 0.65, within_segment_effect_pp: 10.13,
+      segments: [{ segment: "google / organic", change_pp: 9.63, sample_sufficient: true }, { segment: "(direct) / (none)", change_pp: 12.63, sample_sufficient: true }, { segment: "<Other> / <Other>", change_pp: 9.84, sample_sufficient: true }],
+    },
+  }),
+  step({ id: "g3-stop", step_order: 9, node: "STOP_DRILLDOWN", decision: "STOP", decision_reason: "All permitted dimensions are complete." }),
+].map((item) => ({ ...item, run_id: growthRun.id }));
 
 export const dataQualityRun: AnalysisRun = {
   ...run,

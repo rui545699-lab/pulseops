@@ -57,6 +57,7 @@ def _evolve_sqlite_schema(engine: Engine) -> None:
             "return_timing": "JSON",
             "segment_analysis": "JSON",
             "hypothesis_records": "JSON",
+            "baseline_period": "JSON",
             "growth_period": "JSON",
             "confirmation_period": "JSON",
             "holdout_results": "JSON",
