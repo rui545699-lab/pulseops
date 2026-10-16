@@ -24,7 +24,7 @@ An opportunity detail keeps the localized New User metric separate from the over
 
 ### 3. Case 02 · Lifecycle Risk
 
-![Case 02 lifecycle risk](docs/assets/case-02-lifecycle-risk.png)
+![Case 02 lifecycle risk](docs/assets/case-02-lifecycle-risk-full.png)
 
 New-user 7-day Return Rate fell from 8.33% to 5.11%, then partially recovered to 6.90%. PulseOps kept Signal Confidence HIGH and Root-cause Confidence LOW, so the recommended action remained Evidence Collection.
 
