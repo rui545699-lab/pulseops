@@ -1,0 +1,664 @@
+{
+  "verification": "V0.3 Positive Growth Live DeepSeek Planner Verification",
+  "generated_at": "2026-10-16T09:06:26.020490+00:00",
+  "provider": "deepseek",
+  "configured_model": "deepseek-flash",
+  "response_model_identifier": "deepseek-flash",
+  "analytics_source": {
+    "kind": "GOLDEN_FIXTURE",
+    "derived_from": "Verified GA4 BigQuery V0.3 Phase A/B outputs",
+    "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*"
+  },
+  "windows": {
+    "baseline_start": "2020-11-23",
+    "baseline_end": "2020-12-06",
+    "target_start": "2020-12-07",
+    "target_end": "2020-12-20",
+    "confirmation_start": "2020-12-21",
+    "confirmation_end": "2021-01-03",
+    "holdout_1_start": "2021-01-04",
+    "holdout_1_end": "2021-01-17",
+    "holdout_2_start": "2021-01-18",
+    "holdout_2_end": "2021-01-31"
+  },
+  "runs": [
+    {
+      "run_id": "case-03-live-1",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_GROWTH",
+        "CHECK_WEEKLY_PERSISTENCE",
+        "CHECK_CONFIRMATION",
+        "CHECK_HOLDOUT"
+      ],
+      "planner_sequence": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "proposed_filters": [
+        null,
+        null,
+        null
+      ],
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "lifecycle",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated in particular lifecycle stages, since a validated lift is not a proven mechanism and composition changes across lifecycle stages may be associated with the observed pattern.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "lifecycle",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated by device, since lifecycle was already investigated and the lift was broad across lifecycle segments; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 8,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the observed Checkout→Purchase lift is concentrated in or associated with particular acquisition segments, since lifecycle and device patterns were broad and acquisition composition remains unexamined; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": "BROAD"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "filter_inconsistent": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "broad_scale_violations": 0,
+      "intervention_boundary_violations": 0,
+      "provider_rationale_causal_claim": false,
+      "provider_rationale_scale_recommendation": false,
+      "evidence_semantics_preserved": true,
+      "hypothesis_semantics_preserved": true,
+      "unknown_semantics_preserved": true,
+      "final_facts": {
+        "baseline_rate": 40.35,
+        "baseline_counts": [
+          1046,
+          2592
+        ],
+        "growth_rate": 51.14,
+        "growth_counts": [
+          1304,
+          2550
+        ],
+        "delta_pp": 10.78,
+        "confirmation_rate": 55.07,
+        "confirmation_counts": [
+          369,
+          670
+        ],
+        "holdout_1_rate": 48.74,
+        "holdout_1_counts": [
+          386,
+          792
+        ],
+        "holdout_2_rate": 55.13,
+        "holdout_2_counts": [
+          666,
+          1208
+        ],
+        "localization": "BROAD",
+        "reproducibility": "REPRODUCED",
+        "growth_signal_confidence": "HIGH",
+        "reproducibility_confidence": "HIGH",
+        "recommended_status": "READY_FOR_REPLICATION_TEST",
+        "recommended_action_type": "REPLICATION_TEST",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "passed": true
+    },
+    {
+      "run_id": "case-03-live-2",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_GROWTH",
+        "CHECK_WEEKLY_PERSISTENCE",
+        "CHECK_CONFIRMATION",
+        "CHECK_HOLDOUT"
+      ],
+      "planner_sequence": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "proposed_filters": [
+        null,
+        null,
+        null
+      ],
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "lifecycle",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated in particular lifecycle stages, since the mechanism behind the improvement remains unverified and evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "lifecycle",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated in particular device types, since lifecycle was already investigated and showed broad within-segment improvement; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 8,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated in or associated with particular acquisition segments, since lifecycle and device investigations showed broad within-segment improvement and acquisition composition remains unexamined; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": "BROAD"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "filter_inconsistent": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "broad_scale_violations": 0,
+      "intervention_boundary_violations": 0,
+      "provider_rationale_causal_claim": false,
+      "provider_rationale_scale_recommendation": false,
+      "evidence_semantics_preserved": true,
+      "hypothesis_semantics_preserved": true,
+      "unknown_semantics_preserved": true,
+      "final_facts": {
+        "baseline_rate": 40.35,
+        "baseline_counts": [
+          1046,
+          2592
+        ],
+        "growth_rate": 51.14,
+        "growth_counts": [
+          1304,
+          2550
+        ],
+        "delta_pp": 10.78,
+        "confirmation_rate": 55.07,
+        "confirmation_counts": [
+          369,
+          670
+        ],
+        "holdout_1_rate": 48.74,
+        "holdout_1_counts": [
+          386,
+          792
+        ],
+        "holdout_2_rate": 55.13,
+        "holdout_2_counts": [
+          666,
+          1208
+        ],
+        "localization": "BROAD",
+        "reproducibility": "REPRODUCED",
+        "growth_signal_confidence": "HIGH",
+        "reproducibility_confidence": "HIGH",
+        "recommended_status": "READY_FOR_REPLICATION_TEST",
+        "recommended_action_type": "REPLICATION_TEST",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "passed": true
+    },
+    {
+      "run_id": "case-03-live-3",
+      "preflight": [
+        "VALIDATE_DATA",
+        "ANALYZE_GROWTH",
+        "CHECK_WEEKLY_PERSISTENCE",
+        "CHECK_CONFIRMATION",
+        "CHECK_HOLDOUT"
+      ],
+      "planner_sequence": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "proposed_filters": [
+        null,
+        null,
+        null
+      ],
+      "investigation_order": [
+        "lifecycle",
+        "device",
+        "acquisition"
+      ],
+      "planner_guard_log": [
+        {
+          "step_order": 6,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "lifecycle",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated in particular lifecycle stages, since the mechanism behind the improvement is not yet established and evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "lifecycle",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [],
+            "remaining_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 4,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 7,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "device",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the validated Checkout→Purchase lift is concentrated by device, since lifecycle was already investigated and showed broad within-segment improvement; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "device",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle"
+            ],
+            "remaining_dimensions": [
+              "device",
+              "acquisition"
+            ],
+            "remaining_budget": 3,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          }
+        },
+        {
+          "step_order": 8,
+          "proposed_action": "INVESTIGATE",
+          "proposed_dimension": "acquisition",
+          "proposed_lifecycle_filter": null,
+          "proposed_hypothesis_code": null,
+          "rationale": "Investigate whether the observed Checkout→Purchase lift is concentrated in or associated with particular acquisition segments, since lifecycle and device patterns were broad and acquisition composition may have changed; evidence is insufficient to establish causality.",
+          "guard_status": "ACCEPTED",
+          "guard_reason": "ACCEPTED",
+          "executed_tool": "compare_growth_segments",
+          "executed_dimension": "acquisition",
+          "executed_lifecycle_filter": null,
+          "fallback_used": false,
+          "fallback_reason": null,
+          "state_before": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device"
+            ],
+            "remaining_dimensions": [
+              "acquisition"
+            ],
+            "remaining_budget": 2,
+            "stop_allowed": false,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": null
+          },
+          "state_after": {
+            "investigated_dimensions": [
+              "lifecycle",
+              "device",
+              "acquisition"
+            ],
+            "remaining_dimensions": [],
+            "remaining_budget": 1,
+            "stop_allowed": true,
+            "growth_signal_confidence": "HIGH",
+            "reproducibility": "REPRODUCED",
+            "localization": "BROAD"
+          }
+        }
+      ],
+      "proposal_count": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "fallback_count": 0,
+      "fallback_reasons": {},
+      "illegal_proposals": 0,
+      "filter_inconsistent": 0,
+      "duplicate_proposals": 0,
+      "premature_stops": 0,
+      "unsupported_causal_claims": 0,
+      "broad_scale_violations": 0,
+      "intervention_boundary_violations": 0,
+      "provider_rationale_causal_claim": false,
+      "provider_rationale_scale_recommendation": false,
+      "evidence_semantics_preserved": true,
+      "hypothesis_semantics_preserved": true,
+      "unknown_semantics_preserved": true,
+      "final_facts": {
+        "baseline_rate": 40.35,
+        "baseline_counts": [
+          1046,
+          2592
+        ],
+        "growth_rate": 51.14,
+        "growth_counts": [
+          1304,
+          2550
+        ],
+        "delta_pp": 10.78,
+        "confirmation_rate": 55.07,
+        "confirmation_counts": [
+          369,
+          670
+        ],
+        "holdout_1_rate": 48.74,
+        "holdout_1_counts": [
+          386,
+          792
+        ],
+        "holdout_2_rate": 55.13,
+        "holdout_2_counts": [
+          666,
+          1208
+        ],
+        "localization": "BROAD",
+        "reproducibility": "REPRODUCED",
+        "growth_signal_confidence": "HIGH",
+        "reproducibility_confidence": "HIGH",
+        "recommended_status": "READY_FOR_REPLICATION_TEST",
+        "recommended_action_type": "REPLICATION_TEST",
+        "stop_reason": "ALLOWED_DIMENSIONS_EXHAUSTED"
+      },
+      "passed": true
+    }
+  ],
+  "summary": {
+    "run_count": 3,
+    "total_proposals": 9,
+    "accepted_proposals": 9,
+    "rejected_proposals": 0,
+    "fallback_count": 0,
+    "fallback_reasons": {},
+    "illegal_proposals": 0,
+    "filter_inconsistent": 0,
+    "duplicate_proposals": 0,
+    "premature_stops": 0,
+    "unsupported_causal_claims": 0,
+    "broad_scale_violations": 0,
+    "intervention_boundary_violations": 0,
+    "final_state_consistent": true,
+    "overall_result": "PASS"
+  }
+}

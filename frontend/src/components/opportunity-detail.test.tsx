@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { OpportunityDetailView } from "@/components/opportunity-detail";
-import { lifecycleOpportunity, lifecycleRun, opportunity, run } from "@/test/fixtures";
+import { growthOpportunity, growthRun, lifecycleOpportunity, lifecycleRun, opportunity, run } from "@/test/fixtures";
 
 describe("Opportunity Detail", () => {
   it("renders the localized opportunity metric", () => {
@@ -77,5 +77,51 @@ describe("Opportunity Detail", () => {
       />,
     );
     expect(screen.getByRole("heading", { name: "No Recovery relative to Baseline" })).toBeInTheDocument();
+  });
+
+  it("renders positive growth persistence without causalizing the lift", () => {
+    render(<OpportunityDetailView opportunity={growthOpportunity} run={growthRun} />);
+    expect(screen.getByText("Positive Growth")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Growth confirmation and holdouts" })).toBeInTheDocument();
+    expect(screen.getByText("55.07%")).toBeInTheDocument();
+    const confidence = screen.getByRole("region", { name: "Confidence" });
+    expect(confidence).toHaveTextContent("Growth Signal ConfidenceHIGH");
+    expect(confidence).toHaveTextContent("Reproducibility ConfidenceHIGH");
+    expect(screen.getByText(/Validated lift ≠ proven growth mechanism/)).toBeInTheDocument();
+  });
+
+  it.each(["PARTIALLY_REPRODUCED", "NOT_REPRODUCED"])(
+    "renders %s as its actual reproducibility state",
+    (reproducibility) => {
+      render(
+        <OpportunityDetailView
+          opportunity={{ ...growthOpportunity, reproducibility }}
+          run={{ ...growthRun, reproducibility }}
+        />,
+      );
+      expect(screen.getByText(reproducibility === "PARTIALLY_REPRODUCED" ? "Partially Reproduced" : "Not Reproduced")).toBeInTheDocument();
+      expect(screen.queryByText("REPRODUCED")).not.toBeInTheDocument();
+    },
+  );
+
+  it("renders missing positive-growth localization as Unknown", () => {
+    render(
+      <OpportunityDetailView
+        opportunity={{ ...growthOpportunity, growth_localization: null }}
+        run={{ ...growthRun, growth_localization: null }}
+      />,
+    );
+    expect(screen.getByText("Localization · Unknown")).toBeInTheDocument();
+  });
+
+  it("renders safely without AOV context", () => {
+    render(
+      <OpportunityDetailView
+        opportunity={{ ...growthOpportunity, order_value_context: null }}
+        run={growthRun}
+      />,
+    );
+    expect(screen.getByRole("heading", { name: "Growth confirmation and holdouts" })).toBeInTheDocument();
+    expect(screen.queryByText(/AOV context:/)).not.toBeInTheDocument();
   });
 });

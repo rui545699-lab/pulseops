@@ -4,11 +4,14 @@ from pulseops.backend.agent.state import AgentState, InvestigationProfile
 
 ALLOWED_DIMENSIONS = ("lifecycle", "device", "acquisition", "category")
 LIFECYCLE_RISK_DIMENSIONS = ("acquisition", "device", "activation_depth")
+POSITIVE_GROWTH_DIMENSIONS = ("lifecycle", "device", "acquisition")
 
 
 def allowed_dimensions(state: AgentState) -> tuple[str, ...]:
     if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
         return LIFECYCLE_RISK_DIMENSIONS
+    if state.investigation_profile == InvestigationProfile.POSITIVE_GROWTH:
+        return POSITIVE_GROWTH_DIMENSIONS
     return ALLOWED_DIMENSIONS
 
 
@@ -38,6 +41,8 @@ def continuation_reason(state: AgentState, dimension: str | None) -> str:
         return "A material signal exists; identify whether the decline is concentrated by lifecycle."
     if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
         return f"Lifecycle risk remains causal-unconfirmed; investigate {dimension}."
+    if state.investigation_profile == InvestigationProfile.POSITIVE_GROWTH:
+        return f"The validated lift is not a proven mechanism; investigate {dimension} observationally."
     if state.affected_segment:
         return f"Root cause remains unconfirmed; investigate {dimension} within {state.affected_segment}."
     return f"Root cause remains unconfirmed; investigate the next permitted dimension: {dimension}."

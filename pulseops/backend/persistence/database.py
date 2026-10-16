@@ -24,7 +24,7 @@ def init_database(engine: Engine) -> None:
 
 
 def _evolve_sqlite_schema(engine: Engine) -> None:
-    """Add V0.2 nullable columns without invalidating existing local V0.1 databases."""
+    """Add nullable product fields without invalidating existing local databases."""
     additions = {
         "analysis_runs": {
             "analysis_type": "VARCHAR(64) NOT NULL DEFAULT 'CONVERSION'",
@@ -36,6 +36,17 @@ def _evolve_sqlite_schema(engine: Engine) -> None:
             "recovery_ratio": "FLOAT",
             "risk_pattern": "VARCHAR(64)",
             "return_timing": "JSON",
+            "confirmation_start": "DATE",
+            "confirmation_end": "DATE",
+            "holdout_1_start": "DATE",
+            "holdout_1_end": "DATE",
+            "holdout_2_start": "DATE",
+            "holdout_2_end": "DATE",
+            "growth_analysis": "JSON",
+            "reproducibility": "VARCHAR(64)",
+            "growth_signal_confidence": "VARCHAR(32)",
+            "reproducibility_confidence": "VARCHAR(32)",
+            "growth_localization": "VARCHAR(64)",
         },
         "opportunities": {
             "post_rate": "FLOAT",
@@ -46,6 +57,14 @@ def _evolve_sqlite_schema(engine: Engine) -> None:
             "return_timing": "JSON",
             "segment_analysis": "JSON",
             "hypothesis_records": "JSON",
+            "growth_period": "JSON",
+            "confirmation_period": "JSON",
+            "holdout_results": "JSON",
+            "reproducibility": "VARCHAR(64)",
+            "growth_signal_confidence": "VARCHAR(32)",
+            "reproducibility_confidence": "VARCHAR(32)",
+            "growth_localization": "VARCHAR(64)",
+            "order_value_context": "JSON",
         },
     }
     with engine.begin() as connection:

@@ -15,6 +15,11 @@ from pulseops.backend.schemas.analytics import (
     SegmentComparison,
     ValidationResult,
     LifecycleSegmentComparison,
+    GrowthComparison,
+    GrowthSegmentComparison,
+    OrderValueContext,
+    Reproducibility,
+    WeeklyGrowthResult,
     RecoveryAnalysis,
     RetentionComparison,
     ReturnTimingAnalysis,
@@ -25,12 +30,14 @@ from pulseops.backend.schemas.analytics import (
 class InvestigationProfile(str, Enum):
     CONVERSION = "CONVERSION"
     LIFECYCLE_RISK = "LIFECYCLE_RISK"
+    POSITIVE_GROWTH = "POSITIVE_GROWTH"
 
 
 class RecommendedActionType(str, Enum):
     EVIDENCE_COLLECTION = "EVIDENCE_COLLECTION"
     INTERVENTION = "INTERVENTION"
     NONE = "NONE"
+    REPLICATION_TEST = "REPLICATION_TEST"
 
 
 class StopReason(str, Enum):
@@ -82,6 +89,12 @@ class AgentState(BaseModel):
     target_end: date
     post_start: date | None = None
     post_end: date | None = None
+    confirmation_start: date | None = None
+    confirmation_end: date | None = None
+    holdout_1_start: date | None = None
+    holdout_1_end: date | None = None
+    holdout_2_start: date | None = None
+    holdout_2_end: date | None = None
     investigation_profile: InvestigationProfile = InvestigationProfile.CONVERSION
     opportunity_type: str = "CONVERSION_DECLINE"
     metric_name: str | None = None
@@ -116,3 +129,13 @@ class AgentState(BaseModel):
     lifecycle_segment_results: dict[str, LifecycleSegmentComparison] = Field(
         default_factory=dict, exclude=True
     )
+    growth_result: GrowthComparison | None = Field(default=None, exclude=True)
+    weekly_growth_results: list[WeeklyGrowthResult] = Field(default_factory=list, exclude=True)
+    growth_segment_results: dict[str, GrowthSegmentComparison] = Field(
+        default_factory=dict, exclude=True
+    )
+    order_value_context: OrderValueContext | None = Field(default=None, exclude=True)
+    reproducibility: Reproducibility | None = None
+    growth_signal_confidence: Confidence | None = None
+    reproducibility_confidence: Confidence | None = None
+    growth_localization: str | None = None

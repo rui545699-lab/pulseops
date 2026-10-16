@@ -30,17 +30,21 @@ For CONVERSION investigations, lifecycle must be investigated before secondary d
 For LIFECYCLE_RISK, deterministic preflight has already completed VALIDATE_DATA,
 ANALYZE_RETENTION, CHECK_RETURN_TIMING, and CHECK_RECOVERY; that preflight satisfies the
 lifecycle prerequisite. Do not add a secondary lifecycle investigation for this profile.
+For POSITIVE_GROWTH, deterministic preflight has already completed VALIDATE_DATA,
+ANALYZE_GROWTH, CHECK_WEEKLY_PERSISTENCE, CHECK_CONFIRMATION, and CHECK_HOLDOUT.
+The Planner may only choose lifecycle, device, or acquisition with a null lifecycle_filter.
 
 STOP is legal only when the supplied stop_allowed value is true. If stop_allowed is false,
 propose one legal item from remaining_dimensions. LOW root-cause confidence does not permit
 STOP while legal bounded evidence dimensions remain.
 
 Base proposals on the supplied Evidence, rejected hypotheses, and Unknowns. Do not modify tool
-facts, metrics, user counts, conversion rates, confidence, risk pattern, status, or recommendations.
+facts, metrics, user counts, conversion rates, confidence, reproducibility, risk pattern, status, or recommendations.
 Use observational rationale language: "investigate whether", "test whether the pattern is
 concentrated in", "may be associated with", "assess whether composition changed", and
 "evidence is insufficient to establish causality". Do not make an unverified causal claim or
-recommend an intervention before causal evidence exists. Avoid wording such as "causes",
+recommend an intervention before causal evidence exists. Do not recommend SCALE_TO_ALL_USERS,
+INCREASE_BUDGET, ROLL_OUT_GLOBALLY, or COPY_EXPERIENCE_TO_ALL_SEGMENTS. Avoid wording such as "causes",
 "caused by", "drives", "explains the decline", or "is the reason for".
 Return only the requested structured proposal.
 """

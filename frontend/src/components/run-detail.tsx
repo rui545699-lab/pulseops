@@ -69,7 +69,7 @@ export function RunDetailView({ run, steps }: RunDetailData) {
           <p className="mt-3 text-sm text-[#6f6f69]">{run.baseline_start}–{run.baseline_end} compared with {run.target_start}–{run.target_end}</p>
         </div>
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 rounded-xl border border-[#dfdfda] bg-white px-5 py-4 text-xs sm:grid-cols-4">
-          <Technical label="Analysis Type" value={run.analysis_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : "Conversion / Activation"} />
+          <Technical label="Analysis Type" value={run.analysis_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : run.analysis_type === "POSITIVE_GROWTH" ? "Positive Growth" : "Conversion / Activation"} />
           <Technical label="Planner Mode" value={plannerLabel(run.planner_mode)} />
           <Technical label="Provider" value={providerLabel(run.provider)} />
           <Technical label="Model" value={run.model_identifier ?? "—"} wide />
@@ -77,12 +77,13 @@ export function RunDetailView({ run, steps }: RunDetailData) {
       </header>
 
       {run.detected_signal ? (
-        <section className={`grid gap-4 rounded-xl border border-[#deded9] bg-white p-5 sm:p-6 ${run.analysis_type === "LIFECYCLE_RISK" ? "sm:grid-cols-5" : "sm:grid-cols-4"}`} aria-label="Detected signal summary">
+        <section className={`grid gap-4 rounded-xl border border-[#deded9] bg-white p-5 sm:p-6 ${run.analysis_type === "LIFECYCLE_RISK" || run.analysis_type === "POSITIVE_GROWTH" ? "sm:grid-cols-5" : "sm:grid-cols-4"}`} aria-label="Detected signal summary">
           <div><p className="meta-label">Detected Signal</p><p className="mt-2 text-sm font-semibold">{run.detected_signal}</p></div>
           <div><p className="meta-label">Overall Movement</p><p className="mt-2 text-sm font-semibold tabular-nums">{formatRate(run.overall_baseline_rate)} → {formatRate(run.overall_target_rate)}</p></div>
-          <div><p className="meta-label">Delta</p><p className="mt-2 text-sm font-semibold text-[#9a4438]">{formatDelta(run.overall_delta_pp)}</p></div>
+          <div><p className="meta-label">Delta</p><p className={`mt-2 text-sm font-semibold ${run.analysis_type === "POSITIVE_GROWTH" ? "text-[#2f7666]" : "text-[#9a4438]"}`}>{formatDelta(run.overall_delta_pp)}</p></div>
           <div><p className="meta-label">Affected Segment</p><p className="mt-2 text-sm font-semibold">{segmentLabel(run.affected_segment)}</p></div>
           {run.analysis_type === "LIFECYCLE_RISK" ? <div><p className="meta-label">Post / Recovery</p><p className="mt-2 text-sm font-semibold tabular-nums">{formatRate(run.post_rate)} · {humanize(run.risk_pattern)}</p></div> : null}
+          {run.analysis_type === "POSITIVE_GROWTH" ? <div><p className="meta-label">Reproducibility</p><p className="mt-2 text-sm font-semibold">{humanize(run.reproducibility)}</p></div> : null}
         </section>
       ) : null}
 
@@ -206,6 +207,10 @@ function stepTitle(node: string): string {
     ANALYZE_RETENTION: "Analyze Retention",
     CHECK_RETURN_TIMING: "Return Timing",
     CHECK_RECOVERY: "Recovery",
+    ANALYZE_GROWTH: "Analyze Growth",
+    CHECK_WEEKLY_PERSISTENCE: "Weekly Persistence",
+    CHECK_CONFIRMATION: "Confirmation",
+    CHECK_HOLDOUT: "Holdout Reproducibility",
     CHECK_ACQUISITION: "Acquisition",
     CHECK_DEVICE: "Device",
     CHECK_ACTIVATION_DEPTH: "Activation Depth",
@@ -238,6 +243,17 @@ function stepSummary(step: AgentStep): string {
     const target = objectValue(step.tool_output_summary.target);
     return `D7 Return ${formatRate(numberValue(baseline?.return_rate_7d))} → ${formatRate(numberValue(target?.return_rate_7d))}, ${formatDelta(numberValue(step.tool_output_summary.delta_pp))}.`;
   }
+  if (step.node === "ANALYZE_GROWTH") {
+    const baseline = objectValue(step.tool_output_summary.baseline);
+    const growth = objectValue(step.tool_output_summary.growth);
+    return `Checkout→Purchase ${formatRate(numberValue(baseline?.conversion_rate))} → ${formatRate(numberValue(growth?.conversion_rate))}, ${formatDelta(numberValue(step.tool_output_summary.delta_pp))}.`;
+  }
+  if (step.node === "CHECK_WEEKLY_PERSISTENCE") return "Weekly strict checkout-to-purchase results were recorded to check persistence.";
+  if (step.node === "CHECK_CONFIRMATION") {
+    const confirmation = objectValue(step.tool_output_summary.confirmation);
+    return `Confirmation Checkout→Purchase: ${formatRate(numberValue(confirmation?.conversion_rate))}.`;
+  }
+  if (step.node === "CHECK_HOLDOUT") return `Holdout reproducibility: ${humanize(typeof step.tool_output_summary.reproducibility === "string" ? step.tool_output_summary.reproducibility : null)}.`;
   if (step.node === "CHECK_RETURN_TIMING") {
     const conclusion = step.tool_output_summary.conclusion;
     if (typeof conclusion === "string") return conclusion;

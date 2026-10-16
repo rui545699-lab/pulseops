@@ -46,6 +46,15 @@ export function RunInvestigation({
             post_start: String(form.get("post_start")),
             post_end: String(form.get("post_end")),
           }
+        : analysisType === "POSITIVE_GROWTH"
+          ? {
+              confirmation_start: String(form.get("confirmation_start")),
+              confirmation_end: String(form.get("confirmation_end")),
+              holdout_1_start: String(form.get("holdout_1_start")),
+              holdout_1_end: String(form.get("holdout_1_end")),
+              holdout_2_start: String(form.get("holdout_2_start")),
+              holdout_2_end: String(form.get("holdout_2_end")),
+            }
         : {}),
     };
 
@@ -112,6 +121,7 @@ export function RunInvestigation({
               >
                 <option value="CONVERSION">Conversion / Activation</option>
                 <option value="LIFECYCLE_RISK">Lifecycle Risk</option>
+                <option value="POSITIVE_GROWTH">Positive Growth</option>
               </select>
             </label>
             <DateField name="baseline_start" label="Baseline Start" />
@@ -122,6 +132,16 @@ export function RunInvestigation({
               <>
                 <DateField name="post_start" label="Post Start" />
                 <DateField name="post_end" label="Post End" />
+              </>
+            ) : null}
+            {analysisType === "POSITIVE_GROWTH" ? (
+              <>
+                <DateField name="confirmation_start" label="Confirmation Start" />
+                <DateField name="confirmation_end" label="Confirmation End" />
+                <DateField name="holdout_1_start" label="Holdout 1 Start" />
+                <DateField name="holdout_1_end" label="Holdout 1 End" />
+                <DateField name="holdout_2_start" label="Holdout 2 Start" />
+                <DateField name="holdout_2_end" label="Holdout 2 End" />
               </>
             ) : null}
             <label className="space-y-2 text-xs font-medium text-[#d2d2cc]">

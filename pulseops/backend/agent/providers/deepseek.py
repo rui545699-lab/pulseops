@@ -68,6 +68,15 @@ class DeepSeekPlanner(PlannerProtocol):
                 "activation_depth. Propose only from remaining_dimensions. lifecycle_filter MUST be "
                 "null, even when affected_segment is new_users."
             )
+        elif state.investigation_profile == InvestigationProfile.POSITIVE_GROWTH:
+            profile_rules = (
+                "This is POSITIVE_GROWTH. Deterministic preflight already completed "
+                "VALIDATE_DATA, ANALYZE_GROWTH, CHECK_WEEKLY_PERSISTENCE, "
+                "CHECK_CONFIRMATION, and CHECK_HOLDOUT. Valid bounded evidence dimensions "
+                "are lifecycle, device, and acquisition. Propose only from "
+                "remaining_dimensions. lifecycle_filter MUST be null. A validated lift is "
+                "not a proven mechanism, and you must not recommend broad scaling."
+            )
         else:
             profile_rules = (
                 "This is CONVERSION. Follow the supplied required_lifecycle_filter exactly for the "
@@ -111,6 +120,17 @@ class DeepSeekPlanner(PlannerProtocol):
             "risk_pattern": (
                 state.recovery_result.risk_pattern.value if state.recovery_result else None
             ),
+            "growth_signal_confidence": (
+                state.growth_signal_confidence.value if state.growth_signal_confidence else None
+            ),
+            "reproducibility": (
+                state.reproducibility.value if state.reproducibility else None
+            ),
+            "reproducibility_confidence": (
+                state.reproducibility_confidence.value
+                if state.reproducibility_confidence else None
+            ),
+            "growth_localization": state.growth_localization,
         }
         return {
             "model": self.config.model,
@@ -131,7 +151,10 @@ class DeepSeekPlanner(PlannerProtocol):
 
 
 def _required_lifecycle_filter(state: AgentState) -> str | None:
-    if state.investigation_profile == InvestigationProfile.LIFECYCLE_RISK:
+    if state.investigation_profile in {
+        InvestigationProfile.LIFECYCLE_RISK,
+        InvestigationProfile.POSITIVE_GROWTH,
+    }:
         return None
     if state.affected_segment == "new_users":
         return "new"

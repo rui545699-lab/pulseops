@@ -1,0 +1,66 @@
+{
+  "provenance": {
+    "kind": "GOLDEN_FIXTURE",
+    "derived_from": "Verified GA4 BigQuery V0.3 Phase A/B outputs",
+    "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*"
+  },
+  "windows": {
+    "baseline_start": "2020-11-23",
+    "baseline_end": "2020-12-06",
+    "target_start": "2020-12-07",
+    "target_end": "2020-12-20",
+    "confirmation_start": "2020-12-21",
+    "confirmation_end": "2021-01-03",
+    "holdout_1_start": "2021-01-04",
+    "holdout_1_end": "2021-01-17",
+    "holdout_2_start": "2021-01-18",
+    "holdout_2_end": "2021-01-31"
+  },
+  "growth": {
+    "metric_name": "Checkout→Purchase",
+    "baseline": {"checkout_sessions": 2592, "purchase_after_checkout_sessions": 1046, "conversion_rate": 40.35},
+    "growth": {"checkout_sessions": 2550, "purchase_after_checkout_sessions": 1304, "conversion_rate": 51.14},
+    "confirmation": {"checkout_sessions": 670, "purchase_after_checkout_sessions": 369, "conversion_rate": 55.07},
+    "holdout_1": {"checkout_sessions": 792, "purchase_after_checkout_sessions": 386, "conversion_rate": 48.74},
+    "holdout_2": {"checkout_sessions": 1208, "purchase_after_checkout_sessions": 666, "conversion_rate": 55.13},
+    "delta_pp": 10.78,
+    "growth_statistical_result": {"delta_pp": 10.7823, "z_score": 7.7602, "p_value": 8.478e-15, "statistically_significant": true},
+    "confirmation_statistical_result": {"delta_pp": 14.7197, "z_score": 6.853, "p_value": 7.229e-12, "statistically_significant": true},
+    "holdout_1_statistical_result": {"delta_pp": 8.3824, "z_score": 4.1788, "p_value": 2.93e-05, "statistically_significant": true},
+    "holdout_2_statistical_result": {"delta_pp": 14.7775, "z_score": 8.5256, "p_value": 1.519e-17, "statistically_significant": true}
+  },
+  "weekly": [
+    {"cohort_week": "2020-11-23", "period": "BASELINE", "checkout_sessions": 1184, "purchase_after_checkout_sessions": 460, "conversion_rate": 38.85},
+    {"cohort_week": "2020-11-30", "period": "BASELINE", "checkout_sessions": 1408, "purchase_after_checkout_sessions": 586, "conversion_rate": 41.62},
+    {"cohort_week": "2020-12-07", "period": "GROWTH", "checkout_sessions": 1549, "purchase_after_checkout_sessions": 759, "conversion_rate": 49.00},
+    {"cohort_week": "2020-12-14", "period": "GROWTH", "checkout_sessions": 1001, "purchase_after_checkout_sessions": 545, "conversion_rate": 54.45},
+    {"cohort_week": "2020-12-21", "period": "CONFIRMATION", "checkout_sessions": 411, "purchase_after_checkout_sessions": 232, "conversion_rate": 56.45},
+    {"cohort_week": "2020-12-28", "period": "CONFIRMATION", "checkout_sessions": 259, "purchase_after_checkout_sessions": 137, "conversion_rate": 52.90}
+  ],
+  "segments": {
+    "lifecycle": {
+      "dimension": "lifecycle", "composition_effect_pp": 3.45, "within_segment_effect_pp": 7.33, "localization": "BROAD",
+      "segments": [
+        {"segment": "new_users", "baseline_sessions": 1522, "baseline_converted_sessions": 415, "baseline_rate": 27.27, "baseline_share": 58.72, "growth_sessions": 1220, "growth_converted_sessions": 445, "growth_rate": 36.48, "growth_share": 47.84, "change_pp": 9.21, "share_change_pp": -10.88},
+        {"segment": "returning_users", "baseline_sessions": 1070, "baseline_converted_sessions": 631, "baseline_rate": 58.97, "baseline_share": 41.28, "growth_sessions": 1330, "growth_converted_sessions": 859, "growth_rate": 64.59, "growth_share": 52.16, "change_pp": 5.61, "share_change_pp": 10.88}
+      ]
+    },
+    "device": {
+      "dimension": "device", "composition_effect_pp": -0.02, "within_segment_effect_pp": 10.80, "localization": "BROAD",
+      "segments": [
+        {"segment": "desktop", "baseline_sessions": 1511, "baseline_converted_sessions": 588, "baseline_rate": 38.91, "baseline_share": 58.29, "growth_sessions": 1482, "growth_converted_sessions": 768, "growth_rate": 51.82, "growth_share": 58.12, "change_pp": 12.91, "share_change_pp": -0.17},
+        {"segment": "mobile", "baseline_sessions": 1021, "baseline_converted_sessions": 430, "baseline_rate": 42.12, "baseline_share": 39.39, "growth_sessions": 1021, "growth_converted_sessions": 518, "growth_rate": 50.73, "growth_share": 40.04, "change_pp": 8.62, "share_change_pp": 0.65},
+        {"segment": "tablet", "baseline_sessions": 60, "baseline_converted_sessions": 28, "baseline_rate": 46.67, "baseline_share": 2.31, "growth_sessions": 47, "growth_converted_sessions": 18, "growth_rate": 38.30, "growth_share": 1.84, "change_pp": -8.37, "share_change_pp": -0.47, "sample_sufficient": false}
+      ]
+    },
+    "acquisition": {
+      "dimension": "acquisition", "composition_effect_pp": 0.65, "within_segment_effect_pp": 10.13, "localization": "BROAD",
+      "segments": [
+        {"segment": "google / organic", "baseline_sessions": 749, "baseline_converted_sessions": 282, "baseline_rate": 37.65, "baseline_share": 28.90, "growth_sessions": 717, "growth_converted_sessions": 339, "growth_rate": 47.28, "growth_share": 28.12, "change_pp": 9.63, "share_change_pp": -0.78},
+        {"segment": "(direct) / (none)", "baseline_sessions": 570, "baseline_converted_sessions": 213, "baseline_rate": 37.37, "baseline_share": 21.99, "growth_sessions": 602, "growth_converted_sessions": 301, "growth_rate": 50.00, "growth_share": 23.61, "change_pp": 12.63, "share_change_pp": 1.62},
+        {"segment": "<Other> / <Other>", "baseline_sessions": 357, "baseline_converted_sessions": 117, "baseline_rate": 32.77, "baseline_share": 13.77, "growth_sessions": 291, "growth_converted_sessions": 124, "growth_rate": 42.61, "growth_share": 11.41, "change_pp": 9.84, "share_change_pp": -2.36}
+      ]
+    }
+  },
+  "order_value_context": {"baseline_revenue_usd": 77425.0, "baseline_average_order_value_usd": 71.16, "growth_revenue_usd": 104619.0, "growth_average_order_value_usd": 71.07, "confirmation_revenue_usd": 24618.0, "confirmation_average_order_value_usd": 63.29}
+}

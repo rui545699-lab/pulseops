@@ -18,6 +18,7 @@ from pulseops.backend.schemas.analytics import (
     RecommendedStatus,
     SegmentComparison,
     LifecycleSegmentComparison,
+    GrowthSegmentComparison,
 )
 
 
@@ -247,4 +248,62 @@ def finalize_lifecycle_needs_evidence(state: AgentState) -> None:
         "Do not launch a coupon blast or broad reactivation campaign.",
         "Do not send notification spam or a full-audience promotion.",
         "Do not redesign the UX before the within-segment decline is explained.",
+    ]
+
+
+def apply_growth_segment_policy(
+    state: AgentState, result: GrowthSegmentComparison
+) -> HypothesisRecord:
+    """Record observational breadth without turning it into a causal explanation."""
+    material = [segment for segment in result.segments if segment.sample_sufficient]
+    broad = len(material) >= 2 and all(segment.change_pp > 0 for segment in material)
+    code = f"{result.dimension.upper()}_GROWTH_CONCENTRATION"
+    record = HypothesisRecord(
+        code=code,
+        reason=(
+            f"the observed lift is broad across material {result.dimension} segments"
+            if broad
+            else f"{result.dimension} evidence does not isolate a single growth mechanism"
+        ),
+        status=(HypothesisStatus.SUPPORTED if broad else HypothesisStatus.INSUFFICIENT_EVIDENCE),
+    )
+    (state.supported_hypotheses if broad else state.insufficient_hypotheses).append(record)
+    if broad:
+        state.evidence.append(
+            f"The checkout-to-purchase lift was observed across material {result.dimension} segments."
+        )
+        if abs(result.within_segment_effect_pp) > abs(result.composition_effect_pp):
+            state.evidence.append(
+                f"Within-segment improvement ({result.within_segment_effect_pp:+.2f}pp) exceeded "
+                f"composition effect ({result.composition_effect_pp:+.2f}pp) for {result.dimension}."
+            )
+    else:
+        state.unknowns.append(
+            f"{result.dimension.capitalize()} results do not establish a single growth mechanism."
+        )
+    return record
+
+
+def finalize_positive_growth(state: AgentState) -> None:
+    state.root_cause_confidence = Confidence.LOW
+    state.recommended_status = RecommendedStatus.READY_FOR_REPLICATION_TEST
+    state.recommended_action_type = RecommendedActionType.REPLICATION_TEST
+    state.hypotheses = [
+        "Pricing or promotion context may contribute to the observed lift.",
+        "Checkout UX, payment experience, merchandising, inventory, or calendar context may contribute to the observed lift.",
+        "The validated lift may be repeatable, but its mechanism remains unproven.",
+    ]
+    state.unknowns = [
+        *state.unknowns,
+        "Exact promotion configuration, pricing, UX or payment, merchandising, and inventory changes are unknown.",
+        "A validated lift does not establish a causal mechanism or justify a broad rollout.",
+        "Whether the observed lift can be intentionally recreated remains unknown.",
+    ]
+    state.recommended_next_action = (
+        "Design a bounded replication test with documented context and pre-specified success criteria."
+    )
+    state.do_not_recommend_yet = [
+        "Do not scale to all users before a bounded replication test.",
+        "Do not increase budget or roll out globally without causal evidence.",
+        "Do not attribute the lift to a single segment or intervention."
     ]

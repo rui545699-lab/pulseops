@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { OverviewClient, OverviewView } from "@/components/overview";
-import { multiOpportunityOverview, overviewData } from "@/test/fixtures";
+import { growthOpportunity, growthRun, multiOpportunityOverview, overviewData } from "@/test/fixtures";
 
 describe("Overview", () => {
   it("loads an opportunity from the supplied API loader", async () => {
@@ -51,6 +51,13 @@ describe("Overview", () => {
     expect(screen.getByText("Lifecycle Risk")).toBeInTheDocument();
     expect(screen.getByText("Conversion / Activation")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "New-user 7-day return risk with partial recovery" })).toBeInTheDocument();
+  });
+
+  it("shows a positive-growth opportunity with reproducibility evidence", () => {
+    render(<OverviewView data={{ opportunities: [{ opportunity: growthOpportunity, run: growthRun }], runs: [growthRun] }} />);
+    expect(screen.getByText("Positive Growth")).toBeInTheDocument();
+    expect(screen.getByText("Reproducibility")).toBeInTheDocument();
+    expect(screen.getByText("Reproduced")).toBeInTheDocument();
   });
 
   it("renders a truthful empty state", () => {

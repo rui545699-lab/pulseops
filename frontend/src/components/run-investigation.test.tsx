@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { RunInvestigation } from "@/components/run-investigation";
-import { dataQualityRun, lifecycleOpportunity, lifecycleRun, noSignalRun, opportunity, run } from "@/test/fixtures";
+import { dataQualityRun, growthOpportunity, growthRun, lifecycleOpportunity, lifecycleRun, noSignalRun, opportunity, run } from "@/test/fixtures";
 
 describe("Run Investigation", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -60,6 +60,19 @@ describe("Run Investigation", () => {
       post_start: "2021-01-04",
       post_end: "2021-01-24",
     })));
+  });
+
+  it("includes confirmation and holdout dates for Positive Growth", async () => {
+    const createRun = vi.fn().mockResolvedValue(growthRun);
+    render(<RunInvestigation createRun={createRun} listOpportunities={async () => [growthOpportunity]} onNavigate={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "New investigation" }));
+    await userEvent.selectOptions(screen.getByLabelText("Analysis Type"), "POSITIVE_GROWTH");
+    for (const [label, value] of Object.entries({
+      "Baseline Start": "2020-11-23", "Baseline End": "2020-12-06", "Target Start": "2020-12-07", "Target End": "2020-12-20",
+      "Confirmation Start": "2020-12-21", "Confirmation End": "2021-01-03", "Holdout 1 Start": "2021-01-04", "Holdout 1 End": "2021-01-17", "Holdout 2 Start": "2021-01-18", "Holdout 2 End": "2021-01-31",
+    })) fireEvent.change(screen.getByLabelText(label), { target: { value } });
+    await userEvent.click(screen.getByRole("button", { name: "Run investigation" }));
+    await waitFor(() => expect(createRun).toHaveBeenCalledWith(expect.objectContaining({ analysis_type: "POSITIVE_GROWTH", confirmation_end: "2021-01-03", holdout_2_end: "2021-01-31" })));
   });
 });
 

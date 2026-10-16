@@ -37,32 +37,33 @@ class GuardResult(BaseModel):
 class PolicyGuard:
     def validate(self, state: AgentState, proposal: PlannerProposal) -> GuardResult:
         rationale = proposal.rationale
+        normalized_rationale = re.sub(r"[_-]+", " ", rationale.lower())
         if any(
-            pattern.search(rationale)
+            pattern.search(normalized_rationale)
             for pattern in (
                 re.compile(
-                    r"\bcauses?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk)\b",
+                    r"\bcauses?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk|lift|growth)\b",
                     re.IGNORECASE,
                 ),
                 re.compile(
-                    r"\bcaused\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk)\b",
+                    r"\bcaused\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk|lift|growth)\b",
                     re.IGNORECASE,
                 ),
                 re.compile(
-                    r"\b(?:decline|drop|change|risk)\s+(?:was|is)\s+caused\s+by\b",
+                    r"\b(?:decline|drop|change|risk|lift|growth)\s+(?:was|is)\s+caused\s+by\b",
                     re.IGNORECASE,
                 ),
-                re.compile(r"\bis the root cause\b", re.IGNORECASE),
-                re.compile(r"\bproves that\b", re.IGNORECASE),
+                re.compile(r"\bis the root cause\b"),
+                re.compile(r"\bproves that\b"),
                 re.compile(
-                    r"\bdrives?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk)\b",
+                    r"\bdrives?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk|lift|growth)\b",
                     re.IGNORECASE,
                 ),
                 re.compile(
-                    r"\bexplains?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk)\b",
+                    r"\bexplains?\s+(?:the\s+)?(?:observed\s+)?(?:decline|drop|change|risk|lift|growth)\b",
                     re.IGNORECASE,
                 ),
-                re.compile(r"\bis the reason for\b", re.IGNORECASE),
+                re.compile(r"\bis the reason for\b"),
             )
         ):
             return GuardResult(
@@ -70,17 +71,26 @@ class PolicyGuard:
                 reason=GuardReason.UNSUPPORTED_CAUSAL_CLAIM,
             )
         if any(
-            pattern.search(rationale)
+            pattern.search(normalized_rationale)
             for pattern in (
-                re.compile(r"\blaunch (?:a )?coupon", re.IGNORECASE),
-                re.compile(r"\bsend coupons?\b", re.IGNORECASE),
-                re.compile(r"\boffer discounts?\b", re.IGNORECASE),
-                re.compile(r"\bsend push notifications?\b", re.IGNORECASE),
-                re.compile(r"\blaunch (?:a )?promotion\b", re.IGNORECASE),
-                re.compile(r"\breactivation campaign\b", re.IGNORECASE),
-                re.compile(r"\bnotification spam\b", re.IGNORECASE),
-                re.compile(r"\bredesign the ux\b", re.IGNORECASE),
-                re.compile(r"\bfull-audience promotion\b", re.IGNORECASE),
+                re.compile(r"\blaunch (?:a )?coupon"),
+                re.compile(r"\bsend coupons?\b"),
+                re.compile(r"\boffer discounts?\b"),
+                re.compile(r"\bsend push notifications?\b"),
+                re.compile(r"\blaunch (?:a )?promotion\b"),
+                re.compile(r"\breactivation campaign\b"),
+                re.compile(r"\bnotification spam\b"),
+                re.compile(r"\bredesign the ux\b"),
+                re.compile(r"\bfull audience promotion\b"),
+                re.compile(r"\bscale(?: this)? broadly\b"),
+                re.compile(r"\bscale to all users\b"),
+                re.compile(r"\bincrease (?:spend|budget)\b"),
+                re.compile(r"\broll ?out to everyone\b"),
+                re.compile(r"\broll out globally\b"),
+                re.compile(r"\bdeploy globally\b"),
+                re.compile(r"\bexpand (?:to|across) all users\b"),
+                re.compile(r"\bcopy (?:the )?(?:experience )?to all segments\b"),
+                re.compile(r"\bbroad campaign scale\b"),
             )
         ):
             return GuardResult(

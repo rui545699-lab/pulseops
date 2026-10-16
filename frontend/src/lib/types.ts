@@ -2,13 +2,19 @@ export type PlannerMode = "deterministic" | "deepseek";
 
 export interface AnalysisRun {
   id: string;
-  analysis_type: "CONVERSION" | "LIFECYCLE_RISK" | string;
+  analysis_type: "CONVERSION" | "LIFECYCLE_RISK" | "POSITIVE_GROWTH" | string;
   baseline_start: string;
   baseline_end: string;
   target_start: string;
   target_end: string;
   post_start: string | null;
   post_end: string | null;
+  confirmation_start: string | null;
+  confirmation_end: string | null;
+  holdout_1_start: string | null;
+  holdout_1_end: string | null;
+  holdout_2_start: string | null;
+  holdout_2_end: string | null;
   planner_mode: PlannerMode;
   provider: string | null;
   model_identifier: string | null;
@@ -22,6 +28,11 @@ export interface AnalysisRun {
   recovery_ratio: number | null;
   risk_pattern: string | null;
   return_timing: ReturnTiming | null;
+  growth_analysis: GrowthAnalysis | null;
+  reproducibility: string | null;
+  growth_signal_confidence: string | null;
+  reproducibility_confidence: string | null;
+  growth_localization: string | null;
   affected_segment: string | null;
   signal_confidence: string;
   root_cause_confidence: string;
@@ -78,6 +89,14 @@ export interface Opportunity {
   recovery_ratio: number | null;
   risk_pattern: string | null;
   return_timing: ReturnTiming | null;
+  growth_period: GrowthPeriod | null;
+  confirmation_period: GrowthPeriod | null;
+  holdout_results: { holdout_1: GrowthPeriod; holdout_2: GrowthPeriod } | null;
+  reproducibility: string | null;
+  growth_signal_confidence: string | null;
+  reproducibility_confidence: string | null;
+  growth_localization: string | null;
+  order_value_context: OrderValueContext | null;
   segment_analysis: Record<string, unknown> | null;
   hypothesis_records: Array<{ code: string; reason: string; status: string }> | null;
   signal_confidence: string;
@@ -95,13 +114,19 @@ export interface Opportunity {
 }
 
 export interface RunRequest {
-  analysis_type: "CONVERSION" | "LIFECYCLE_RISK";
+  analysis_type: "CONVERSION" | "LIFECYCLE_RISK" | "POSITIVE_GROWTH";
   baseline_start: string;
   baseline_end: string;
   target_start: string;
   target_end: string;
   post_start?: string;
   post_end?: string;
+  confirmation_start?: string;
+  confirmation_end?: string;
+  holdout_1_start?: string;
+  holdout_1_end?: string;
+  holdout_2_start?: string;
+  holdout_2_end?: string;
   planner_mode: PlannerMode;
 }
 
@@ -122,6 +147,42 @@ export interface ReturnTiming {
   d1_decline_contribution_pct: number;
   d2_3_decline_contribution_pct: number;
   d4_7_decline_contribution_pct: number;
+}
+
+export interface GrowthPeriod {
+  checkout_sessions: number;
+  purchase_after_checkout_sessions: number;
+  conversion_rate: number;
+}
+
+export interface StatisticalResult {
+  delta_pp: number;
+  z_score: number;
+  p_value: number;
+  statistically_significant: boolean;
+}
+
+export interface GrowthAnalysis {
+  metric_name: string;
+  baseline: GrowthPeriod;
+  growth: GrowthPeriod;
+  confirmation: GrowthPeriod;
+  holdout_1: GrowthPeriod;
+  holdout_2: GrowthPeriod;
+  delta_pp: number;
+  growth_statistical_result: StatisticalResult;
+  confirmation_statistical_result: StatisticalResult;
+  holdout_1_statistical_result: StatisticalResult;
+  holdout_2_statistical_result: StatisticalResult;
+}
+
+export interface OrderValueContext {
+  baseline_revenue_usd: number;
+  baseline_average_order_value_usd: number;
+  growth_revenue_usd: number;
+  growth_average_order_value_usd: number;
+  confirmation_revenue_usd: number;
+  confirmation_average_order_value_usd: number;
 }
 
 export interface OpportunityWithRun {

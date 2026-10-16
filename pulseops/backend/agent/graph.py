@@ -17,9 +17,11 @@ from pulseops.backend.agent.planner import (
 )
 from pulseops.backend.agent.policies import (
     apply_lifecycle_segment_policy,
+    apply_growth_segment_policy,
     apply_segment_policy,
     finalize_lifecycle_needs_evidence,
     finalize_needs_evidence,
+    finalize_positive_growth,
     select_signal,
     set_signal_confidence,
 )
@@ -42,6 +44,11 @@ from pulseops.backend.analytics.lifecycle import (
     has_material_negative_retention,
     retention_data_is_sufficient,
 )
+from pulseops.backend.analytics.growth import (
+    classify_reproducibility,
+    derive_growth_localization,
+    has_material_positive_growth,
+)
 from pulseops.backend.analytics.queries.metrics import FUNNEL_PAIRS
 from pulseops.backend.schemas.analytics import (
     AnalysisStatus,
@@ -58,6 +65,11 @@ from pulseops.backend.schemas.analytics import (
     RetentionComparison,
     RiskPattern,
     ReturnTimingAnalysis,
+    GrowthComparison,
+    GrowthSegmentComparison,
+    GrowthWindows,
+    OrderValueContext,
+    WeeklyGrowthResult,
 )
 from pulseops.backend.tools.analyze_funnel import analyze_funnel
 from pulseops.backend.tools.compare_segments import compare_segments
@@ -69,6 +81,13 @@ from pulseops.backend.tools.lifecycle import (
     query_return_timing,
     retention_from_timing,
     validate_lifecycle_data,
+)
+from pulseops.backend.tools.growth import (
+    analyze_growth as analyze_live_growth,
+    analyze_order_value as analyze_live_order_value,
+    analyze_weekly_growth as analyze_live_weekly_growth,
+    compare_growth_segments as compare_live_growth_segments,
+    validate_growth_data as validate_live_growth_data,
 )
 
 
@@ -96,6 +115,18 @@ class InvestigationTools(Protocol):
     def compare_lifecycle_segments(
         self, dimension: str, windows: LifecycleWindows
     ) -> LifecycleSegmentComparison: ...
+
+    def validate_growth_data(self, windows: GrowthWindows) -> ValidationResult: ...
+
+    def analyze_growth(self, windows: GrowthWindows) -> GrowthComparison: ...
+
+    def analyze_weekly_growth(self, windows: GrowthWindows) -> list[WeeklyGrowthResult]: ...
+
+    def compare_growth_segments(
+        self, dimension: str, windows: GrowthWindows
+    ) -> GrowthSegmentComparison: ...
+
+    def analyze_order_value(self, windows: GrowthWindows) -> OrderValueContext: ...
 
 
 class AnalyticsToolset:
@@ -150,6 +181,21 @@ class AnalyticsToolset:
             self.executor, dimension, windows, self.minimum_sample_size
         )
 
+    def validate_growth_data(self, windows: GrowthWindows) -> ValidationResult:
+        return validate_live_growth_data(self.executor, windows)
+
+    def analyze_growth(self, windows: GrowthWindows) -> GrowthComparison:
+        return analyze_live_growth(self.executor, windows)
+
+    def analyze_weekly_growth(self, windows: GrowthWindows) -> list[WeeklyGrowthResult]:
+        return analyze_live_weekly_growth(self.executor, windows)
+
+    def compare_growth_segments(self, dimension: str, windows: GrowthWindows) -> GrowthSegmentComparison:
+        return compare_live_growth_segments(self.executor, dimension, windows, self.minimum_sample_size)
+
+    def analyze_order_value(self, windows: GrowthWindows) -> OrderValueContext:
+        return analyze_live_order_value(self.executor, windows)
+
 
 class InvestigationAgent:
     def __init__(
@@ -180,12 +226,20 @@ class InvestigationAgent:
             **windows.model_dump(),
             remaining_investigation_budget=self.investigation_budget,
             investigation_profile=profile,
-            opportunity_type=("LIFECYCLE_RISK" if profile == InvestigationProfile.LIFECYCLE_RISK else "CONVERSION_DECLINE"),
+            opportunity_type=(
+                "LIFECYCLE_RISK" if profile == InvestigationProfile.LIFECYCLE_RISK
+                else "POSITIVE_GROWTH" if profile == InvestigationProfile.POSITIVE_GROWTH
+                else "CONVERSION_DECLINE"
+            ),
         )
         if profile == InvestigationProfile.LIFECYCLE_RISK:
             if not isinstance(windows, LifecycleWindows):
                 raise ValueError("LIFECYCLE_RISK requires post_start and post_end")
             return self._run_lifecycle(state, windows)
+        if profile == InvestigationProfile.POSITIVE_GROWTH:
+            if not isinstance(windows, GrowthWindows):
+                raise ValueError("POSITIVE_GROWTH requires confirmation and holdout windows")
+            return self._run_growth(state, windows)
         self._validate(state, windows)
         if state.data_quality_status != "PASS":
             return state
@@ -246,6 +300,155 @@ class InvestigationAgent:
             continuation_reason(state, None),
         )
         return state
+
+    def _run_growth(self, state: AgentState, windows: GrowthWindows) -> AgentState:
+        self._validate_growth(state, windows)
+        if state.data_quality_status != "PASS":
+            return state
+        if not self._analyze_growth(state, windows):
+            return state
+        self._check_weekly_growth(state, windows)
+        self._check_growth_confirmation(state, windows)
+        self._check_growth_holdout(state, windows)
+
+        while next_dimension(state) is not None:
+            proposal, planning = self._planning_decision(state)
+            if proposal.action == PlannerAction.STOP:
+                break
+            self._investigate_growth_dimension(state, windows, proposal.dimension, planning)
+
+        state.growth_localization = derive_growth_localization(
+            tuple(state.growth_segment_results.values())
+        )
+        finalize_positive_growth(state)
+        state.stop_reason = _investigation_stop_reason(state)
+        self._log(
+            state, "STOP_DRILLDOWN", None, {}, {}, "STOP", continuation_reason(state, None)
+        )
+        return state
+
+    def _validate_growth(self, state: AgentState, windows: GrowthWindows) -> None:
+        result = self.tools.validate_growth_data(windows)
+        state.validation_result = result
+        state.data_quality_status = result.status
+        if not result.analysis_allowed:
+            state.stop_reason = StopReason.DATA_QUALITY_FAIL
+            state.recommended_status = RecommendedStatus.DATA_QUALITY_ALERT
+            state.recommended_action_type = RecommendedActionType.NONE
+            state.recommended_next_action = "Resolve growth data-quality warnings before investigating the lift."
+            state.unknowns = ["Growth signal validity is unknown until data quality is restored."]
+            decision, reason = "STOP", "Growth data quality failed; stop immediately."
+        else:
+            decision, reason = "CONTINUE", "Growth source events are stable; analyze the strict checkout-to-purchase signal."
+            state.evidence.append(
+                "Begin Checkout and Purchase tracking passed continuity and volume checks."
+            )
+        self._log(
+            state, "VALIDATE_DATA", "validate_growth_data", _window_input(windows),
+            {"status": result.status.value, "warning_codes": [item.code for item in result.warnings]},
+            decision, reason,
+        )
+
+    def _analyze_growth(self, state: AgentState, windows: GrowthWindows) -> bool:
+        result = self.tools.analyze_growth(windows)
+        state.growth_result = result
+        state.metric_name = result.metric_name
+        if not has_material_positive_growth(result.baseline, result.growth):
+            state.stop_reason = StopReason.NO_SIGNIFICANT_SIGNAL
+            state.signal_confidence = Confidence.LOW
+            state.growth_signal_confidence = Confidence.LOW
+            state.root_cause_confidence = Confidence.LOW
+            state.recommended_status = RecommendedStatus.NO_OPPORTUNITY
+            state.recommended_action_type = RecommendedActionType.NONE
+            state.recommended_next_action = "No material positive growth signal requires investigation."
+            state.unknowns = ["A statistically supported positive checkout-to-purchase change was not observed."]
+            self._log(state, "ANALYZE_GROWTH", "analyze_growth", _window_input(windows), result.model_dump(mode="json"), "STOP", "No statistically supported positive growth signal was detected.")
+            return False
+
+        state.detected_signal = result.metric_name
+        state.affected_segment = "all_checkout_sessions"
+        state.signal_confidence = Confidence.HIGH
+        state.growth_signal_confidence = Confidence.HIGH
+        state.evidence.append(
+            f"Strict Checkout→Purchase conversion increased from {result.baseline.conversion_rate:.2f}% to {result.growth.conversion_rate:.2f}% ({result.delta_pp:+.2f}pp)."
+        )
+        self._log(state, "ANALYZE_GROWTH", "analyze_growth", _window_input(windows), result.model_dump(mode="json"), "CONTINUE", "A statistically supported positive signal is present; check weekly persistence.")
+        return True
+
+    def _check_weekly_growth(self, state: AgentState, windows: GrowthWindows) -> None:
+        results = self.tools.analyze_weekly_growth(windows)
+        state.weekly_growth_results = results
+        baseline_rate = state.growth_result.baseline.conversion_rate if state.growth_result else None
+        growth_weeks = [item for item in results if item.period == "GROWTH"]
+        confirmation_weeks = [item for item in results if item.period == "CONFIRMATION"]
+        if baseline_rate is not None and growth_weeks and all(
+            item.conversion_rate > baseline_rate for item in growth_weeks
+        ):
+            state.evidence.append(
+                "Both Growth weeks improved above the Baseline Checkout→Purchase rate."
+            )
+        if baseline_rate is not None and confirmation_weeks and all(
+            item.conversion_rate > baseline_rate for item in confirmation_weeks
+        ):
+            state.evidence.append(
+                "Both Confirmation weeks remained above the Baseline Checkout→Purchase rate."
+            )
+        self._log(state, "CHECK_WEEKLY_PERSISTENCE", "analyze_weekly_growth", _window_input(windows), {"weekly": [item.model_dump(mode="json") for item in results]}, "CONTINUE", "Weekly persistence is recorded without inferring a mechanism.")
+
+    def _check_growth_confirmation(self, state: AgentState, windows: GrowthWindows) -> None:
+        if state.growth_result is None:
+            raise ValueError("growth analysis must precede confirmation")
+        result = state.growth_result
+        state.evidence.append(
+            f"Confirmation Checkout→Purchase conversion was {result.confirmation.conversion_rate:.2f}% after the growth period."
+        )
+        self._log(state, "CHECK_CONFIRMATION", "analyze_growth", _window_input(windows), {"confirmation": result.confirmation.model_dump(mode="json"), "statistical_result": result.confirmation_statistical_result.model_dump(mode="json")}, "CONTINUE", "Confirmation is a deterministic comparison against Baseline.")
+
+    def _check_growth_holdout(self, state: AgentState, windows: GrowthWindows) -> None:
+        if state.growth_result is None:
+            raise ValueError("growth analysis must precede holdout checks")
+        result = state.growth_result
+        state.reproducibility = classify_reproducibility(
+            result.baseline,
+            result.confirmation,
+            result.holdout_1,
+            result.holdout_2,
+            growth_weeks=state.weekly_growth_results,
+            growth=result.growth,
+        )
+        state.reproducibility_confidence = (
+            Confidence.HIGH if state.reproducibility.value == "REPRODUCED" else Confidence.MEDIUM
+        )
+        state.evidence.append(
+            f"Holdout periods measured {result.holdout_1.conversion_rate:.2f}% and {result.holdout_2.conversion_rate:.2f}% Checkout→Purchase conversion; reproducibility is {state.reproducibility.value}."
+        )
+        try:
+            state.order_value_context = self.tools.analyze_order_value(windows)
+            context = state.order_value_context
+            if context.baseline_average_order_value_usd and (
+                context.growth_average_order_value_usd
+                >= context.baseline_average_order_value_usd * 0.95
+            ):
+                state.evidence.append(
+                    "Average order value did not show an obvious collapse during the Growth period."
+                )
+        except RuntimeError:
+            # Order value is contextual and must never block or manufacture a growth signal.
+            state.unknowns.append("Order-value context was unavailable for this bounded investigation.")
+        self._log(state, "CHECK_HOLDOUT", "analyze_growth", _window_input(windows), {"holdout_1": result.holdout_1.model_dump(mode="json"), "holdout_2": result.holdout_2.model_dump(mode="json"), "reproducibility": state.reproducibility.value, "reproducibility_confidence": state.reproducibility_confidence.value}, "CONTINUE", "Reproducibility is deterministically classified; bounded segment investigation may begin.")
+
+    def _investigate_growth_dimension(
+        self, state: AgentState, windows: GrowthWindows, dimension: str | None, planning: dict
+    ) -> None:
+        if dimension is None:
+            raise ValueError("accepted INVESTIGATE proposal requires a dimension")
+        result = self.tools.compare_growth_segments(dimension, windows)
+        state.growth_segment_results[dimension] = result
+        state.investigated_dimensions.append(dimension)
+        state.remaining_investigation_budget -= 1
+        hypothesis = apply_growth_segment_policy(state, result)
+        following = next_dimension(state)
+        self._log(state, f"CHECK_{dimension.upper()}", "compare_growth_segments", {**_window_input(windows), "dimension": dimension, "lifecycle_filter": None}, result.model_dump(mode="json"), "CONTINUE" if following is not None else "STOP_DRILLDOWN", continuation_reason(state, following), hypothesis.code, hypothesis.status, **planning)
 
     def _validate_lifecycle(self, state: AgentState, windows: LifecycleWindows) -> None:
         result = self.tools.validate_lifecycle_data(windows)

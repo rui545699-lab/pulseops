@@ -1,0 +1,1525 @@
+{
+  "phase": "V0.3 Positive Growth Opportunity \u2014 Phase B",
+  "case_03_validation_status": "VALIDATED",
+  "selected_candidate_unchanged": "BEGIN_CHECKOUT_TO_PURCHASE",
+  "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*",
+  "data_range": {
+    "start": "2020-11-23",
+    "end": "2021-01-31"
+  },
+  "strict_metric_verification": {
+    "definition": "Distinct same-user, same-session checkout sessions in which at least one purchase occurs strictly after the first begin_checkout event.",
+    "denominator": "checkout_sessions",
+    "numerator": "purchase_after_checkout_sessions",
+    "ordering_rule": "purchase timestamp > first begin_checkout timestamp within the same session",
+    "duplicate_control": "The numerator is distinct sessions, so multiple purchase events or transaction IDs cannot create extra converting sessions.",
+    "period_quality_checks": {
+      "baseline": {
+        "checkout_sessions": 2592,
+        "purchase_after_checkout_sessions": 1046,
+        "purchase_before_checkout_sessions": 0,
+        "both_before_and_after_sessions": 0,
+        "multiple_checkout_sessions": 1811,
+        "multiple_purchase_sessions": 157,
+        "purchase_but_not_qualifying_sessions": 0
+      },
+      "growth": {
+        "checkout_sessions": 2550,
+        "purchase_after_checkout_sessions": 1304,
+        "purchase_before_checkout_sessions": 0,
+        "both_before_and_after_sessions": 0,
+        "multiple_checkout_sessions": 2515,
+        "multiple_purchase_sessions": 112,
+        "purchase_but_not_qualifying_sessions": 0
+      },
+      "confirmation": {
+        "checkout_sessions": 670,
+        "purchase_after_checkout_sessions": 369,
+        "purchase_before_checkout_sessions": 0,
+        "both_before_and_after_sessions": 0,
+        "multiple_checkout_sessions": 670,
+        "multiple_purchase_sessions": 27,
+        "purchase_but_not_qualifying_sessions": 0
+      },
+      "holdout_1": {
+        "checkout_sessions": 792,
+        "purchase_after_checkout_sessions": 386,
+        "purchase_before_checkout_sessions": 0,
+        "both_before_and_after_sessions": 0,
+        "multiple_checkout_sessions": 792,
+        "multiple_purchase_sessions": 22,
+        "purchase_but_not_qualifying_sessions": 0
+      },
+      "holdout_2": {
+        "checkout_sessions": 1208,
+        "purchase_after_checkout_sessions": 666,
+        "purchase_before_checkout_sessions": 0,
+        "both_before_and_after_sessions": 0,
+        "multiple_checkout_sessions": 1208,
+        "multiple_purchase_sessions": 24,
+        "purchase_but_not_qualifying_sessions": 0
+      }
+    }
+  },
+  "data_quality": {
+    "date_range": {
+      "start": "2020-11-23",
+      "end": "2021-01-31",
+      "days": 70
+    },
+    "begin_checkout_zero_dates": [],
+    "purchase_zero_dates": [],
+    "begin_checkout_daily_median": 392.0,
+    "purchase_daily_median": 52.5,
+    "implausibly_low_checkout_dates_below_20pct_median": [],
+    "implausibly_low_purchase_dates_below_20pct_median": [],
+    "daily_purchase_to_checkout_event_ratio_min": 0.0533,
+    "daily_purchase_to_checkout_event_ratio_max": 0.509,
+    "conclusion": "No day-level zero-volume or <20%-of-median break is used as evidence of a tracking-definition change.",
+    "known_add_to_cart_issue": "Auxiliary only: this metric is defined directly on begin_checkout and purchase, neither of which has an observed zero-volume date in the validation range."
+  },
+  "daily_event_coverage": [
+    {
+      "day": "2020-11-23",
+      "begin_checkout_events": 277,
+      "purchase_events": 141,
+      "checkout_sessions": 169,
+      "purchase_sessions": 62
+    },
+    {
+      "day": "2020-11-24",
+      "begin_checkout_events": 366,
+      "purchase_events": 147,
+      "checkout_sessions": 210,
+      "purchase_sessions": 97
+    },
+    {
+      "day": "2020-11-25",
+      "begin_checkout_events": 387,
+      "purchase_events": 108,
+      "checkout_sessions": 227,
+      "purchase_sessions": 86
+    },
+    {
+      "day": "2020-11-26",
+      "begin_checkout_events": 321,
+      "purchase_events": 57,
+      "checkout_sessions": 190,
+      "purchase_sessions": 55
+    },
+    {
+      "day": "2020-11-27",
+      "begin_checkout_events": 300,
+      "purchase_events": 97,
+      "checkout_sessions": 195,
+      "purchase_sessions": 90
+    },
+    {
+      "day": "2020-11-28",
+      "begin_checkout_events": 245,
+      "purchase_events": 78,
+      "checkout_sessions": 160,
+      "purchase_sessions": 75
+    },
+    {
+      "day": "2020-11-29",
+      "begin_checkout_events": 246,
+      "purchase_events": 51,
+      "checkout_sessions": 125,
+      "purchase_sessions": 49
+    },
+    {
+      "day": "2020-11-30",
+      "begin_checkout_events": 950,
+      "purchase_events": 141,
+      "checkout_sessions": 243,
+      "purchase_sessions": 127
+    },
+    {
+      "day": "2020-12-01",
+      "begin_checkout_events": 732,
+      "purchase_events": 107,
+      "checkout_sessions": 229,
+      "purchase_sessions": 100
+    },
+    {
+      "day": "2020-12-02",
+      "begin_checkout_events": 768,
+      "purchase_events": 82,
+      "checkout_sessions": 212,
+      "purchase_sessions": 75
+    },
+    {
+      "day": "2020-12-03",
+      "begin_checkout_events": 775,
+      "purchase_events": 90,
+      "checkout_sessions": 226,
+      "purchase_sessions": 86
+    },
+    {
+      "day": "2020-12-04",
+      "begin_checkout_events": 733,
+      "purchase_events": 96,
+      "checkout_sessions": 197,
+      "purchase_sessions": 86
+    },
+    {
+      "day": "2020-12-05",
+      "begin_checkout_events": 591,
+      "purchase_events": 87,
+      "checkout_sessions": 175,
+      "purchase_sessions": 77
+    },
+    {
+      "day": "2020-12-06",
+      "begin_checkout_events": 434,
+      "purchase_events": 42,
+      "checkout_sessions": 138,
+      "purchase_sessions": 40
+    },
+    {
+      "day": "2020-12-07",
+      "begin_checkout_events": 716,
+      "purchase_events": 110,
+      "checkout_sessions": 203,
+      "purchase_sessions": 91
+    },
+    {
+      "day": "2020-12-08",
+      "begin_checkout_events": 990,
+      "purchase_events": 122,
+      "checkout_sessions": 271,
+      "purchase_sessions": 111
+    },
+    {
+      "day": "2020-12-09",
+      "begin_checkout_events": 1016,
+      "purchase_events": 150,
+      "checkout_sessions": 258,
+      "purchase_sessions": 131
+    },
+    {
+      "day": "2020-12-10",
+      "begin_checkout_events": 983,
+      "purchase_events": 143,
+      "checkout_sessions": 268,
+      "purchase_sessions": 129
+    },
+    {
+      "day": "2020-12-11",
+      "begin_checkout_events": 933,
+      "purchase_events": 160,
+      "checkout_sessions": 262,
+      "purchase_sessions": 148
+    },
+    {
+      "day": "2020-12-12",
+      "begin_checkout_events": 647,
+      "purchase_events": 106,
+      "checkout_sessions": 192,
+      "purchase_sessions": 99
+    },
+    {
+      "day": "2020-12-13",
+      "begin_checkout_events": 423,
+      "purchase_events": 74,
+      "checkout_sessions": 135,
+      "purchase_sessions": 63
+    },
+    {
+      "day": "2020-12-14",
+      "begin_checkout_events": 725,
+      "purchase_events": 99,
+      "checkout_sessions": 185,
+      "purchase_sessions": 86
+    },
+    {
+      "day": "2020-12-15",
+      "begin_checkout_events": 825,
+      "purchase_events": 139,
+      "checkout_sessions": 195,
+      "purchase_sessions": 119
+    },
+    {
+      "day": "2020-12-16",
+      "begin_checkout_events": 833,
+      "purchase_events": 143,
+      "checkout_sessions": 184,
+      "purchase_sessions": 117
+    },
+    {
+      "day": "2020-12-17",
+      "begin_checkout_events": 745,
+      "purchase_events": 126,
+      "checkout_sessions": 156,
+      "purchase_sessions": 91
+    },
+    {
+      "day": "2020-12-18",
+      "begin_checkout_events": 938,
+      "purchase_events": 107,
+      "checkout_sessions": 154,
+      "purchase_sessions": 79
+    },
+    {
+      "day": "2020-12-19",
+      "begin_checkout_events": 526,
+      "purchase_events": 52,
+      "checkout_sessions": 91,
+      "purchase_sessions": 40
+    },
+    {
+      "day": "2020-12-20",
+      "begin_checkout_events": 375,
+      "purchase_events": 20,
+      "checkout_sessions": 51,
+      "purchase_sessions": 19
+    },
+    {
+      "day": "2020-12-21",
+      "begin_checkout_events": 534,
+      "purchase_events": 53,
+      "checkout_sessions": 90,
+      "purchase_sessions": 48
+    },
+    {
+      "day": "2020-12-22",
+      "begin_checkout_events": 546,
+      "purchase_events": 60,
+      "checkout_sessions": 97,
+      "purchase_sessions": 57
+    },
+    {
+      "day": "2020-12-23",
+      "begin_checkout_events": 589,
+      "purchase_events": 67,
+      "checkout_sessions": 93,
+      "purchase_sessions": 53
+    },
+    {
+      "day": "2020-12-24",
+      "begin_checkout_events": 188,
+      "purchase_events": 23,
+      "checkout_sessions": 39,
+      "purchase_sessions": 22
+    },
+    {
+      "day": "2020-12-25",
+      "begin_checkout_events": 202,
+      "purchase_events": 17,
+      "checkout_sessions": 36,
+      "purchase_sessions": 17
+    },
+    {
+      "day": "2020-12-26",
+      "begin_checkout_events": 143,
+      "purchase_events": 17,
+      "checkout_sessions": 25,
+      "purchase_sessions": 16
+    },
+    {
+      "day": "2020-12-27",
+      "begin_checkout_events": 211,
+      "purchase_events": 20,
+      "checkout_sessions": 39,
+      "purchase_sessions": 20
+    },
+    {
+      "day": "2020-12-28",
+      "begin_checkout_events": 302,
+      "purchase_events": 36,
+      "checkout_sessions": 47,
+      "purchase_sessions": 32
+    },
+    {
+      "day": "2020-12-29",
+      "begin_checkout_events": 239,
+      "purchase_events": 24,
+      "checkout_sessions": 43,
+      "purchase_sessions": 22
+    },
+    {
+      "day": "2020-12-30",
+      "begin_checkout_events": 263,
+      "purchase_events": 37,
+      "checkout_sessions": 37,
+      "purchase_sessions": 21
+    },
+    {
+      "day": "2020-12-31",
+      "begin_checkout_events": 252,
+      "purchase_events": 25,
+      "checkout_sessions": 43,
+      "purchase_sessions": 22
+    },
+    {
+      "day": "2021-01-01",
+      "begin_checkout_events": 162,
+      "purchase_events": 14,
+      "checkout_sessions": 27,
+      "purchase_sessions": 12
+    },
+    {
+      "day": "2021-01-02",
+      "begin_checkout_events": 140,
+      "purchase_events": 14,
+      "checkout_sessions": 31,
+      "purchase_sessions": 14
+    },
+    {
+      "day": "2021-01-03",
+      "begin_checkout_events": 151,
+      "purchase_events": 14,
+      "checkout_sessions": 32,
+      "purchase_sessions": 14
+    },
+    {
+      "day": "2021-01-04",
+      "begin_checkout_events": 183,
+      "purchase_events": 16,
+      "checkout_sessions": 31,
+      "purchase_sessions": 16
+    },
+    {
+      "day": "2021-01-05",
+      "begin_checkout_events": 260,
+      "purchase_events": 29,
+      "checkout_sessions": 54,
+      "purchase_sessions": 27
+    },
+    {
+      "day": "2021-01-06",
+      "begin_checkout_events": 348,
+      "purchase_events": 31,
+      "checkout_sessions": 65,
+      "purchase_sessions": 28
+    },
+    {
+      "day": "2021-01-07",
+      "begin_checkout_events": 373,
+      "purchase_events": 26,
+      "checkout_sessions": 61,
+      "purchase_sessions": 25
+    },
+    {
+      "day": "2021-01-08",
+      "begin_checkout_events": 308,
+      "purchase_events": 34,
+      "checkout_sessions": 63,
+      "purchase_sessions": 34
+    },
+    {
+      "day": "2021-01-09",
+      "begin_checkout_events": 173,
+      "purchase_events": 20,
+      "checkout_sessions": 38,
+      "purchase_sessions": 18
+    },
+    {
+      "day": "2021-01-10",
+      "begin_checkout_events": 173,
+      "purchase_events": 14,
+      "checkout_sessions": 34,
+      "purchase_sessions": 14
+    },
+    {
+      "day": "2021-01-11",
+      "begin_checkout_events": 280,
+      "purchase_events": 28,
+      "checkout_sessions": 56,
+      "purchase_sessions": 27
+    },
+    {
+      "day": "2021-01-12",
+      "begin_checkout_events": 428,
+      "purchase_events": 48,
+      "checkout_sessions": 79,
+      "purchase_sessions": 43
+    },
+    {
+      "day": "2021-01-13",
+      "begin_checkout_events": 398,
+      "purchase_events": 36,
+      "checkout_sessions": 84,
+      "purchase_sessions": 35
+    },
+    {
+      "day": "2021-01-14",
+      "begin_checkout_events": 469,
+      "purchase_events": 54,
+      "checkout_sessions": 82,
+      "purchase_sessions": 47
+    },
+    {
+      "day": "2021-01-15",
+      "begin_checkout_events": 383,
+      "purchase_events": 47,
+      "checkout_sessions": 71,
+      "purchase_sessions": 38
+    },
+    {
+      "day": "2021-01-16",
+      "begin_checkout_events": 281,
+      "purchase_events": 27,
+      "checkout_sessions": 52,
+      "purchase_sessions": 24
+    },
+    {
+      "day": "2021-01-17",
+      "begin_checkout_events": 193,
+      "purchase_events": 14,
+      "checkout_sessions": 35,
+      "purchase_sessions": 14
+    },
+    {
+      "day": "2021-01-18",
+      "begin_checkout_events": 221,
+      "purchase_events": 19,
+      "checkout_sessions": 47,
+      "purchase_sessions": 18
+    },
+    {
+      "day": "2021-01-19",
+      "begin_checkout_events": 469,
+      "purchase_events": 49,
+      "checkout_sessions": 83,
+      "purchase_sessions": 47
+    },
+    {
+      "day": "2021-01-20",
+      "begin_checkout_events": 804,
+      "purchase_events": 96,
+      "checkout_sessions": 144,
+      "purchase_sessions": 94
+    },
+    {
+      "day": "2021-01-21",
+      "begin_checkout_events": 519,
+      "purchase_events": 52,
+      "checkout_sessions": 106,
+      "purchase_sessions": 49
+    },
+    {
+      "day": "2021-01-22",
+      "begin_checkout_events": 906,
+      "purchase_events": 100,
+      "checkout_sessions": 156,
+      "purchase_sessions": 88
+    },
+    {
+      "day": "2021-01-23",
+      "begin_checkout_events": 375,
+      "purchase_events": 43,
+      "checkout_sessions": 79,
+      "purchase_sessions": 43
+    },
+    {
+      "day": "2021-01-24",
+      "begin_checkout_events": 397,
+      "purchase_events": 36,
+      "checkout_sessions": 68,
+      "purchase_sessions": 35
+    },
+    {
+      "day": "2021-01-25",
+      "begin_checkout_events": 462,
+      "purchase_events": 61,
+      "checkout_sessions": 85,
+      "purchase_sessions": 58
+    },
+    {
+      "day": "2021-01-26",
+      "begin_checkout_events": 413,
+      "purchase_events": 55,
+      "checkout_sessions": 89,
+      "purchase_sessions": 51
+    },
+    {
+      "day": "2021-01-27",
+      "begin_checkout_events": 524,
+      "purchase_events": 54,
+      "checkout_sessions": 119,
+      "purchase_sessions": 50
+    },
+    {
+      "day": "2021-01-28",
+      "begin_checkout_events": 325,
+      "purchase_events": 69,
+      "checkout_sessions": 89,
+      "purchase_sessions": 56
+    },
+    {
+      "day": "2021-01-29",
+      "begin_checkout_events": 421,
+      "purchase_events": 54,
+      "checkout_sessions": 92,
+      "purchase_sessions": 51
+    },
+    {
+      "day": "2021-01-30",
+      "begin_checkout_events": 261,
+      "purchase_events": 31,
+      "checkout_sessions": 53,
+      "purchase_sessions": 28
+    },
+    {
+      "day": "2021-01-31",
+      "begin_checkout_events": 234,
+      "purchase_events": 19,
+      "checkout_sessions": 56,
+      "purchase_sessions": 18
+    }
+  ],
+  "weekly_split": {
+    "baseline_w1": {
+      "period": "baseline_w1",
+      "period_label": "Baseline Week 1",
+      "start_date": "2020-11-23",
+      "end_date": "2020-11-29",
+      "checkout_sessions": 1184,
+      "purchase_after_checkout_sessions": 460,
+      "multiple_checkout_sessions": 428,
+      "multiple_purchase_sessions": 119,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 622,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 38.8514,
+      "ci_95": [
+        36.1153,
+        41.6595
+      ]
+    },
+    "baseline_w2": {
+      "period": "baseline_w2",
+      "period_label": "Baseline Week 2",
+      "start_date": "2020-11-30",
+      "end_date": "2020-12-06",
+      "checkout_sessions": 1408,
+      "purchase_after_checkout_sessions": 586,
+      "multiple_checkout_sessions": 1383,
+      "multiple_purchase_sessions": 38,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 638,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 41.6193,
+      "ci_95": [
+        39.0708,
+        44.2134
+      ]
+    },
+    "growth_w1": {
+      "period": "growth_w1",
+      "period_label": "Growth Week 1",
+      "start_date": "2020-12-07",
+      "end_date": "2020-12-13",
+      "checkout_sessions": 1549,
+      "purchase_after_checkout_sessions": 759,
+      "multiple_checkout_sessions": 1526,
+      "multiple_purchase_sessions": 53,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 851,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 48.9994,
+      "ci_95": [
+        46.5154,
+        51.4882
+      ]
+    },
+    "growth_w2": {
+      "period": "growth_w2",
+      "period_label": "Growth Week 2",
+      "start_date": "2020-12-14",
+      "end_date": "2020-12-20",
+      "checkout_sessions": 1001,
+      "purchase_after_checkout_sessions": 545,
+      "multiple_checkout_sessions": 989,
+      "multiple_purchase_sessions": 59,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 681,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 54.4456,
+      "ci_95": [
+        51.3493,
+        57.5079
+      ]
+    },
+    "confirmation_w1": {
+      "period": "confirmation_w1",
+      "period_label": "Confirmation Week 1",
+      "start_date": "2020-12-21",
+      "end_date": "2020-12-27",
+      "checkout_sessions": 411,
+      "purchase_after_checkout_sessions": 232,
+      "multiple_checkout_sessions": 411,
+      "multiple_purchase_sessions": 16,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 256,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 56.4477,
+      "ci_95": [
+        51.6163,
+        61.1596
+      ]
+    },
+    "confirmation_w2": {
+      "period": "confirmation_w2",
+      "period_label": "Confirmation Week 2",
+      "start_date": "2020-12-28",
+      "end_date": "2021-01-03",
+      "checkout_sessions": 259,
+      "purchase_after_checkout_sessions": 137,
+      "multiple_checkout_sessions": 259,
+      "multiple_purchase_sessions": 11,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 164,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 52.8958,
+      "ci_95": [
+        46.8188,
+        58.8881
+      ]
+    },
+    "holdout_1": {
+      "period": "holdout_1",
+      "period_label": "Holdout 1",
+      "start_date": "2021-01-04",
+      "end_date": "2021-01-17",
+      "checkout_sessions": 792,
+      "purchase_after_checkout_sessions": 386,
+      "multiple_checkout_sessions": 792,
+      "multiple_purchase_sessions": 22,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 420,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 48.7374,
+      "ci_95": [
+        45.2708,
+        52.2162
+      ]
+    },
+    "holdout_2": {
+      "period": "holdout_2",
+      "period_label": "Holdout 2",
+      "start_date": "2021-01-18",
+      "end_date": "2021-01-31",
+      "checkout_sessions": 1208,
+      "purchase_after_checkout_sessions": 666,
+      "multiple_checkout_sessions": 1208,
+      "multiple_purchase_sessions": 24,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 717,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 55.1325,
+      "ci_95": [
+        52.3159,
+        57.9165
+      ]
+    }
+  },
+  "pooled_results": {
+    "baseline": {
+      "period": "baseline",
+      "period_label": "Baseline",
+      "start_date": "2020-11-23",
+      "end_date": "2020-12-06",
+      "checkout_sessions": 2592,
+      "purchase_after_checkout_sessions": 1046,
+      "multiple_checkout_sessions": 1811,
+      "multiple_purchase_sessions": 157,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 1260,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 40.3549,
+      "ci_95": [
+        38.4818,
+        42.2566
+      ]
+    },
+    "growth": {
+      "period": "growth",
+      "period_label": "Growth",
+      "start_date": "2020-12-07",
+      "end_date": "2020-12-20",
+      "checkout_sessions": 2550,
+      "purchase_after_checkout_sessions": 1304,
+      "multiple_checkout_sessions": 2515,
+      "multiple_purchase_sessions": 112,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 1532,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 51.1373,
+      "ci_95": [
+        49.1969,
+        53.0742
+      ]
+    },
+    "confirmation": {
+      "period": "confirmation",
+      "period_label": "Confirmation",
+      "start_date": "2020-12-21",
+      "end_date": "2021-01-03",
+      "checkout_sessions": 670,
+      "purchase_after_checkout_sessions": 369,
+      "multiple_checkout_sessions": 670,
+      "multiple_purchase_sessions": 27,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 420,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 55.0746,
+      "ci_95": [
+        51.2899,
+        58.8015
+      ]
+    },
+    "holdout_1": {
+      "period": "holdout_1",
+      "period_label": "Holdout 1",
+      "start_date": "2021-01-04",
+      "end_date": "2021-01-17",
+      "checkout_sessions": 792,
+      "purchase_after_checkout_sessions": 386,
+      "multiple_checkout_sessions": 792,
+      "multiple_purchase_sessions": 22,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 420,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 48.7374,
+      "ci_95": [
+        45.2708,
+        52.2162
+      ]
+    },
+    "holdout_2": {
+      "period": "holdout_2",
+      "period_label": "Holdout 2",
+      "start_date": "2021-01-18",
+      "end_date": "2021-01-31",
+      "checkout_sessions": 1208,
+      "purchase_after_checkout_sessions": 666,
+      "multiple_checkout_sessions": 1208,
+      "multiple_purchase_sessions": 24,
+      "purchase_before_checkout_sessions": 0,
+      "both_before_and_after_sessions": 0,
+      "purchase_events_in_checkout_sessions": 717,
+      "purchase_but_not_qualifying_sessions": 0,
+      "conversion_rate": 55.1325,
+      "ci_95": [
+        52.3159,
+        57.9165
+      ]
+    }
+  },
+  "expanded_statistical_results": {
+    "material_margin_pp": 1.0,
+    "validated_if": "Growth is statistically and materially above baseline, both growth weeks exceed baseline, both confirmation weeks and pooled confirmation are materially/statistically above baseline, and both two-week holdouts remain materially/statistically above baseline.",
+    "downgraded_if": "Growth and confirmation pass, but a later holdout decays while Holdout 1 does not immediately return to within one percentage point of baseline.",
+    "rejected_if": "Growth is isolated, confirmation does not support the pattern, or Holdout 1 immediately returns to within one percentage point of baseline.",
+    "tests": {
+      "growth_vs_baseline": {
+        "delta_pp": 10.7823,
+        "z_score": 7.7602,
+        "p_value": 8.478177572179715e-15
+      },
+      "confirmation_vs_baseline": {
+        "delta_pp": 14.7197,
+        "z_score": 6.853,
+        "p_value": 7.229234240166529e-12
+      },
+      "holdout_1_vs_baseline": {
+        "delta_pp": 8.3824,
+        "z_score": 4.1788,
+        "p_value": 2.9302046338405587e-05
+      },
+      "holdout_2_vs_baseline": {
+        "delta_pp": 14.7775,
+        "z_score": 8.5256,
+        "p_value": 1.5196801741446676e-17
+      },
+      "holdout_1_vs_growth": {
+        "delta_pp": -2.3999,
+        "z_score": -1.18,
+        "p_value": 0.23800533729587975
+      },
+      "holdout_2_vs_growth": {
+        "delta_pp": 3.9952,
+        "z_score": 2.2904,
+        "p_value": 0.02200065401236152
+      }
+    },
+    "conditions": {
+      "both_growth_weeks_above_baseline": true,
+      "both_confirmation_weeks_above_baseline": true,
+      "growth_strong": true,
+      "confirmation_supports": true,
+      "holdout_1_persists": true,
+      "holdout_2_persists": true,
+      "holdout_1_immediate_collapse": false
+    }
+  },
+  "segment_validation": {
+    "lifecycle": {
+      "composition_effect_pp": 3.4483,
+      "within_segment_effect_pp": 7.3341,
+      "display_note": "All lifecycle groups are shown.",
+      "displayed_major_segments": [
+        {
+          "segment": "new",
+          "baseline": {
+            "checkout_sessions": 1522,
+            "purchase_after_checkout_sessions": 415,
+            "rate": 27.2668
+          },
+          "growth": {
+            "checkout_sessions": 1220,
+            "purchase_after_checkout_sessions": 445,
+            "rate": 36.4754
+          },
+          "confirmation": {
+            "checkout_sessions": 305,
+            "purchase_after_checkout_sessions": 132,
+            "rate": 43.2787
+          },
+          "within_growth_delta_pp": 9.2087,
+          "within_growth_p_value": 2.406249643931792e-07,
+          "growth_mix_share_pct": 47.8431
+        },
+        {
+          "segment": "returning",
+          "baseline": {
+            "checkout_sessions": 1070,
+            "purchase_after_checkout_sessions": 631,
+            "rate": 58.972
+          },
+          "growth": {
+            "checkout_sessions": 1330,
+            "purchase_after_checkout_sessions": 859,
+            "rate": 64.5865
+          },
+          "confirmation": {
+            "checkout_sessions": 365,
+            "purchase_after_checkout_sessions": 237,
+            "rate": 64.9315
+          },
+          "within_growth_delta_pp": 5.6145,
+          "within_growth_p_value": 0.004834346970270548,
+          "growth_mix_share_pct": 52.1569
+        }
+      ],
+      "all_segments_for_decomposition": [
+        {
+          "segment": "new",
+          "baseline": {
+            "checkout_sessions": 1522,
+            "purchase_after_checkout_sessions": 415,
+            "rate": 27.2668
+          },
+          "growth": {
+            "checkout_sessions": 1220,
+            "purchase_after_checkout_sessions": 445,
+            "rate": 36.4754
+          },
+          "confirmation": {
+            "checkout_sessions": 305,
+            "purchase_after_checkout_sessions": 132,
+            "rate": 43.2787
+          },
+          "within_growth_delta_pp": 9.2087,
+          "within_growth_p_value": 2.406249643931792e-07,
+          "growth_mix_share_pct": 47.8431
+        },
+        {
+          "segment": "returning",
+          "baseline": {
+            "checkout_sessions": 1070,
+            "purchase_after_checkout_sessions": 631,
+            "rate": 58.972
+          },
+          "growth": {
+            "checkout_sessions": 1330,
+            "purchase_after_checkout_sessions": 859,
+            "rate": 64.5865
+          },
+          "confirmation": {
+            "checkout_sessions": 365,
+            "purchase_after_checkout_sessions": 237,
+            "rate": 64.9315
+          },
+          "within_growth_delta_pp": 5.6145,
+          "within_growth_p_value": 0.004834346970270548,
+          "growth_mix_share_pct": 52.1569
+        }
+      ]
+    },
+    "device": {
+      "composition_effect_pp": -0.0158,
+      "within_segment_effect_pp": 10.7982,
+      "display_note": "Desktop and mobile are shown; tablet is included only if each pooled period has at least 100 checkout sessions.",
+      "displayed_major_segments": [
+        {
+          "segment": "desktop",
+          "baseline": {
+            "checkout_sessions": 1511,
+            "purchase_after_checkout_sessions": 588,
+            "rate": 38.9146
+          },
+          "growth": {
+            "checkout_sessions": 1482,
+            "purchase_after_checkout_sessions": 768,
+            "rate": 51.8219
+          },
+          "confirmation": {
+            "checkout_sessions": 367,
+            "purchase_after_checkout_sessions": 193,
+            "rate": 52.5886
+          },
+          "within_growth_delta_pp": 12.9072,
+          "within_growth_p_value": 1.3187518317264306e-12,
+          "growth_mix_share_pct": 58.1176
+        },
+        {
+          "segment": "mobile",
+          "baseline": {
+            "checkout_sessions": 1021,
+            "purchase_after_checkout_sessions": 430,
+            "rate": 42.1156
+          },
+          "growth": {
+            "checkout_sessions": 1021,
+            "purchase_after_checkout_sessions": 518,
+            "rate": 50.7346
+          },
+          "confirmation": {
+            "checkout_sessions": 282,
+            "purchase_after_checkout_sessions": 162,
+            "rate": 57.4468
+          },
+          "within_growth_delta_pp": 8.619,
+          "within_growth_p_value": 9.430714031766503e-05,
+          "growth_mix_share_pct": 40.0392
+        }
+      ],
+      "all_segments_for_decomposition": [
+        {
+          "segment": "desktop",
+          "baseline": {
+            "checkout_sessions": 1511,
+            "purchase_after_checkout_sessions": 588,
+            "rate": 38.9146
+          },
+          "growth": {
+            "checkout_sessions": 1482,
+            "purchase_after_checkout_sessions": 768,
+            "rate": 51.8219
+          },
+          "confirmation": {
+            "checkout_sessions": 367,
+            "purchase_after_checkout_sessions": 193,
+            "rate": 52.5886
+          },
+          "within_growth_delta_pp": 12.9072,
+          "within_growth_p_value": 1.3187518317264306e-12,
+          "growth_mix_share_pct": 58.1176
+        },
+        {
+          "segment": "mobile",
+          "baseline": {
+            "checkout_sessions": 1021,
+            "purchase_after_checkout_sessions": 430,
+            "rate": 42.1156
+          },
+          "growth": {
+            "checkout_sessions": 1021,
+            "purchase_after_checkout_sessions": 518,
+            "rate": 50.7346
+          },
+          "confirmation": {
+            "checkout_sessions": 282,
+            "purchase_after_checkout_sessions": 162,
+            "rate": 57.4468
+          },
+          "within_growth_delta_pp": 8.619,
+          "within_growth_p_value": 9.430714031766503e-05,
+          "growth_mix_share_pct": 40.0392
+        },
+        {
+          "segment": "tablet",
+          "baseline": {
+            "checkout_sessions": 60,
+            "purchase_after_checkout_sessions": 28,
+            "rate": 46.6667
+          },
+          "growth": {
+            "checkout_sessions": 47,
+            "purchase_after_checkout_sessions": 18,
+            "rate": 38.2979
+          },
+          "confirmation": {
+            "checkout_sessions": 21,
+            "purchase_after_checkout_sessions": 14,
+            "rate": 66.6667
+          },
+          "within_growth_delta_pp": -8.3688,
+          "within_growth_p_value": 0.3854864795727604,
+          "growth_mix_share_pct": 1.8431
+        }
+      ]
+    },
+    "acquisition": {
+      "composition_effect_pp": 0.651,
+      "within_segment_effect_pp": 10.1314,
+      "display_note": "Major acquisition groups are selected deterministically in descending pooled volume until they cover at least 80% of baseline, growth, and confirmation volume combined (displayed coverage: 84.57%). Small remaining groups are not interpreted individually.",
+      "displayed_major_segments": [
+        {
+          "segment": "google / organic",
+          "baseline": {
+            "checkout_sessions": 749,
+            "purchase_after_checkout_sessions": 282,
+            "rate": 37.6502
+          },
+          "growth": {
+            "checkout_sessions": 717,
+            "purchase_after_checkout_sessions": 339,
+            "rate": 47.2803
+          },
+          "confirmation": {
+            "checkout_sessions": 177,
+            "purchase_after_checkout_sessions": 94,
+            "rate": 53.1073
+          },
+          "within_growth_delta_pp": 9.6301,
+          "within_growth_p_value": 0.00019136990554818496,
+          "growth_mix_share_pct": 28.1176
+        },
+        {
+          "segment": "(direct) / (none)",
+          "baseline": {
+            "checkout_sessions": 570,
+            "purchase_after_checkout_sessions": 213,
+            "rate": 37.3684
+          },
+          "growth": {
+            "checkout_sessions": 602,
+            "purchase_after_checkout_sessions": 301,
+            "rate": 50.0
+          },
+          "confirmation": {
+            "checkout_sessions": 156,
+            "purchase_after_checkout_sessions": 84,
+            "rate": 53.8462
+          },
+          "within_growth_delta_pp": 12.6316,
+          "within_growth_p_value": 1.3261407722330957e-05,
+          "growth_mix_share_pct": 23.6078
+        },
+        {
+          "segment": "<Other> / <Other>",
+          "baseline": {
+            "checkout_sessions": 357,
+            "purchase_after_checkout_sessions": 117,
+            "rate": 32.7731
+          },
+          "growth": {
+            "checkout_sessions": 291,
+            "purchase_after_checkout_sessions": 124,
+            "rate": 42.6117
+          },
+          "confirmation": {
+            "checkout_sessions": 83,
+            "purchase_after_checkout_sessions": 40,
+            "rate": 48.1928
+          },
+          "within_growth_delta_pp": 9.8386,
+          "within_growth_p_value": 0.009952490761183135,
+          "growth_mix_share_pct": 11.4118
+        },
+        {
+          "segment": "(data deleted) / (data deleted)",
+          "baseline": {
+            "checkout_sessions": 238,
+            "purchase_after_checkout_sessions": 141,
+            "rate": 59.2437
+          },
+          "growth": {
+            "checkout_sessions": 292,
+            "purchase_after_checkout_sessions": 192,
+            "rate": 65.7534
+          },
+          "confirmation": {
+            "checkout_sessions": 97,
+            "purchase_after_checkout_sessions": 59,
+            "rate": 60.8247
+          },
+          "within_growth_delta_pp": 6.5097,
+          "within_growth_p_value": 0.12295194452961797,
+          "growth_mix_share_pct": 11.451
+        },
+        {
+          "segment": "shop.googlemerchandisestore.com / referral",
+          "baseline": {
+            "checkout_sessions": 258,
+            "purchase_after_checkout_sessions": 129,
+            "rate": 50.0
+          },
+          "growth": {
+            "checkout_sessions": 263,
+            "purchase_after_checkout_sessions": 158,
+            "rate": 60.076
+          },
+          "confirmation": {
+            "checkout_sessions": 65,
+            "purchase_after_checkout_sessions": 41,
+            "rate": 63.0769
+          },
+          "within_growth_delta_pp": 10.076,
+          "within_growth_p_value": 0.020789418291357106,
+          "growth_mix_share_pct": 10.3137
+        }
+      ],
+      "all_segments_for_decomposition": [
+        {
+          "segment": "google / organic",
+          "baseline": {
+            "checkout_sessions": 749,
+            "purchase_after_checkout_sessions": 282,
+            "rate": 37.6502
+          },
+          "growth": {
+            "checkout_sessions": 717,
+            "purchase_after_checkout_sessions": 339,
+            "rate": 47.2803
+          },
+          "confirmation": {
+            "checkout_sessions": 177,
+            "purchase_after_checkout_sessions": 94,
+            "rate": 53.1073
+          },
+          "within_growth_delta_pp": 9.6301,
+          "within_growth_p_value": 0.00019136990554818496,
+          "growth_mix_share_pct": 28.1176
+        },
+        {
+          "segment": "(direct) / (none)",
+          "baseline": {
+            "checkout_sessions": 570,
+            "purchase_after_checkout_sessions": 213,
+            "rate": 37.3684
+          },
+          "growth": {
+            "checkout_sessions": 602,
+            "purchase_after_checkout_sessions": 301,
+            "rate": 50.0
+          },
+          "confirmation": {
+            "checkout_sessions": 156,
+            "purchase_after_checkout_sessions": 84,
+            "rate": 53.8462
+          },
+          "within_growth_delta_pp": 12.6316,
+          "within_growth_p_value": 1.3261407722330957e-05,
+          "growth_mix_share_pct": 23.6078
+        },
+        {
+          "segment": "<Other> / <Other>",
+          "baseline": {
+            "checkout_sessions": 357,
+            "purchase_after_checkout_sessions": 117,
+            "rate": 32.7731
+          },
+          "growth": {
+            "checkout_sessions": 291,
+            "purchase_after_checkout_sessions": 124,
+            "rate": 42.6117
+          },
+          "confirmation": {
+            "checkout_sessions": 83,
+            "purchase_after_checkout_sessions": 40,
+            "rate": 48.1928
+          },
+          "within_growth_delta_pp": 9.8386,
+          "within_growth_p_value": 0.009952490761183135,
+          "growth_mix_share_pct": 11.4118
+        },
+        {
+          "segment": "(data deleted) / (data deleted)",
+          "baseline": {
+            "checkout_sessions": 238,
+            "purchase_after_checkout_sessions": 141,
+            "rate": 59.2437
+          },
+          "growth": {
+            "checkout_sessions": 292,
+            "purchase_after_checkout_sessions": 192,
+            "rate": 65.7534
+          },
+          "confirmation": {
+            "checkout_sessions": 97,
+            "purchase_after_checkout_sessions": 59,
+            "rate": 60.8247
+          },
+          "within_growth_delta_pp": 6.5097,
+          "within_growth_p_value": 0.12295194452961797,
+          "growth_mix_share_pct": 11.451
+        },
+        {
+          "segment": "shop.googlemerchandisestore.com / referral",
+          "baseline": {
+            "checkout_sessions": 258,
+            "purchase_after_checkout_sessions": 129,
+            "rate": 50.0
+          },
+          "growth": {
+            "checkout_sessions": 263,
+            "purchase_after_checkout_sessions": 158,
+            "rate": 60.076
+          },
+          "confirmation": {
+            "checkout_sessions": 65,
+            "purchase_after_checkout_sessions": 41,
+            "rate": 63.0769
+          },
+          "within_growth_delta_pp": 10.076,
+          "within_growth_p_value": 0.020789418291357106,
+          "growth_mix_share_pct": 10.3137
+        },
+        {
+          "segment": "<Other> / referral",
+          "baseline": {
+            "checkout_sessions": 256,
+            "purchase_after_checkout_sessions": 107,
+            "rate": 41.7969
+          },
+          "growth": {
+            "checkout_sessions": 240,
+            "purchase_after_checkout_sessions": 115,
+            "rate": 47.9167
+          },
+          "confirmation": {
+            "checkout_sessions": 55,
+            "purchase_after_checkout_sessions": 32,
+            "rate": 58.1818
+          },
+          "within_growth_delta_pp": 6.1198,
+          "within_growth_p_value": 0.1707551042932233,
+          "growth_mix_share_pct": 9.4118
+        },
+        {
+          "segment": "google / cpc",
+          "baseline": {
+            "checkout_sessions": 101,
+            "purchase_after_checkout_sessions": 35,
+            "rate": 34.6535
+          },
+          "growth": {
+            "checkout_sessions": 90,
+            "purchase_after_checkout_sessions": 43,
+            "rate": 47.7778
+          },
+          "confirmation": {
+            "checkout_sessions": 18,
+            "purchase_after_checkout_sessions": 10,
+            "rate": 55.5556
+          },
+          "within_growth_delta_pp": 13.1243,
+          "within_growth_p_value": 0.0654757474872668,
+          "growth_mix_share_pct": 3.5294
+        },
+        {
+          "segment": "<Other> / organic",
+          "baseline": {
+            "checkout_sessions": 58,
+            "purchase_after_checkout_sessions": 19,
+            "rate": 32.7586
+          },
+          "growth": {
+            "checkout_sessions": 50,
+            "purchase_after_checkout_sessions": 30,
+            "rate": 60.0
+          },
+          "confirmation": {
+            "checkout_sessions": 18,
+            "purchase_after_checkout_sessions": 8,
+            "rate": 44.4444
+          },
+          "within_growth_delta_pp": 27.2414,
+          "within_growth_p_value": 0.004576685445958783,
+          "growth_mix_share_pct": 1.9608
+        },
+        {
+          "segment": "<Other> / (data deleted)",
+          "baseline": {
+            "checkout_sessions": 5,
+            "purchase_after_checkout_sessions": 3,
+            "rate": 60.0
+          },
+          "growth": {
+            "checkout_sessions": 5,
+            "purchase_after_checkout_sessions": 2,
+            "rate": 40.0
+          },
+          "confirmation": {
+            "checkout_sessions": 1,
+            "purchase_after_checkout_sessions": 1,
+            "rate": 100.0
+          },
+          "within_growth_delta_pp": -20.0,
+          "within_growth_p_value": 0.5270892568655383,
+          "growth_mix_share_pct": 0.1961
+        },
+        {
+          "segment": "(data deleted) / referral",
+          "baseline": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "growth": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "confirmation": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "within_growth_delta_pp": null,
+          "within_growth_p_value": null,
+          "growth_mix_share_pct": 0.0
+        },
+        {
+          "segment": "<Other> / cpc",
+          "baseline": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "growth": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "confirmation": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "within_growth_delta_pp": null,
+          "within_growth_p_value": null,
+          "growth_mix_share_pct": 0.0
+        },
+        {
+          "segment": "google / <Other>",
+          "baseline": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "growth": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "confirmation": {
+            "checkout_sessions": 0,
+            "purchase_after_checkout_sessions": 0,
+            "rate": null
+          },
+          "within_growth_delta_pp": null,
+          "within_growth_p_value": null,
+          "growth_mix_share_pct": 0.0
+        }
+      ]
+    }
+  },
+  "revenue_context": {
+    "baseline": {
+      "purchase_events": 1261,
+      "distinct_transaction_ids": 1088,
+      "repeated_transaction_ids": 125,
+      "duplicate_transaction_events": 173,
+      "purchase_events_without_transaction_id": 0,
+      "purchase_events_without_revenue": 0,
+      "transaction_revenue_usd": 77425.0,
+      "average_order_value_usd": 71.16,
+      "scope_note": "Purchase events are assigned by the associated session_start period; transaction revenue is deduplicated by transaction_id using the maximum event-level revenue value per transaction."
+    },
+    "growth": {
+      "purchase_events": 1532,
+      "distinct_transaction_ids": 1472,
+      "repeated_transaction_ids": 16,
+      "duplicate_transaction_events": 60,
+      "purchase_events_without_transaction_id": 0,
+      "purchase_events_without_revenue": 0,
+      "transaction_revenue_usd": 104619.0,
+      "average_order_value_usd": 71.07,
+      "scope_note": "Purchase events are assigned by the associated session_start period; transaction revenue is deduplicated by transaction_id using the maximum event-level revenue value per transaction."
+    },
+    "confirmation": {
+      "purchase_events": 420,
+      "distinct_transaction_ids": 389,
+      "repeated_transaction_ids": 9,
+      "duplicate_transaction_events": 31,
+      "purchase_events_without_transaction_id": 0,
+      "purchase_events_without_revenue": 0,
+      "transaction_revenue_usd": 24618.0,
+      "average_order_value_usd": 63.29,
+      "scope_note": "Purchase events are assigned by the associated session_start period; transaction revenue is deduplicated by transaction_id using the maximum event-level revenue value per transaction."
+    },
+    "holdout_1": {
+      "purchase_events": 420,
+      "distinct_transaction_ids": 389,
+      "repeated_transaction_ids": 5,
+      "duplicate_transaction_events": 31,
+      "purchase_events_without_transaction_id": 0,
+      "purchase_events_without_revenue": 0,
+      "transaction_revenue_usd": 22275.0,
+      "average_order_value_usd": 57.26,
+      "scope_note": "Purchase events are assigned by the associated session_start period; transaction revenue is deduplicated by transaction_id using the maximum event-level revenue value per transaction."
+    },
+    "holdout_2": {
+      "purchase_events": 717,
+      "distinct_transaction_ids": 457,
+      "repeated_transaction_ids": 6,
+      "duplicate_transaction_events": 260,
+      "purchase_events_without_transaction_id": 0,
+      "purchase_events_without_revenue": 0,
+      "transaction_revenue_usd": 29883.0,
+      "average_order_value_usd": 65.39,
+      "scope_note": "Purchase events are assigned by the associated session_start period; transaction revenue is deduplicated by transaction_id using the maximum event-level revenue value per transaction."
+    }
+  },
+  "evidence": [
+    "The strict pooled conversion rate was 40.35% in baseline, 51.14% in growth, and 55.07% in confirmation.",
+    "Both growth weeks exceeded the pooled baseline rate, and both confirmation weeks exceeded it as well: True / True.",
+    "Holdout 1 was 48.74% and Holdout 2 was 55.13% under the same strict session definition.",
+    "Numerator inflation is bounded by distinct-session counting; repeated purchase events and transaction identifiers are reported separately and do not create extra converting sessions.",
+    "The major device and acquisition tables report observed group rates and a non-causal mix/within decomposition."
+  ],
+  "hypotheses": [
+    "Promotion or pricing context may be associated with the observed lift.",
+    "Checkout UX, payment experience, inventory, merchandising, or calendar context may be associated with the observed lift.",
+    "These are plausible explanations only; the public GA4 behavioral data does not establish any one of them as a cause."
+  ],
+  "unknowns": [
+    "Promotion configuration, pricing changes, holiday campaigns, inventory changes, checkout UX changes, and payment changes are not available in this dataset.",
+    "GA4 data cannot establish causal attribution or prove that the observed lift will recur under a future intervention.",
+    "The obfuscated acquisition labels and public-sample context limit channel-level interpretation."
+  ],
+  "reproducibility": "REPRODUCED",
+  "golden_case_framing": "Conceptual Golden Case: **Positive Growth Opportunity \u2014 Broad Checkout\u2192Purchase Lift**. This means a validated behavioral signal with broad observed support, not a proven growth mechanism.",
+  "future_confidence_model": "Proposed only: retain separate Growth Signal Confidence (measurement strength and materiality) and Reproducibility Confidence (confirmation and independent-holdout persistence). Do not implement or freeze product enums in Phase B.",
+  "recommended_safe_next_action": "REPLICATION_TEST",
+  "boundary": "Read-only BigQuery validation. No synthetic data, intervention recommendation, causal root-cause claim, or application-code change is made."
+}

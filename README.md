@@ -6,7 +6,7 @@
 
 PulseOps detects meaningful changes in user behavior, identifies the affected users, investigates bounded competing explanations, and stops when the available evidence is insufficient.
 
-It currently handles two user-operations problems: **Conversion / Activation Anomaly** and **Lifecycle Risk**. Both use the same guarded Investigation Agent, so operators can see the evidence behind a decision without turning an early signal into an unsupported intervention.
+It currently handles three user-operations problems: **Conversion / Activation Anomaly**, **Lifecycle Risk**, and **Positive Growth Opportunity**. All three use one guarded Investigation Agent, so operators can see the evidence behind a decision without turning an early signal into an unsupported intervention.
 
 ## Product Demo
 
@@ -45,7 +45,7 @@ When user behavior changes, product and User Operations teams need four answers:
 
 Without a bounded workflow, the path is often **manual monitoring → repeated segmentation → inconsistent diagnosis → premature action**. PulseOps turns that path into a traceable, evidence-bounded decision.
 
-## Two Real Cases
+## Three Real Cases
 
 ### Case 01 · New-user View→Cart decline
 
@@ -99,9 +99,42 @@ Deterministic checks covered **Return Timing** and **Recovery**, followed by bou
 
 The post-period improvement is evidence of partial recovery, not proof of a causal mechanism. The investigation does not attribute the change to calendar, holiday, promotion, or reactivation effects without further evidence.
 
+### Case 03 · Positive Growth Opportunity
+
+**Signal**
+
+The strict **Begin Checkout → Purchase Rate** increased from **40.35%** to **51.14%** (**+10.78pp**).
+
+**Affected / Benefiting Population**
+
+The lift was observed broadly across checkout sessions, with **BROAD** localization. It is an observed behavioral improvement, not a causal claim about any particular user segment or intervention.
+
+**Investigation**
+
+Both Growth weeks improved above Baseline, the rate persisted through **Confirmation (55.07%)**, and remained above Baseline in **Holdout 1 (48.74%)** and **Holdout 2 (55.13%)**. Lifecycle, Device, and Acquisition comparisons were primarily within-segment improvements rather than composition effects. AOV did not show an obvious concurrent collapse.
+
+**Decision**
+
+| Output | Result |
+| --- | --- |
+| Localization | **BROAD** |
+| Reproducibility | **REPRODUCED** |
+| Growth Signal Confidence | **HIGH** |
+| Reproducibility Confidence | **HIGH** |
+| Status | **READY_FOR_REPLICATION_TEST** |
+| Recommended Action | **REPLICATION_TEST** |
+
+Historical reproducibility means the lift persisted in the observed periods; it does not prove the mechanism, establish causality, or show that the lift can be intentionally recreated. The next step is a controlled replication test, not an immediate broad rollout.
+
 ## Why this is an Agent
 
-PulseOps uses **one Investigation Agent** across both profiles. Deterministic analytics own the facts; the LLM Planner has proposal authority over the next allowed investigation, while the Policy Guard has execution authority.
+PulseOps uses **one Investigation Agent** across all three profiles. Profile-specific bounded paths are explicit:
+
+- **Conversion / Activation Anomaly:** deterministic funnel analysis, then lifecycle / device / acquisition / category investigation.
+- **Lifecycle Risk:** deterministic retention, timing, and recovery preflight, then acquisition / device / activation-depth investigation.
+- **Positive Growth:** deterministic growth, persistence, confirmation, and holdout preflight, then lifecycle / device / acquisition investigation.
+
+Deterministic analytics own the facts; the LLM Planner has proposal authority over the next allowed investigation, while the Policy Guard has execution authority.
 
 The Planner's order can change with the investigation state. Invalid, duplicate, unsafe, or premature proposals are rejected. If the provider is unavailable, deterministic fallback remains available. The Agent stops when its bounded evidence is exhausted rather than extending analysis into guesswork.
 
@@ -132,6 +165,8 @@ Plausible explanations that are not established facts.
 
 Information the current data cannot establish.
 
+For Positive Growth, **REPRODUCED historical lift ≠ proven growth mechanism**. Likewise, **REPLICATION_TEST ≠ immediate broad rollout**.
+
 PulseOps is designed to know not only what it knows, but also what it does not know.
 
 ## Technical Credibility
@@ -156,11 +191,12 @@ flowchart LR
 
 ### Validation
 
-The V0.2 baseline has **116 backend tests** and **33 frontend tests** passing.
+The current V0.3 baseline has **167 backend tests** and **40 frontend tests** passing.
 
 - Case 01: real BigQuery validation and real DeepSeek Planner validation
 - Case 02: real BigQuery Phase A/B validation and real DeepSeek Planner validation
-- Lifecycle live verification: **3 runs**, **9 proposals**, **9 accepted**, **0 rejected**, **0 fallback**, **0 illegal proposals**, **0 premature stops**, **0 unsupported causal claims**, and **0 intervention-boundary violations**
+- Case 03: real BigQuery Phase A/B validation and real DeepSeek Planner validation
+- Case 03 live Planner verification: **3 runs**, **9 proposals**, **9 accepted**, **0 rejected**, **0 fallback**, **0 illegal proposals**, **0 premature stops**, **0 unsupported causal claims**, **0 broad-scale violations**, and **0 intervention-boundary violations**
 - Guard, data-quality, no-signal, transaction rollback, Product API, frontend component/API-client, and Next.js production-build coverage
 
 Ordinary tests remain offline and never depend on DeepSeek or Google Cloud credentials. Live Planner verification is an explicit, separate check.
@@ -186,13 +222,13 @@ Ordinary tests remain offline and never depend on DeepSeek or Google Cloud crede
 - New-user 7-day Return Risk investigation
 - Real BigQuery Phase A/B validation and live DeepSeek Planner validation
 
-### V0.3 · Positive Growth Opportunity ☐
+### V0.3 · Positive Growth Opportunity ✅
 
-Planned, not implemented: detect sustained positive lifts and investigate whether they are reproducible.
+Detect sustained positive lifts and investigate whether they are historically reproducible, while keeping the mechanism unproven and the next step bounded.
 
-### Optional · Feedback Evidence
+### V0.4 · Feedback Evidence Integration ☐
 
-Planned, not implemented: use linked or appropriately scoped qualitative feedback as an additional evidence source.
+Qualitative feedback becomes an additional evidence source, not a separate Agent.
 
 ## Engineering Reference
 
@@ -242,7 +278,7 @@ $env:DATABASE_URL = "sqlite:///./work/pulseops-demo.db"
 uvicorn pulseops.backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-The demo creates verified Case 01 and Case 02 material-signal runs, plus data-quality and no-signal examples. It uses verified fixture analytics and does not require cloud credentials. For Case 01 only, a configured `DEEPSEEK_API_KEY` enables the real bounded DeepSeek Planner; otherwise deterministic fallback remains available. The reset command refuses database paths outside `work/`.
+The demo creates verified Case 01, Case 02, and Case 03 runs, plus data-quality and no-signal examples. It uses verified fixture analytics and does not require cloud credentials. A configured `DEEPSEEK_API_KEY` enables the real bounded DeepSeek Planner; otherwise deterministic fallback remains available. The reset command refuses database paths outside `work/`.
 
 ### Offline Tests
 
@@ -280,6 +316,7 @@ Live Planner verification is intentionally separate from ordinary tests:
 ```powershell
 python -m scripts.verify_live_planner
 python -m scripts.verify_live_lifecycle_planner
+python -m scripts.verify_live_growth_planner
 ```
 
 The scripts read `DEEPSEEK_API_KEY` only from the environment or an ignored local `.env`, write sanitized reports, and exit cleanly when the key is absent.

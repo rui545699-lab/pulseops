@@ -9,7 +9,7 @@ import { RunInvestigation } from "@/components/run-investigation";
 import { EmptyState, ErrorState, PageLoading } from "@/components/states";
 import { StatusBadge } from "@/components/status-badge";
 import { loadOverview } from "@/lib/api";
-import { dateTimeLabel, formatDelta, formatRate, opportunityTitle, plannerLabel, segmentLabel } from "@/lib/format";
+import { dateTimeLabel, formatDelta, formatRate, humanize, opportunityTitle, plannerLabel, segmentLabel } from "@/lib/format";
 import type { OverviewData } from "@/lib/types";
 
 export function OverviewClient({ loader = loadOverview }: { loader?: () => Promise<OverviewData> }) {
@@ -76,20 +76,22 @@ export function OverviewView({ data }: { data: OverviewData }) {
                     <StatusBadge value={opportunity.status} />
                     <StatusBadge
                       value={opportunity.opportunity_type}
-                      label={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : "Conversion / Activation"}
+                      label={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle Risk" : opportunity.opportunity_type === "POSITIVE_GROWTH" ? "Positive Growth" : "Conversion / Activation"}
                     />
                     <span className="text-[11px] text-[#8a8a84]">{dateTimeLabel(opportunity.created_at)}</span>
                   </div>
-                  <h3 className="mt-3 text-xl font-semibold tracking-[-0.025em]">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}</h3>
+                  <h3 className="mt-3 text-xl font-semibold tracking-[-0.025em]">{opportunity.opportunity_type === "LIFECYCLE_RISK" || opportunity.opportunity_type === "POSITIVE_GROWTH" ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}</h3>
                   <p className="mt-1.5 text-sm text-[#72726c]">Affected segment: <span className="font-medium text-[#343431]">{segmentLabel(opportunity.affected_segment)}</span></p>
                 </div>
-                <MetricScope eyebrow={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle risk" : "Localized opportunity"} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} />
+                <MetricScope eyebrow={opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Lifecycle risk" : opportunity.opportunity_type === "POSITIVE_GROWTH" ? "Validated growth signal" : "Localized opportunity"} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} />
                 <div className="border-l-0 border-[#e8e8e4] lg:border-l lg:pl-7">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a8a84]">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Recovery" : "Overall detected signal"}</p>
-                  <p className="mt-2 text-sm font-medium">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? opportunity.risk_pattern?.replaceAll("_", " ") : (run?.detected_signal ?? opportunity.metric)}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a8a84]">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? "Recovery" : opportunity.opportunity_type === "POSITIVE_GROWTH" ? "Reproducibility" : "Overall detected signal"}</p>
+                  <p className="mt-2 text-sm font-medium">{opportunity.opportunity_type === "LIFECYCLE_RISK" ? opportunity.risk_pattern?.replaceAll("_", " ") : opportunity.opportunity_type === "POSITIVE_GROWTH" ? humanize(opportunity.reproducibility) : (run?.detected_signal ?? opportunity.metric)}</p>
                   <p className="mt-1 text-sm tabular-nums text-[#686862]">
                     {opportunity.opportunity_type === "LIFECYCLE_RISK" ? (
                       <>Target {formatRate(opportunity.target_rate)} → Post {formatRate(opportunity.post_rate)}</>
+                    ) : opportunity.opportunity_type === "POSITIVE_GROWTH" ? (
+                      <>Confirmation {formatRate(opportunity.confirmation_period?.conversion_rate ?? null)} <span className="ml-1 text-[#2f7666]">{formatDelta(opportunity.delta_pp)}</span></>
                     ) : (
                       <>{formatRate(run?.overall_baseline_rate ?? null)} → {formatRate(run?.overall_target_rate ?? null)} <span className="ml-1 text-[#984a3e]">{formatDelta(run?.overall_delta_pp ?? null)}</span></>
                     )}
@@ -98,6 +100,7 @@ export function OverviewView({ data }: { data: OverviewData }) {
                 <div className="flex items-center justify-between gap-5 lg:justify-end">
                   <div className="flex gap-2 lg:flex-col">
                     <StatusBadge value={opportunity.signal_confidence} label={`Signal ${opportunity.signal_confidence}`} />
+                    {opportunity.opportunity_type === "POSITIVE_GROWTH" ? <StatusBadge value={opportunity.reproducibility_confidence ?? "LOW"} label={`Repro ${opportunity.reproducibility_confidence ?? "LOW"}`} /> : null}
                     <StatusBadge value={opportunity.root_cause_confidence} label={`Root Cause ${opportunity.root_cause_confidence}`} />
                   </div>
                   <ArrowRightIcon className="size-5 text-[#999993] transition-transform group-hover:translate-x-1" />

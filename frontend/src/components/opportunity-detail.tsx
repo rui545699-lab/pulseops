@@ -52,6 +52,7 @@ export function OpportunityDetailClient({
 
 export function OpportunityDetailView({ opportunity, run }: OpportunityDetailData) {
   const lifecycle = opportunity.opportunity_type === "LIFECYCLE_RISK";
+  const positiveGrowth = opportunity.opportunity_type === "POSITIVE_GROWTH";
   return (
     <div className="space-y-10">
       <nav aria-label="Breadcrumb" className="text-xs text-[#85857f]">
@@ -64,15 +65,17 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <StatusBadge value={opportunity.status} />
-            <StatusBadge value={opportunity.opportunity_type} label={lifecycle ? "Lifecycle Risk" : "Conversion / Activation"} />
+            <StatusBadge value={opportunity.opportunity_type} label={opportunityTypeLabel(opportunity.opportunity_type)} />
             <span className="text-xs text-[#7e7e78]">Affected segment · {segmentLabel(opportunity.affected_segment)}</span>
           </div>
           <h1 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-0.04em] sm:text-5xl">
-            {lifecycle ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}
+            {lifecycle || positiveGrowth ? opportunity.title : opportunityTitle(opportunity.metric, opportunity.affected_segment)}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-[#6c6c66]">
             {lifecycle
               ? "A material new-user return risk partially recovered in the Post period. The signal is strong; the causal mechanism remains unconfirmed."
+              : positiveGrowth
+                ? "A statistically supported Checkout→Purchase lift persisted through confirmation and holdouts. The lift is validated; its mechanism remains unproven."
               : "A material conversion decline is localized to this segment. The behavioral signal is strong; the causal mechanism remains unconfirmed."}
           </p>
         </div>
@@ -82,7 +85,7 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
       </header>
 
       <section aria-label="Metric scope comparison" className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-        <MetricScope eyebrow={`${lifecycle ? "Metric summary" : "Localized opportunity"} · ${segmentLabel(opportunity.affected_segment)}`} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} emphasized />
+        <MetricScope eyebrow={`${positiveGrowth ? "Validated growth signal" : lifecycle ? "Metric summary" : "Localized opportunity"} · ${segmentLabel(opportunity.affected_segment)}`} baseline={opportunity.baseline_rate} target={opportunity.target_rate} delta={opportunity.delta_pp} emphasized />
         {lifecycle ? (
           <div className="rounded-xl border border-[#e1e1dc] bg-[#f1f1ee] p-5 sm:p-6">
             <p className="meta-label">Affected Population</p>
@@ -91,6 +94,13 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
             <p className="mt-4 border-t border-[#deded8] pt-4 text-xs leading-5 text-[#777771]">
               {opportunity.return_timing?.target.eligible_new_users.toLocaleString() ?? "—"} eligible users with a complete seven-day observation window.
             </p>
+          </div>
+        ) : positiveGrowth ? (
+          <div className="rounded-xl border border-[#d7e2de] bg-[#f4f8f7] p-5 sm:p-6">
+            <p className="meta-label">Replication Boundary</p>
+            <p className="mt-3 text-xl font-semibold">Validated lift ≠ proven growth mechanism</p>
+            <p className="mt-2 text-sm text-[#686862]">Run a bounded replication test before any broad rollout.</p>
+            <p className="mt-4 border-t border-[#d8e4e0] pt-4 text-xs leading-5 text-[#61716d]">Localization · {opportunity.growth_localization ? humanize(opportunity.growth_localization) : "Unknown"}</p>
           </div>
         ) : (
           <div className="rounded-xl border border-[#e1e1dc] bg-[#f1f1ee] p-5 sm:p-6">
@@ -102,13 +112,15 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
 
       {lifecycle ? <LifecycleRecovery opportunity={opportunity} /> : null}
       {lifecycle && opportunity.return_timing ? <ReturnTiming timing={opportunity.return_timing} /> : null}
+      {positiveGrowth ? <GrowthPersistence opportunity={opportunity} /> : null}
 
-      <section aria-labelledby="confidence-heading" className="grid gap-5 rounded-xl border border-[#deded9] bg-white p-5 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-6">
+      <section aria-labelledby="confidence-heading" className={`grid gap-5 rounded-xl border border-[#deded9] bg-white p-5 sm:items-center sm:p-6 ${positiveGrowth ? "sm:grid-cols-[1fr_auto_auto_auto]" : "sm:grid-cols-[1fr_auto_auto]"}`}>
         <div>
           <h2 id="confidence-heading" className="text-sm font-semibold">Confidence</h2>
-          <p className="mt-1.5 text-sm leading-6 text-[#70706a]">Signal is well supported by behavior data. Specific cause is not yet established.</p>
+          <p className="mt-1.5 text-sm leading-6 text-[#70706a]">{positiveGrowth ? "Growth and reproducibility are measured deterministically. Specific mechanism is not established." : "Signal is well supported by behavior data. Specific cause is not yet established."}</p>
         </div>
-        <Confidence label="Signal Confidence" value={opportunity.signal_confidence} />
+        <Confidence label={positiveGrowth ? "Growth Signal Confidence" : "Signal Confidence"} value={positiveGrowth ? (opportunity.growth_signal_confidence ?? opportunity.signal_confidence) : opportunity.signal_confidence} />
+        {positiveGrowth ? <Confidence label="Reproducibility Confidence" value={opportunity.reproducibility_confidence ?? "LOW"} /> : null}
         <Confidence label="Root-cause Confidence" value={opportunity.root_cause_confidence} />
       </section>
 
@@ -140,6 +152,12 @@ export function OpportunityDetailView({ opportunity, run }: OpportunityDetailDat
   );
 }
 
+function opportunityTypeLabel(type: string): string {
+  if (type === "LIFECYCLE_RISK") return "Lifecycle Risk";
+  if (type === "POSITIVE_GROWTH") return "Positive Growth";
+  return "Conversion / Activation";
+}
+
 function LifecycleRecovery({ opportunity }: { opportunity: Opportunity }) {
   const recoveryLabel = humanize(opportunity.risk_pattern ?? "RECOVERY_ANALYSIS");
   return (
@@ -154,6 +172,28 @@ function LifecycleRecovery({ opportunity }: { opportunity: Opportunity }) {
         <div><dt className="meta-label">Lost rate recovered</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{opportunity.recovery_ratio?.toFixed(2)}%</dd></div>
       </dl>
       <p className="mt-5 text-xs leading-5 text-[#61716d]">Target → Post {formatDelta(opportunity.target_to_post_delta_pp ?? null)} · Baseline → Post {formatDelta(opportunity.baseline_to_post_delta_pp ?? null)}. Calendar timing remains a hypothesis, not a proven cause.</p>
+    </section>
+  );
+}
+
+function GrowthPersistence({ opportunity }: { opportunity: Opportunity }) {
+  const periods = [
+    ["Baseline", { checkout_sessions: 0, purchase_after_checkout_sessions: 0, conversion_rate: opportunity.baseline_rate }],
+    ["Growth", opportunity.growth_period],
+    ["Confirmation", opportunity.confirmation_period],
+    ["Holdout 1", opportunity.holdout_results?.holdout_1],
+    ["Holdout 2", opportunity.holdout_results?.holdout_2],
+  ] as const;
+  return (
+    <section aria-labelledby="growth-persistence-heading" className="rounded-xl border border-[#d7e2de] bg-[#f4f8f7] p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><p className="meta-label">Persistence evidence</p><h2 id="growth-persistence-heading" className="mt-2 text-xl font-semibold">Growth confirmation and holdouts</h2></div>
+        {opportunity.reproducibility ? <StatusBadge value={opportunity.reproducibility} /> : null}
+      </div>
+      <dl className="mt-6 grid gap-4 sm:grid-cols-5">
+        {periods.map(([label, period]) => <div key={label} className="rounded-lg border border-[#dce7e3] bg-white p-4"><dt className="meta-label">{label}</dt><dd className="mt-2 text-xl font-semibold tabular-nums">{period ? `${period.conversion_rate.toFixed(2)}%` : "—"}</dd><p className="mt-1 text-xs text-[#71716b]">{period ? `${period.purchase_after_checkout_sessions.toLocaleString()} / ${period.checkout_sessions.toLocaleString()} sessions` : "Unavailable"}</p></div>)}
+      </dl>
+      <p className="mt-5 text-xs leading-5 text-[#61716d]">Reproducibility is deterministic evidence of persistence, not causal proof. {opportunity.order_value_context ? `AOV context: ${opportunity.order_value_context.baseline_average_order_value_usd.toFixed(2)} → ${opportunity.order_value_context.growth_average_order_value_usd.toFixed(2)} USD.` : ""}</p>
     </section>
   );
 }

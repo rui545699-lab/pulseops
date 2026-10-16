@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from pulseops.backend.persistence.models import AnalysisRun, AgentStep, Opportunity
 from pulseops.backend.persistence.service import RunService
-from pulseops.backend.schemas.analytics import DateWindows, LifecycleWindows
+from pulseops.backend.schemas.analytics import DateWindows, GrowthWindows, LifecycleWindows
 
 router = APIRouter(prefix="/api", tags=["product"])
 
@@ -28,9 +28,15 @@ def _polish_hypothesis_copy(value: str) -> str:
 
 class RunCreate(DateWindows):
     planner_mode: Literal["deterministic", "deepseek"] = "deterministic"
-    analysis_type: Literal["CONVERSION", "LIFECYCLE_RISK"] = "CONVERSION"
+    analysis_type: Literal["CONVERSION", "LIFECYCLE_RISK", "POSITIVE_GROWTH"] = "CONVERSION"
     post_start: date | None = None
     post_end: date | None = None
+    confirmation_start: date | None = None
+    confirmation_end: date | None = None
+    holdout_1_start: date | None = None
+    holdout_1_end: date | None = None
+    holdout_2_start: date | None = None
+    holdout_2_end: date | None = None
 
     @model_validator(mode="after")
     def validate_profile_windows(self) -> "RunCreate":
@@ -38,6 +44,15 @@ class RunCreate(DateWindows):
             self.post_start is None or self.post_end is None
         ):
             raise ValueError("LIFECYCLE_RISK requires post_start and post_end")
+        if self.analysis_type == "POSITIVE_GROWTH" and any(
+            value is None
+            for value in (
+                self.confirmation_start, self.confirmation_end,
+                self.holdout_1_start, self.holdout_1_end,
+                self.holdout_2_start, self.holdout_2_end,
+            )
+        ):
+            raise ValueError("POSITIVE_GROWTH requires confirmation and both holdout windows")
         return self
 
 
@@ -52,6 +67,12 @@ class RunRead(BaseModel):
     target_end: date
     post_start: date | None
     post_end: date | None
+    confirmation_start: date | None
+    confirmation_end: date | None
+    holdout_1_start: date | None
+    holdout_1_end: date | None
+    holdout_2_start: date | None
+    holdout_2_end: date | None
     planner_mode: str
     provider: str | None
     model_identifier: str | None
@@ -65,6 +86,11 @@ class RunRead(BaseModel):
     recovery_ratio: float | None
     risk_pattern: str | None
     return_timing: dict[str, Any] | None
+    growth_analysis: dict[str, Any] | None
+    reproducibility: str | None
+    growth_signal_confidence: str | None
+    reproducibility_confidence: str | None
+    growth_localization: str | None
     affected_segment: str | None
     signal_confidence: str
     root_cause_confidence: str
@@ -119,6 +145,14 @@ class OpportunityRead(BaseModel):
     recovery_ratio: float | None
     risk_pattern: str | None
     return_timing: dict[str, Any] | None
+    growth_period: dict[str, Any] | None
+    confirmation_period: dict[str, Any] | None
+    holdout_results: dict[str, Any] | None
+    reproducibility: str | None
+    growth_signal_confidence: str | None
+    reproducibility_confidence: str | None
+    growth_localization: str | None
+    order_value_context: dict[str, Any] | None
     segment_analysis: dict[str, Any] | None
     hypothesis_records: list[dict[str, Any]] | None
     signal_confidence: str
@@ -149,6 +183,8 @@ def create_run(payload: RunCreate, service: RunService = Depends(get_run_service
     values = payload.model_dump(exclude={"planner_mode", "analysis_type"})
     if payload.analysis_type == "LIFECYCLE_RISK":
         windows = LifecycleWindows.model_validate(values)
+    elif payload.analysis_type == "POSITIVE_GROWTH":
+        windows = GrowthWindows.model_validate(values)
     else:
         windows = DateWindows.model_validate(values, extra="ignore")
     return service.execute(windows, payload.planner_mode, payload.analysis_type)

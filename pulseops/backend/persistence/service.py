@@ -95,11 +95,16 @@ class RunService:
     ) -> AnalysisRun:
         funnel = state.funnel_result
         retention = state.retention_result
+        growth = state.growth_result
         recovery = state.recovery_result
         if retention is not None:
             overall_baseline_rate = retention.baseline.return_rate_7d
             overall_target_rate = retention.target.return_rate_7d
             overall_delta_pp = retention.delta_pp
+        elif growth is not None:
+            overall_baseline_rate = growth.baseline.conversion_rate
+            overall_target_rate = growth.growth.conversion_rate
+            overall_delta_pp = growth.delta_pp
         else:
             overall_baseline_rate = funnel.baseline.session_conversion_rate if funnel else None
             overall_target_rate = funnel.target.session_conversion_rate if funnel else None
@@ -113,6 +118,12 @@ class RunService:
             target_end=state.target_end,
             post_start=state.post_start,
             post_end=state.post_end,
+            confirmation_start=state.confirmation_start,
+            confirmation_end=state.confirmation_end,
+            holdout_1_start=state.holdout_1_start,
+            holdout_1_end=state.holdout_1_end,
+            holdout_2_start=state.holdout_2_start,
+            holdout_2_end=state.holdout_2_end,
             planner_mode=planner_mode,
             provider=provider,
             model_identifier=model_identifier,
@@ -129,6 +140,11 @@ class RunService:
                 state.return_timing_result.model_dump(mode="json")
                 if state.return_timing_result else None
             ),
+            growth_analysis=(growth.model_dump(mode="json") if growth else None),
+            reproducibility=_value(state.reproducibility),
+            growth_signal_confidence=_value(state.growth_signal_confidence),
+            reproducibility_confidence=_value(state.reproducibility_confidence),
+            growth_localization=state.growth_localization,
             affected_segment=state.affected_segment,
             signal_confidence=_value(state.signal_confidence),
             root_cause_confidence=_value(state.root_cause_confidence),
@@ -172,11 +188,14 @@ class RunService:
     @staticmethod
     def _opportunity_from_state(state: AgentState) -> Opportunity | None:
         if state.detected_signal is None or (
-            state.funnel_result is None and state.retention_result is None
+            state.funnel_result is None
+            and state.retention_result is None
+            and state.growth_result is None
         ):
             return None
         baseline_rate, target_rate, delta_pp = _opportunity_rates(state)
         lifecycle = state.retention_result is not None
+        positive_growth = state.growth_result is not None
         recovery = state.recovery_result
         hypothesis_records = [
             item.model_dump(mode="json")
@@ -192,6 +211,8 @@ class RunService:
             title=(
                 _lifecycle_opportunity_title(_value(recovery.risk_pattern) if recovery else None)
                 if lifecycle
+                else _positive_growth_opportunity_title(state.growth_localization)
+                if positive_growth
                 else f"{state.detected_signal} decline for {state.affected_segment or 'all users'}"
             ),
             opportunity_type=state.opportunity_type,
@@ -213,12 +234,37 @@ class RunService:
                 state.return_timing_result.model_dump(mode="json")
                 if state.return_timing_result else None
             ),
+            growth_period=(
+                state.growth_result.growth.model_dump(mode="json") if positive_growth else None
+            ),
+            confirmation_period=(
+                state.growth_result.confirmation.model_dump(mode="json") if positive_growth else None
+            ),
+            holdout_results=(
+                {
+                    "holdout_1": state.growth_result.holdout_1.model_dump(mode="json"),
+                    "holdout_2": state.growth_result.holdout_2.model_dump(mode="json"),
+                }
+                if positive_growth else None
+            ),
+            reproducibility=_value(state.reproducibility),
+            growth_signal_confidence=_value(state.growth_signal_confidence),
+            reproducibility_confidence=_value(state.reproducibility_confidence),
+            growth_localization=state.growth_localization,
+            order_value_context=(
+                state.order_value_context.model_dump(mode="json")
+                if state.order_value_context else None
+            ),
             segment_analysis=(
                 {
                     name: result.model_dump(mode="json")
                     for name, result in state.lifecycle_segment_results.items()
                 }
-                if lifecycle else None
+                if lifecycle else {
+                    name: result.model_dump(mode="json")
+                    for name, result in state.growth_segment_results.items()
+                }
+                if positive_growth else None
             ),
             hypothesis_records=hypothesis_records or None,
             signal_confidence=_value(state.signal_confidence),
@@ -241,6 +287,13 @@ def _opportunity_rates(state: AgentState) -> tuple[float, float, float]:
             state.retention_result.baseline.return_rate_7d,
             state.retention_result.target.return_rate_7d,
             state.retention_result.delta_pp,
+        )
+
+    if state.growth_result is not None:
+        return (
+            state.growth_result.baseline.conversion_rate,
+            state.growth_result.growth.conversion_rate,
+            state.growth_result.delta_pp,
         )
 
     lifecycle_segment = {
@@ -276,3 +329,13 @@ def _lifecycle_opportunity_title(risk_pattern: str | None) -> str:
     if recovery == "no recovery":
         recovery = "no observed recovery"
     return f"New-user 7-day return risk with {recovery}"
+
+
+def _positive_growth_opportunity_title(localization: str | None) -> str:
+    titles = {
+        "BROAD": "Broad Checkout→Purchase lift ready for replication test",
+        "SEGMENT_CONCENTRATED": "Segment-concentrated Checkout→Purchase lift ready for replication test",
+        "MIX_DRIVEN": "Mix-driven Checkout→Purchase lift ready for replication test",
+        "MIXED": "Mixed Checkout→Purchase lift ready for replication test",
+    }
+    return titles.get(localization or "", "Checkout→Purchase Growth Opportunity")

@@ -11,6 +11,7 @@ from pulseops.backend.agent.planner import PlannerMode
 from pulseops.backend.agent.providers.deepseek import DeepSeekPlanner, DeepSeekPlannerConfig
 from pulseops.backend.agent.state import InvestigationProfile
 from pulseops.backend.fixtures.lifecycle import CASE_02, Case02GoldenTools
+from pulseops.backend.fixtures.growth import CASE_03, Case03GoldenTools
 from pulseops.backend.persistence.database import create_database, init_database
 from pulseops.backend.persistence.runner import RunExecution
 from pulseops.backend.persistence.service import RunService
@@ -18,6 +19,7 @@ from pulseops.backend.schemas.analytics import (
     AnalysisStatus,
     DateWindows,
     LifecycleWindows,
+    GrowthWindows,
     ValidationResult,
     WarningItem,
 )
@@ -25,6 +27,7 @@ from scripts.verify_live_planner import Case01FixtureTools, ROOT, WINDOWS, _env_
 
 DEFAULT_DATABASE_PATH = ROOT / "work" / "pulseops-demo.db"
 LIFECYCLE_WINDOWS = LifecycleWindows.model_validate(CASE_02["windows"])
+GROWTH_WINDOWS = GrowthWindows.model_validate(CASE_03["windows"])
 
 
 class DemoFixtureTools(Case01FixtureTools):
@@ -139,6 +142,13 @@ def seed_demo(database_path: Path, *, api_key: str | None) -> dict[str, Any]:
             "LIFECYCLE_RISK",
         )
 
+        growth_service = RunService(sessions, DemoRunner(Case03GoldenTools()))
+        growth = growth_service.execute(
+            GROWTH_WINDOWS,
+            "deterministic",
+            "POSITIVE_GROWTH",
+        )
+
         data_quality_service = RunService(
             sessions,
             DemoRunner(DemoFixtureTools(data_quality_passes=False)),
@@ -171,6 +181,7 @@ def seed_demo(database_path: Path, *, api_key: str | None) -> dict[str, Any]:
             "runs": [
                 _run_summary(material, "material_signal"),
                 _run_summary(lifecycle, "lifecycle_risk"),
+                _run_summary(growth, "positive_growth"),
                 _run_summary(data_quality, "data_quality_alert"),
                 _run_summary(no_signal, "no_significant_signal"),
             ],
@@ -180,6 +191,9 @@ def seed_demo(database_path: Path, *, api_key: str | None) -> dict[str, Any]:
             ),
             "lifecycle_opportunity_id": (
                 lifecycle.opportunity.id if lifecycle.opportunity is not None else None
+            ),
+            "growth_opportunity_id": (
+                growth.opportunity.id if growth.opportunity is not None else None
             ),
             "planner": {
                 "provider": material.provider,

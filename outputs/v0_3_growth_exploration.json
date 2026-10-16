@@ -1,0 +1,3408 @@
+{
+  "phase": "V0.3 Positive Growth Opportunity \u2014 Phase A",
+  "case_03_status": "SUITABLE",
+  "source": "bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*",
+  "data_range": {
+    "start": "2020-11-01",
+    "end": "2021-01-31"
+  },
+  "methodology": {
+    "full_weeks_only": [
+      "2020-11-02",
+      "2020-11-09",
+      "2020-11-16",
+      "2020-11-23",
+      "2020-11-30",
+      "2020-12-07",
+      "2020-12-14",
+      "2020-12-21",
+      "2020-12-28",
+      "2021-01-04",
+      "2021-01-11",
+      "2021-01-18"
+    ],
+    "predefined_metrics": {
+      "A": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "B": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "C": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "D": "Session Start \u2192 Purchase",
+      "E": "New-user 7-day Return Rate",
+      "F": "First-session Activation Depth distribution (shallow, browse, intent); only intent share is a pre-specified positive-direction candidate component."
+    },
+    "candidate_rule": "Two complete baseline weeks followed by two consecutive complete growth weeks and a two-week confirmation period. Growth and confirmation must each be statistically positive versus baseline (two-sided pooled two-proportion z test, p < 0.05); each growth week must exceed aggregate baseline rate; each period must have at least 100 eligible observations.",
+    "confidence_intervals": "95% Wilson intervals for weekly and period rates.",
+    "selection_rule": "Rank only candidates passing all gates, by data quality, minimum statistical strength across growth and confirmation, minimum period sample, two-week persistence, confirmation lift, and business relevance."
+  },
+  "data_quality": {
+    "status": "PASS_WITH_AUXILIARY_LIMITATION",
+    "dates_checked": 92,
+    "event_zero_dates": {
+      "first_visit": [],
+      "session_start": [],
+      "view_item": [],
+      "begin_checkout": [],
+      "purchase": []
+    },
+    "add_to_cart_zero_dates": [
+      "2020-11-02",
+      "2020-11-03",
+      "2020-11-04",
+      "2020-11-05",
+      "2020-11-06",
+      "2020-11-07",
+      "2020-11-08",
+      "2020-11-09",
+      "2020-11-10",
+      "2020-11-11",
+      "2020-11-12",
+      "2020-11-13",
+      "2020-11-14",
+      "2020-11-15",
+      "2020-11-21",
+      "2020-11-22",
+      "2020-11-23",
+      "2020-11-24"
+    ],
+    "structural_break_assessment": "Primary event coverage is continuous. add_to_cart has an early zero-volume interval; metrics whose denominator or numerator requires add_to_cart exclude weeks before 2020-11-30.",
+    "partial_boundary_weeks_excluded": [
+      "2020-10-26",
+      "2021-01-25"
+    ],
+    "retention_right_censoring_control": "Only first_visit cohorts through 2021-01-24 are used, so every retained cohort has seven follow-up days through 2021-01-31.",
+    "daily_minimums": {
+      "first_visit_events": 1521,
+      "session_start_events": 2133,
+      "session_start_users": 1890
+    }
+  },
+  "daily_event_coverage": [
+    {
+      "day": "2020-11-01",
+      "first_visit_events": 1946,
+      "session_start_events": 2594,
+      "view_item_events": 3380,
+      "add_to_cart_events": 4,
+      "begin_checkout_events": 127,
+      "purchase_events": 14,
+      "session_start_users": 2339
+    },
+    {
+      "day": "2020-11-02",
+      "first_visit_events": 2485,
+      "session_start_events": 3682,
+      "view_item_events": 4935,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 219,
+      "purchase_events": 49,
+      "session_start_users": 3227
+    },
+    {
+      "day": "2020-11-03",
+      "first_visit_events": 3668,
+      "session_start_events": 5285,
+      "view_item_events": 5790,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 233,
+      "purchase_events": 49,
+      "session_start_users": 4604
+    },
+    {
+      "day": "2020-11-04",
+      "first_visit_events": 2848,
+      "session_start_events": 4281,
+      "view_item_events": 5063,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 218,
+      "purchase_events": 46,
+      "session_start_users": 3691
+    },
+    {
+      "day": "2020-11-05",
+      "first_visit_events": 2415,
+      "session_start_events": 3795,
+      "view_item_events": 5255,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 195,
+      "purchase_events": 26,
+      "session_start_users": 3236
+    },
+    {
+      "day": "2020-11-06",
+      "first_visit_events": 2026,
+      "session_start_events": 3265,
+      "view_item_events": 5370,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 269,
+      "purchase_events": 58,
+      "session_start_users": 2768
+    },
+    {
+      "day": "2020-11-07",
+      "first_visit_events": 1547,
+      "session_start_events": 2239,
+      "view_item_events": 3953,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 150,
+      "purchase_events": 31,
+      "session_start_users": 1977
+    },
+    {
+      "day": "2020-11-08",
+      "first_visit_events": 1521,
+      "session_start_events": 2133,
+      "view_item_events": 3166,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 132,
+      "purchase_events": 32,
+      "session_start_users": 1890
+    },
+    {
+      "day": "2020-11-09",
+      "first_visit_events": 2086,
+      "session_start_events": 3227,
+      "view_item_events": 4429,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 211,
+      "purchase_events": 52,
+      "session_start_users": 2765
+    },
+    {
+      "day": "2020-11-10",
+      "first_visit_events": 2453,
+      "session_start_events": 3784,
+      "view_item_events": 5222,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 266,
+      "purchase_events": 64,
+      "session_start_users": 3221
+    },
+    {
+      "day": "2020-11-11",
+      "first_visit_events": 2446,
+      "session_start_events": 3765,
+      "view_item_events": 5322,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 248,
+      "purchase_events": 64,
+      "session_start_users": 3247
+    },
+    {
+      "day": "2020-11-12",
+      "first_visit_events": 2274,
+      "session_start_events": 3631,
+      "view_item_events": 4925,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 355,
+      "purchase_events": 54,
+      "session_start_users": 3132
+    },
+    {
+      "day": "2020-11-13",
+      "first_visit_events": 2153,
+      "session_start_events": 3300,
+      "view_item_events": 5281,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 605,
+      "purchase_events": 79,
+      "session_start_users": 2828
+    },
+    {
+      "day": "2020-11-14",
+      "first_visit_events": 1622,
+      "session_start_events": 2334,
+      "view_item_events": 3509,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 320,
+      "purchase_events": 30,
+      "session_start_users": 2052
+    },
+    {
+      "day": "2020-11-15",
+      "first_visit_events": 1566,
+      "session_start_events": 2190,
+      "view_item_events": 3212,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 324,
+      "purchase_events": 21,
+      "session_start_users": 1942
+    },
+    {
+      "day": "2020-11-16",
+      "first_visit_events": 2335,
+      "session_start_events": 3496,
+      "view_item_events": 4836,
+      "add_to_cart_events": 85,
+      "begin_checkout_events": 542,
+      "purchase_events": 69,
+      "session_start_users": 3047
+    },
+    {
+      "day": "2020-11-17",
+      "first_visit_events": 2562,
+      "session_start_events": 4012,
+      "view_item_events": 6077,
+      "add_to_cart_events": 535,
+      "begin_checkout_events": 693,
+      "purchase_events": 98,
+      "session_start_users": 3404
+    },
+    {
+      "day": "2020-11-18",
+      "first_visit_events": 2636,
+      "session_start_events": 4092,
+      "view_item_events": 5338,
+      "add_to_cart_events": 621,
+      "begin_checkout_events": 354,
+      "purchase_events": 68,
+      "session_start_users": 3472
+    },
+    {
+      "day": "2020-11-19",
+      "first_visit_events": 2692,
+      "session_start_events": 4154,
+      "view_item_events": 5154,
+      "add_to_cart_events": 187,
+      "begin_checkout_events": 335,
+      "purchase_events": 84,
+      "session_start_users": 3536
+    },
+    {
+      "day": "2020-11-20",
+      "first_visit_events": 2627,
+      "session_start_events": 4084,
+      "view_item_events": 6082,
+      "add_to_cart_events": 15,
+      "begin_checkout_events": 318,
+      "purchase_events": 118,
+      "session_start_users": 3434
+    },
+    {
+      "day": "2020-11-21",
+      "first_visit_events": 2175,
+      "session_start_events": 3153,
+      "view_item_events": 4214,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 174,
+      "purchase_events": 68,
+      "session_start_users": 2723
+    },
+    {
+      "day": "2020-11-22",
+      "first_visit_events": 1887,
+      "session_start_events": 2650,
+      "view_item_events": 3737,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 166,
+      "purchase_events": 60,
+      "session_start_users": 2329
+    },
+    {
+      "day": "2020-11-23",
+      "first_visit_events": 2640,
+      "session_start_events": 3916,
+      "view_item_events": 5070,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 277,
+      "purchase_events": 141,
+      "session_start_users": 3378
+    },
+    {
+      "day": "2020-11-24",
+      "first_visit_events": 2742,
+      "session_start_events": 4170,
+      "view_item_events": 6624,
+      "add_to_cart_events": 0,
+      "begin_checkout_events": 366,
+      "purchase_events": 147,
+      "session_start_users": 3591
+    },
+    {
+      "day": "2020-11-25",
+      "first_visit_events": 2895,
+      "session_start_events": 4295,
+      "view_item_events": 6700,
+      "add_to_cart_events": 297,
+      "begin_checkout_events": 387,
+      "purchase_events": 108,
+      "session_start_users": 3727
+    },
+    {
+      "day": "2020-11-26",
+      "first_visit_events": 2882,
+      "session_start_events": 4061,
+      "view_item_events": 5114,
+      "add_to_cart_events": 1047,
+      "begin_checkout_events": 321,
+      "purchase_events": 57,
+      "session_start_users": 3562
+    },
+    {
+      "day": "2020-11-27",
+      "first_visit_events": 2810,
+      "session_start_events": 3928,
+      "view_item_events": 5216,
+      "add_to_cart_events": 1229,
+      "begin_checkout_events": 300,
+      "purchase_events": 97,
+      "session_start_users": 3466
+    },
+    {
+      "day": "2020-11-28",
+      "first_visit_events": 2453,
+      "session_start_events": 3346,
+      "view_item_events": 4438,
+      "add_to_cart_events": 1076,
+      "begin_checkout_events": 245,
+      "purchase_events": 78,
+      "session_start_users": 2969
+    },
+    {
+      "day": "2020-11-29",
+      "first_visit_events": 2321,
+      "session_start_events": 3207,
+      "view_item_events": 4095,
+      "add_to_cart_events": 811,
+      "begin_checkout_events": 246,
+      "purchase_events": 51,
+      "session_start_users": 2846
+    },
+    {
+      "day": "2020-11-30",
+      "first_visit_events": 3060,
+      "session_start_events": 4516,
+      "view_item_events": 7132,
+      "add_to_cart_events": 1767,
+      "begin_checkout_events": 950,
+      "purchase_events": 141,
+      "session_start_users": 3919
+    },
+    {
+      "day": "2020-12-01",
+      "first_visit_events": 3303,
+      "session_start_events": 4912,
+      "view_item_events": 6976,
+      "add_to_cart_events": 1653,
+      "begin_checkout_events": 732,
+      "purchase_events": 107,
+      "session_start_users": 4239
+    },
+    {
+      "day": "2020-12-02",
+      "first_visit_events": 3184,
+      "session_start_events": 4759,
+      "view_item_events": 6441,
+      "add_to_cart_events": 1464,
+      "begin_checkout_events": 768,
+      "purchase_events": 82,
+      "session_start_users": 4063
+    },
+    {
+      "day": "2020-12-03",
+      "first_visit_events": 3514,
+      "session_start_events": 5142,
+      "view_item_events": 7075,
+      "add_to_cart_events": 1286,
+      "begin_checkout_events": 775,
+      "purchase_events": 90,
+      "session_start_users": 4419
+    },
+    {
+      "day": "2020-12-04",
+      "first_visit_events": 3249,
+      "session_start_events": 4678,
+      "view_item_events": 7349,
+      "add_to_cart_events": 1561,
+      "begin_checkout_events": 733,
+      "purchase_events": 96,
+      "session_start_users": 4094
+    },
+    {
+      "day": "2020-12-05",
+      "first_visit_events": 2492,
+      "session_start_events": 3464,
+      "view_item_events": 4952,
+      "add_to_cart_events": 1063,
+      "begin_checkout_events": 591,
+      "purchase_events": 87,
+      "session_start_users": 3044
+    },
+    {
+      "day": "2020-12-06",
+      "first_visit_events": 2407,
+      "session_start_events": 3303,
+      "view_item_events": 4043,
+      "add_to_cart_events": 791,
+      "begin_checkout_events": 434,
+      "purchase_events": 42,
+      "session_start_users": 2922
+    },
+    {
+      "day": "2020-12-07",
+      "first_visit_events": 3742,
+      "session_start_events": 5410,
+      "view_item_events": 6872,
+      "add_to_cart_events": 1127,
+      "begin_checkout_events": 716,
+      "purchase_events": 110,
+      "session_start_users": 4672
+    },
+    {
+      "day": "2020-12-08",
+      "first_visit_events": 5483,
+      "session_start_events": 7526,
+      "view_item_events": 7896,
+      "add_to_cart_events": 1775,
+      "begin_checkout_events": 990,
+      "purchase_events": 122,
+      "session_start_users": 6640
+    },
+    {
+      "day": "2020-12-09",
+      "first_visit_events": 4411,
+      "session_start_events": 6211,
+      "view_item_events": 7801,
+      "add_to_cart_events": 1787,
+      "begin_checkout_events": 1016,
+      "purchase_events": 150,
+      "session_start_users": 5468
+    },
+    {
+      "day": "2020-12-10",
+      "first_visit_events": 4053,
+      "session_start_events": 5759,
+      "view_item_events": 8108,
+      "add_to_cart_events": 1739,
+      "begin_checkout_events": 983,
+      "purchase_events": 143,
+      "session_start_users": 5035
+    },
+    {
+      "day": "2020-12-11",
+      "first_visit_events": 3886,
+      "session_start_events": 5476,
+      "view_item_events": 7926,
+      "add_to_cart_events": 2135,
+      "begin_checkout_events": 933,
+      "purchase_events": 160,
+      "session_start_users": 4850
+    },
+    {
+      "day": "2020-12-12",
+      "first_visit_events": 3126,
+      "session_start_events": 4088,
+      "view_item_events": 5674,
+      "add_to_cart_events": 1381,
+      "begin_checkout_events": 647,
+      "purchase_events": 106,
+      "session_start_users": 3706
+    },
+    {
+      "day": "2020-12-13",
+      "first_visit_events": 2868,
+      "session_start_events": 3666,
+      "view_item_events": 4516,
+      "add_to_cart_events": 940,
+      "begin_checkout_events": 423,
+      "purchase_events": 74,
+      "session_start_users": 3364
+    },
+    {
+      "day": "2020-12-14",
+      "first_visit_events": 3695,
+      "session_start_events": 5051,
+      "view_item_events": 6684,
+      "add_to_cart_events": 1528,
+      "begin_checkout_events": 725,
+      "purchase_events": 99,
+      "session_start_users": 4504
+    },
+    {
+      "day": "2020-12-15",
+      "first_visit_events": 3986,
+      "session_start_events": 5680,
+      "view_item_events": 7348,
+      "add_to_cart_events": 1943,
+      "begin_checkout_events": 825,
+      "purchase_events": 139,
+      "session_start_users": 4927
+    },
+    {
+      "day": "2020-12-16",
+      "first_visit_events": 3851,
+      "session_start_events": 5487,
+      "view_item_events": 6432,
+      "add_to_cart_events": 1710,
+      "begin_checkout_events": 833,
+      "purchase_events": 143,
+      "session_start_users": 4777
+    },
+    {
+      "day": "2020-12-17",
+      "first_visit_events": 3821,
+      "session_start_events": 5283,
+      "view_item_events": 6142,
+      "add_to_cart_events": 1648,
+      "begin_checkout_events": 745,
+      "purchase_events": 126,
+      "session_start_users": 4661
+    },
+    {
+      "day": "2020-12-18",
+      "first_visit_events": 3547,
+      "session_start_events": 4786,
+      "view_item_events": 5374,
+      "add_to_cart_events": 1629,
+      "begin_checkout_events": 938,
+      "purchase_events": 107,
+      "session_start_users": 4217
+    },
+    {
+      "day": "2020-12-19",
+      "first_visit_events": 2774,
+      "session_start_events": 3558,
+      "view_item_events": 3113,
+      "add_to_cart_events": 776,
+      "begin_checkout_events": 526,
+      "purchase_events": 52,
+      "session_start_users": 3207
+    },
+    {
+      "day": "2020-12-20",
+      "first_visit_events": 2562,
+      "session_start_events": 3247,
+      "view_item_events": 2389,
+      "add_to_cart_events": 535,
+      "begin_checkout_events": 375,
+      "purchase_events": 20,
+      "session_start_users": 2931
+    },
+    {
+      "day": "2020-12-21",
+      "first_visit_events": 2939,
+      "session_start_events": 3952,
+      "view_item_events": 3542,
+      "add_to_cart_events": 841,
+      "begin_checkout_events": 534,
+      "purchase_events": 53,
+      "session_start_users": 3571
+    },
+    {
+      "day": "2020-12-22",
+      "first_visit_events": 2718,
+      "session_start_events": 3793,
+      "view_item_events": 4286,
+      "add_to_cart_events": 1103,
+      "begin_checkout_events": 546,
+      "purchase_events": 60,
+      "session_start_users": 3363
+    },
+    {
+      "day": "2020-12-23",
+      "first_visit_events": 2527,
+      "session_start_events": 3409,
+      "view_item_events": 3750,
+      "add_to_cart_events": 1116,
+      "begin_checkout_events": 589,
+      "purchase_events": 67,
+      "session_start_users": 3087
+    },
+    {
+      "day": "2020-12-24",
+      "first_visit_events": 2241,
+      "session_start_events": 2774,
+      "view_item_events": 2271,
+      "add_to_cart_events": 483,
+      "begin_checkout_events": 188,
+      "purchase_events": 23,
+      "session_start_users": 2574
+    },
+    {
+      "day": "2020-12-25",
+      "first_visit_events": 2207,
+      "session_start_events": 2624,
+      "view_item_events": 1639,
+      "add_to_cart_events": 462,
+      "begin_checkout_events": 202,
+      "purchase_events": 17,
+      "session_start_users": 2471
+    },
+    {
+      "day": "2020-12-26",
+      "first_visit_events": 2209,
+      "session_start_events": 2651,
+      "view_item_events": 1730,
+      "add_to_cart_events": 338,
+      "begin_checkout_events": 143,
+      "purchase_events": 17,
+      "session_start_users": 2451
+    },
+    {
+      "day": "2020-12-27",
+      "first_visit_events": 2179,
+      "session_start_events": 2646,
+      "view_item_events": 1681,
+      "add_to_cart_events": 500,
+      "begin_checkout_events": 211,
+      "purchase_events": 20,
+      "session_start_users": 2467
+    },
+    {
+      "day": "2020-12-28",
+      "first_visit_events": 2577,
+      "session_start_events": 3329,
+      "view_item_events": 2638,
+      "add_to_cart_events": 633,
+      "begin_checkout_events": 302,
+      "purchase_events": 36,
+      "session_start_users": 3021
+    },
+    {
+      "day": "2020-12-29",
+      "first_visit_events": 2647,
+      "session_start_events": 3401,
+      "view_item_events": 2308,
+      "add_to_cart_events": 556,
+      "begin_checkout_events": 239,
+      "purchase_events": 24,
+      "session_start_users": 3090
+    },
+    {
+      "day": "2020-12-30",
+      "first_visit_events": 2514,
+      "session_start_events": 3183,
+      "view_item_events": 1863,
+      "add_to_cart_events": 400,
+      "begin_checkout_events": 263,
+      "purchase_events": 37,
+      "session_start_users": 2927
+    },
+    {
+      "day": "2020-12-31",
+      "first_visit_events": 2104,
+      "session_start_events": 2588,
+      "view_item_events": 1639,
+      "add_to_cart_events": 444,
+      "begin_checkout_events": 252,
+      "purchase_events": 25,
+      "session_start_users": 2407
+    },
+    {
+      "day": "2021-01-01",
+      "first_visit_events": 1916,
+      "session_start_events": 2289,
+      "view_item_events": 1498,
+      "add_to_cart_events": 295,
+      "begin_checkout_events": 162,
+      "purchase_events": 14,
+      "session_start_users": 2140
+    },
+    {
+      "day": "2021-01-02",
+      "first_visit_events": 2298,
+      "session_start_events": 2705,
+      "view_item_events": 1390,
+      "add_to_cart_events": 304,
+      "begin_checkout_events": 140,
+      "purchase_events": 14,
+      "session_start_users": 2555
+    },
+    {
+      "day": "2021-01-03",
+      "first_visit_events": 2255,
+      "session_start_events": 2753,
+      "view_item_events": 1615,
+      "add_to_cart_events": 229,
+      "begin_checkout_events": 151,
+      "purchase_events": 14,
+      "session_start_users": 2546
+    },
+    {
+      "day": "2021-01-04",
+      "first_visit_events": 2620,
+      "session_start_events": 3319,
+      "view_item_events": 1983,
+      "add_to_cart_events": 396,
+      "begin_checkout_events": 183,
+      "purchase_events": 16,
+      "session_start_users": 3037
+    },
+    {
+      "day": "2021-01-05",
+      "first_visit_events": 3480,
+      "session_start_events": 4411,
+      "view_item_events": 2715,
+      "add_to_cart_events": 538,
+      "begin_checkout_events": 260,
+      "purchase_events": 29,
+      "session_start_users": 4033
+    },
+    {
+      "day": "2021-01-06",
+      "first_visit_events": 4736,
+      "session_start_events": 5952,
+      "view_item_events": 3144,
+      "add_to_cart_events": 656,
+      "begin_checkout_events": 348,
+      "purchase_events": 31,
+      "session_start_users": 5444
+    },
+    {
+      "day": "2021-01-07",
+      "first_visit_events": 3493,
+      "session_start_events": 4608,
+      "view_item_events": 2798,
+      "add_to_cart_events": 594,
+      "begin_checkout_events": 373,
+      "purchase_events": 26,
+      "session_start_users": 4129
+    },
+    {
+      "day": "2021-01-08",
+      "first_visit_events": 3197,
+      "session_start_events": 4219,
+      "view_item_events": 2660,
+      "add_to_cart_events": 498,
+      "begin_checkout_events": 308,
+      "purchase_events": 34,
+      "session_start_users": 3765
+    },
+    {
+      "day": "2021-01-09",
+      "first_visit_events": 2553,
+      "session_start_events": 3241,
+      "view_item_events": 2130,
+      "add_to_cart_events": 462,
+      "begin_checkout_events": 173,
+      "purchase_events": 20,
+      "session_start_users": 2936
+    },
+    {
+      "day": "2021-01-10",
+      "first_visit_events": 2394,
+      "session_start_events": 2976,
+      "view_item_events": 1778,
+      "add_to_cart_events": 310,
+      "begin_checkout_events": 173,
+      "purchase_events": 14,
+      "session_start_users": 2746
+    },
+    {
+      "day": "2021-01-11",
+      "first_visit_events": 2983,
+      "session_start_events": 3918,
+      "view_item_events": 2444,
+      "add_to_cart_events": 537,
+      "begin_checkout_events": 280,
+      "purchase_events": 28,
+      "session_start_users": 3570
+    },
+    {
+      "day": "2021-01-12",
+      "first_visit_events": 3491,
+      "session_start_events": 4679,
+      "view_item_events": 3315,
+      "add_to_cart_events": 745,
+      "begin_checkout_events": 428,
+      "purchase_events": 48,
+      "session_start_users": 4149
+    },
+    {
+      "day": "2021-01-13",
+      "first_visit_events": 3440,
+      "session_start_events": 4478,
+      "view_item_events": 2990,
+      "add_to_cart_events": 665,
+      "begin_checkout_events": 398,
+      "purchase_events": 36,
+      "session_start_users": 4043
+    },
+    {
+      "day": "2021-01-14",
+      "first_visit_events": 3248,
+      "session_start_events": 4322,
+      "view_item_events": 3268,
+      "add_to_cart_events": 684,
+      "begin_checkout_events": 469,
+      "purchase_events": 54,
+      "session_start_users": 3869
+    },
+    {
+      "day": "2021-01-15",
+      "first_visit_events": 2972,
+      "session_start_events": 3894,
+      "view_item_events": 2981,
+      "add_to_cart_events": 572,
+      "begin_checkout_events": 383,
+      "purchase_events": 47,
+      "session_start_users": 3516
+    },
+    {
+      "day": "2021-01-16",
+      "first_visit_events": 2513,
+      "session_start_events": 3149,
+      "view_item_events": 1938,
+      "add_to_cart_events": 357,
+      "begin_checkout_events": 281,
+      "purchase_events": 27,
+      "session_start_users": 2868
+    },
+    {
+      "day": "2021-01-17",
+      "first_visit_events": 2375,
+      "session_start_events": 2960,
+      "view_item_events": 1566,
+      "add_to_cart_events": 301,
+      "begin_checkout_events": 193,
+      "purchase_events": 14,
+      "session_start_users": 2688
+    },
+    {
+      "day": "2021-01-18",
+      "first_visit_events": 2735,
+      "session_start_events": 3561,
+      "view_item_events": 1829,
+      "add_to_cart_events": 388,
+      "begin_checkout_events": 221,
+      "purchase_events": 19,
+      "session_start_users": 3187
+    },
+    {
+      "day": "2021-01-19",
+      "first_visit_events": 3057,
+      "session_start_events": 4146,
+      "view_item_events": 3933,
+      "add_to_cart_events": 713,
+      "begin_checkout_events": 469,
+      "purchase_events": 49,
+      "session_start_users": 3678
+    },
+    {
+      "day": "2021-01-20",
+      "first_visit_events": 3455,
+      "session_start_events": 4727,
+      "view_item_events": 5548,
+      "add_to_cart_events": 925,
+      "begin_checkout_events": 804,
+      "purchase_events": 96,
+      "session_start_users": 4151
+    },
+    {
+      "day": "2021-01-21",
+      "first_visit_events": 3398,
+      "session_start_events": 4640,
+      "view_item_events": 4680,
+      "add_to_cart_events": 642,
+      "begin_checkout_events": 519,
+      "purchase_events": 52,
+      "session_start_users": 4150
+    },
+    {
+      "day": "2021-01-22",
+      "first_visit_events": 2912,
+      "session_start_events": 4034,
+      "view_item_events": 4486,
+      "add_to_cart_events": 677,
+      "begin_checkout_events": 906,
+      "purchase_events": 100,
+      "session_start_users": 3551
+    },
+    {
+      "day": "2021-01-23",
+      "first_visit_events": 2400,
+      "session_start_events": 3088,
+      "view_item_events": 2811,
+      "add_to_cart_events": 372,
+      "begin_checkout_events": 375,
+      "purchase_events": 43,
+      "session_start_users": 2788
+    },
+    {
+      "day": "2021-01-24",
+      "first_visit_events": 2278,
+      "session_start_events": 2929,
+      "view_item_events": 2610,
+      "add_to_cart_events": 473,
+      "begin_checkout_events": 397,
+      "purchase_events": 36,
+      "session_start_users": 2659
+    },
+    {
+      "day": "2021-01-25",
+      "first_visit_events": 2843,
+      "session_start_events": 3865,
+      "view_item_events": 3269,
+      "add_to_cart_events": 480,
+      "begin_checkout_events": 462,
+      "purchase_events": 61,
+      "session_start_users": 3463
+    },
+    {
+      "day": "2021-01-26",
+      "first_visit_events": 2888,
+      "session_start_events": 4049,
+      "view_item_events": 3012,
+      "add_to_cart_events": 506,
+      "begin_checkout_events": 413,
+      "purchase_events": 55,
+      "session_start_users": 3542
+    },
+    {
+      "day": "2021-01-27",
+      "first_visit_events": 3047,
+      "session_start_events": 4271,
+      "view_item_events": 3813,
+      "add_to_cart_events": 575,
+      "begin_checkout_events": 524,
+      "purchase_events": 54,
+      "session_start_users": 3744
+    },
+    {
+      "day": "2021-01-28",
+      "first_visit_events": 2905,
+      "session_start_events": 4057,
+      "view_item_events": 3321,
+      "add_to_cart_events": 478,
+      "begin_checkout_events": 325,
+      "purchase_events": 69,
+      "session_start_users": 3594
+    },
+    {
+      "day": "2021-01-29",
+      "first_visit_events": 2733,
+      "session_start_events": 3742,
+      "view_item_events": 3242,
+      "add_to_cart_events": 486,
+      "begin_checkout_events": 421,
+      "purchase_events": 54,
+      "session_start_users": 3338
+    },
+    {
+      "day": "2021-01-30",
+      "first_visit_events": 2131,
+      "session_start_events": 2807,
+      "view_item_events": 2375,
+      "add_to_cart_events": 369,
+      "begin_checkout_events": 261,
+      "purchase_events": 31,
+      "session_start_users": 2524
+    },
+    {
+      "day": "2021-01-31",
+      "first_visit_events": 2127,
+      "session_start_events": 2760,
+      "view_item_events": 1829,
+      "add_to_cart_events": 295,
+      "begin_checkout_events": 234,
+      "purchase_events": 19,
+      "session_start_users": 2473
+    }
+  ],
+  "weekly_metric_scan": [
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 16500,
+      "successes": 3048,
+      "rate": 18.4727,
+      "ci_95": [
+        17.888,
+        19.0722
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 14591,
+      "successes": 2908,
+      "rate": 19.9301,
+      "ci_95": [
+        19.2899,
+        20.5862
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 16906,
+      "successes": 3546,
+      "rate": 20.9748,
+      "ci_95": [
+        20.3677,
+        21.5951
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 18734,
+      "successes": 3009,
+      "rate": 16.0617,
+      "ci_95": [
+        15.5429,
+        16.5944
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 21195,
+      "successes": 3402,
+      "rate": 16.051,
+      "ci_95": [
+        15.5629,
+        16.5513
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 27558,
+      "successes": 3421,
+      "rate": 12.4138,
+      "ci_95": [
+        12.0297,
+        12.8084
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 24221,
+      "successes": 3273,
+      "rate": 13.5131,
+      "ci_95": [
+        13.0883,
+        13.9494
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 17013,
+      "successes": 2234,
+      "rate": 13.1311,
+      "ci_95": [
+        12.6319,
+        13.647
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 16300,
+      "successes": 1847,
+      "rate": 11.3313,
+      "ci_95": [
+        10.8538,
+        11.827
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 22458,
+      "successes": 2462,
+      "rate": 10.9627,
+      "ci_95": [
+        10.5607,
+        11.378
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 21008,
+      "successes": 2700,
+      "rate": 12.8522,
+      "ci_95": [
+        12.4065,
+        13.3116
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_BROWSE",
+      "metric_label": "First-session Activation Depth: browse share",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 20220,
+      "successes": 3871,
+      "rate": 19.1444,
+      "ci_95": [
+        18.608,
+        19.6925
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 16500,
+      "successes": 568,
+      "rate": 3.4424,
+      "ci_95": [
+        3.1749,
+        3.7316
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 14591,
+      "successes": 632,
+      "rate": 4.3314,
+      "ci_95": [
+        4.013,
+        4.6739
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 16906,
+      "successes": 785,
+      "rate": 4.6433,
+      "ci_95": [
+        4.3363,
+        4.9709
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 18734,
+      "successes": 1161,
+      "rate": 6.1973,
+      "ci_95": [
+        5.8609,
+        6.5516
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 21195,
+      "successes": 1744,
+      "rate": 8.2284,
+      "ci_95": [
+        7.8659,
+        8.6059
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 27558,
+      "successes": 1672,
+      "rate": 6.0672,
+      "ci_95": [
+        5.7914,
+        6.3552
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 24221,
+      "successes": 1196,
+      "rate": 4.9379,
+      "ci_95": [
+        4.6721,
+        5.2179
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 17013,
+      "successes": 576,
+      "rate": 3.3856,
+      "ci_95": [
+        3.1242,
+        3.6681
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 16300,
+      "successes": 401,
+      "rate": 2.4601,
+      "ci_95": [
+        2.2333,
+        2.7094
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 22458,
+      "successes": 607,
+      "rate": 2.7028,
+      "ci_95": [
+        2.4987,
+        2.9231
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 21008,
+      "successes": 667,
+      "rate": 3.175,
+      "ci_95": [
+        2.9463,
+        3.4208
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_INTENT",
+      "metric_label": "First-session Activation Depth: intent share",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 20220,
+      "successes": 712,
+      "rate": 3.5213,
+      "ci_95": [
+        3.2759,
+        3.7843
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 16500,
+      "successes": 12884,
+      "rate": 78.0848,
+      "ci_95": [
+        77.4472,
+        78.7095
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 14591,
+      "successes": 11051,
+      "rate": 75.7385,
+      "ci_95": [
+        75.0362,
+        76.4272
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 16906,
+      "successes": 12575,
+      "rate": 74.3819,
+      "ci_95": [
+        73.7184,
+        75.0343
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 18734,
+      "successes": 14564,
+      "rate": 77.741,
+      "ci_95": [
+        77.1397,
+        78.331
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 21195,
+      "successes": 16049,
+      "rate": 75.7207,
+      "ci_95": [
+        75.1388,
+        76.2932
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 27558,
+      "successes": 22465,
+      "rate": 81.519,
+      "ci_95": [
+        81.0563,
+        81.9728
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 24221,
+      "successes": 19752,
+      "rate": 81.5491,
+      "ci_95": [
+        81.0556,
+        82.0326
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 17013,
+      "successes": 14203,
+      "rate": 83.4832,
+      "ci_95": [
+        82.9177,
+        84.0336
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 16300,
+      "successes": 14052,
+      "rate": 86.2086,
+      "ci_95": [
+        85.6707,
+        86.7294
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 22458,
+      "successes": 19389,
+      "rate": 86.3345,
+      "ci_95": [
+        85.879,
+        86.7775
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 21008,
+      "successes": 17641,
+      "rate": 83.9728,
+      "ci_95": [
+        83.4705,
+        84.4626
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_DEPTH_SHALLOW",
+      "metric_label": "First-session Activation Depth: shallow share",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 20220,
+      "successes": 15637,
+      "rate": 77.3343,
+      "ci_95": [
+        76.7521,
+        77.9062
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 16500,
+      "successes": 16500,
+      "rate": 100.0,
+      "ci_95": [
+        99.9767,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 14591,
+      "successes": 14591,
+      "rate": 100.0,
+      "ci_95": [
+        99.9737,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 16906,
+      "successes": 16906,
+      "rate": 100.0,
+      "ci_95": [
+        99.9773,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 18734,
+      "successes": 18734,
+      "rate": 100.0,
+      "ci_95": [
+        99.9795,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 21195,
+      "successes": 21195,
+      "rate": 100.0,
+      "ci_95": [
+        99.9819,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 27558,
+      "successes": 27558,
+      "rate": 100.0,
+      "ci_95": [
+        99.9861,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 24221,
+      "successes": 24221,
+      "rate": 100.0,
+      "ci_95": [
+        99.9841,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 17013,
+      "successes": 17013,
+      "rate": 100.0,
+      "ci_95": [
+        99.9774,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 16300,
+      "successes": 16300,
+      "rate": 100.0,
+      "ci_95": [
+        99.9764,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 22458,
+      "successes": 22458,
+      "rate": 100.0,
+      "ci_95": [
+        99.9829,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 21008,
+      "successes": 21008,
+      "rate": 100.0,
+      "ci_95": [
+        99.9817,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ACTIVATION_SESSION_ID_COVERAGE",
+      "metric_label": "First-session activation session-id coverage",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 20220,
+      "successes": 20220,
+      "rate": 100.0,
+      "ci_95": [
+        99.981,
+        100.0
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 0,
+      "successes": 0,
+      "rate": null,
+      "ci_95": [
+        null,
+        null
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 0,
+      "successes": 0,
+      "rate": null,
+      "ci_95": [
+        null,
+        null
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 529,
+      "successes": 201,
+      "rate": 37.9962,
+      "ci_95": [
+        33.9606,
+        42.2049
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 1208,
+      "successes": 456,
+      "rate": 37.7483,
+      "ci_95": [
+        35.0576,
+        40.5167
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 2605,
+      "successes": 962,
+      "rate": 36.929,
+      "ci_95": [
+        35.0962,
+        38.8003
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 2657,
+      "successes": 1020,
+      "rate": 38.3892,
+      "ci_95": [
+        36.558,
+        40.2539
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 2071,
+      "successes": 694,
+      "rate": 33.5104,
+      "ci_95": [
+        31.5096,
+        35.5722
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 972,
+      "successes": 288,
+      "rate": 29.6296,
+      "ci_95": [
+        26.8438,
+        32.5759
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 643,
+      "successes": 185,
+      "rate": 28.7714,
+      "ci_95": [
+        25.4065,
+        32.3884
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 943,
+      "successes": 226,
+      "rate": 23.9661,
+      "ci_95": [
+        21.3506,
+        26.7928
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 1073,
+      "successes": 327,
+      "rate": 30.4753,
+      "ci_95": [
+        27.7948,
+        33.2951
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "ADD_TO_CART_TO_BEGIN_CHECKOUT",
+      "metric_label": "Strict same-user, same-session Add to Cart \u2192 Begin Checkout",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 1187,
+      "successes": 474,
+      "rate": 39.9326,
+      "ci_95": [
+        37.1832,
+        42.7469
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 872,
+      "successes": 249,
+      "rate": 28.555,
+      "ci_95": [
+        25.6563,
+        31.6419
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 1034,
+      "successes": 337,
+      "rate": 32.5919,
+      "ci_95": [
+        29.804,
+        35.5087
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 1041,
+      "successes": 372,
+      "rate": 35.7349,
+      "ci_95": [
+        32.8811,
+        38.6935
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 1184,
+      "successes": 460,
+      "rate": 38.8514,
+      "ci_95": [
+        36.1153,
+        41.6595
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 1408,
+      "successes": 586,
+      "rate": 41.6193,
+      "ci_95": [
+        39.0708,
+        44.2134
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 1549,
+      "successes": 759,
+      "rate": 48.9994,
+      "ci_95": [
+        46.5154,
+        51.4882
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 1001,
+      "successes": 545,
+      "rate": 54.4456,
+      "ci_95": [
+        51.3493,
+        57.5079
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 411,
+      "successes": 232,
+      "rate": 56.4477,
+      "ci_95": [
+        51.6163,
+        61.1596
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 259,
+      "successes": 137,
+      "rate": 52.8958,
+      "ci_95": [
+        46.8188,
+        58.8881
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 339,
+      "successes": 160,
+      "rate": 47.1976,
+      "ci_95": [
+        41.9446,
+        52.5134
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 453,
+      "successes": 226,
+      "rate": 49.8896,
+      "ci_95": [
+        45.3056,
+        54.4755
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 660,
+      "successes": 372,
+      "rate": 56.3636,
+      "ci_95": [
+        52.554,
+        60.0996
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 16500,
+      "successes": 1500,
+      "rate": 9.0909,
+      "ci_95": [
+        8.6617,
+        9.5391
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 14591,
+      "successes": 1492,
+      "rate": 10.2255,
+      "ci_95": [
+        9.7443,
+        10.7276
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 16906,
+      "successes": 1747,
+      "rate": 10.3336,
+      "ci_95": [
+        9.8837,
+        10.8015
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 18734,
+      "successes": 1687,
+      "rate": 9.005,
+      "ci_95": [
+        8.6035,
+        9.4234
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 21195,
+      "successes": 2045,
+      "rate": 9.6485,
+      "ci_95": [
+        9.2583,
+        10.0533
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 27558,
+      "successes": 2015,
+      "rate": 7.3119,
+      "ci_95": [
+        7.0104,
+        7.6252
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 24221,
+      "successes": 1593,
+      "rate": 6.5769,
+      "ci_95": [
+        6.2716,
+        6.896
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 17013,
+      "successes": 897,
+      "rate": 5.2724,
+      "ci_95": [
+        4.9466,
+        5.6185
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 16300,
+      "successes": 806,
+      "rate": 4.9448,
+      "ci_95": [
+        4.6224,
+        5.2884
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 22458,
+      "successes": 1454,
+      "rate": 6.4743,
+      "ci_95": [
+        6.1599,
+        6.8036
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 21008,
+      "successes": 1390,
+      "rate": 6.6165,
+      "ci_95": [
+        6.2883,
+        6.9607
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "NEW_USER_7D_RETURN",
+      "metric_label": "New-user 7-day Return Rate",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 20220,
+      "successes": 1553,
+      "rate": 7.6805,
+      "ci_95": [
+        7.3215,
+        8.0556
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 24672,
+      "successes": 249,
+      "rate": 1.0092,
+      "ci_95": [
+        0.8919,
+        1.1418
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 22226,
+      "successes": 338,
+      "rate": 1.5207,
+      "ci_95": [
+        1.368,
+        1.6902
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 25632,
+      "successes": 372,
+      "rate": 1.4513,
+      "ci_95": [
+        1.312,
+        1.6052
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 26912,
+      "successes": 460,
+      "rate": 1.7093,
+      "ci_95": [
+        1.5612,
+        1.8712
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 30764,
+      "successes": 587,
+      "rate": 1.9081,
+      "ci_95": [
+        1.7611,
+        2.0671
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 38125,
+      "successes": 759,
+      "rate": 1.9908,
+      "ci_95": [
+        1.8554,
+        2.1359
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 33080,
+      "successes": 545,
+      "rate": 1.6475,
+      "ci_95": [
+        1.5159,
+        1.7904
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 21840,
+      "successes": 232,
+      "rate": 1.0623,
+      "ci_95": [
+        0.9347,
+        1.2071
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 20245,
+      "successes": 137,
+      "rate": 0.6767,
+      "ci_95": [
+        0.5728,
+        0.7994
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 28715,
+      "successes": 160,
+      "rate": 0.5572,
+      "ci_95": [
+        0.4775,
+        0.6502
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 27389,
+      "successes": 226,
+      "rate": 0.8251,
+      "ci_95": [
+        0.7247,
+        0.9394
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 27120,
+      "successes": 372,
+      "rate": 1.3717,
+      "ci_95": [
+        1.24,
+        1.5172
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": null
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-11-02",
+      "week_end": "2020-11-08",
+      "eligible": 5450,
+      "successes": 0,
+      "rate": 0.0,
+      "ci_95": [
+        0.0,
+        0.0704
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-11-09",
+      "week_end": "2020-11-15",
+      "eligible": 5471,
+      "successes": 0,
+      "rate": 0.0,
+      "ci_95": [
+        0.0,
+        0.0702
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-11-16",
+      "week_end": "2020-11-22",
+      "eligible": 6557,
+      "successes": 457,
+      "rate": 6.9697,
+      "ci_95": [
+        6.3782,
+        7.6115
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-11-23",
+      "week_end": "2020-11-29",
+      "eligible": 6108,
+      "successes": 1051,
+      "rate": 17.2069,
+      "ci_95": [
+        16.2811,
+        18.174
+      ],
+      "reliable_for_candidate_selection": false,
+      "reliability_note": "Excluded: early add_to_cart instability contaminates this cart-dependent metric."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-11-30",
+      "week_end": "2020-12-06",
+      "eligible": 7719,
+      "successes": 2251,
+      "rate": 29.1618,
+      "ci_95": [
+        28.1584,
+        30.1859
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-13",
+      "eligible": 7975,
+      "successes": 2289,
+      "rate": 28.7022,
+      "ci_95": [
+        27.7198,
+        29.7051
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-12-14",
+      "week_end": "2020-12-20",
+      "eligible": 6974,
+      "successes": 1705,
+      "rate": 24.4479,
+      "ci_95": [
+        23.4535,
+        25.4705
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-12-21",
+      "week_end": "2020-12-27",
+      "eligible": 4046,
+      "successes": 816,
+      "rate": 20.1681,
+      "ci_95": [
+        18.9602,
+        21.4325
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2020-12-28",
+      "week_end": "2021-01-03",
+      "eligible": 3063,
+      "successes": 535,
+      "rate": 17.4665,
+      "ci_95": [
+        16.1629,
+        18.8517
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2021-01-04",
+      "week_end": "2021-01-10",
+      "eligible": 4357,
+      "successes": 784,
+      "rate": 17.994,
+      "ci_95": [
+        16.8818,
+        19.1627
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2021-01-11",
+      "week_end": "2021-01-17",
+      "eligible": 4790,
+      "successes": 914,
+      "rate": 19.0814,
+      "ci_95": [
+        17.9936,
+        20.2188
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    },
+    {
+      "metric": "VIEW_ITEM_TO_ADD_TO_CART",
+      "metric_label": "Strict same-user, same-session View Item \u2192 Add to Cart",
+      "week_start": "2021-01-18",
+      "week_end": "2021-01-24",
+      "eligible": 6399,
+      "successes": 1004,
+      "rate": 15.69,
+      "ci_95": [
+        14.8194,
+        16.6016
+      ],
+      "reliable_for_candidate_selection": true,
+      "reliability_note": "Included after the verified early add_to_cart instability interval."
+    }
+  ],
+  "candidate_ranking": [
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-23",
+        "week_end": "2020-12-06",
+        "weeks": [
+          "2020-11-23",
+          "2020-11-30"
+        ],
+        "eligible": 2592,
+        "successes": 1046,
+        "rate": 40.3549,
+        "ci_95": [
+          38.4818,
+          42.2566
+        ]
+      },
+      "growth": {
+        "week_start": "2020-12-07",
+        "week_end": "2020-12-20",
+        "weeks": [
+          "2020-12-07",
+          "2020-12-14"
+        ],
+        "eligible": 2550,
+        "successes": 1304,
+        "rate": 51.1373,
+        "ci_95": [
+          49.1969,
+          53.0742
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-12-21",
+        "week_end": "2021-01-03",
+        "weeks": [
+          "2020-12-21",
+          "2020-12-28"
+        ],
+        "eligible": 670,
+        "successes": 369,
+        "rate": 55.0746,
+        "ci_95": [
+          51.2899,
+          58.8015
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 10.7823,
+          "z_score": 7.7602,
+          "p_value": 8.478177572179715e-15
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 14.7197,
+          "z_score": 6.853,
+          "p_value": 7.229234240166529e-12
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 670,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 6.853,
+        "minimum_period_sample": 670,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 14.7197,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 1
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-16",
+        "week_end": "2020-11-29",
+        "weeks": [
+          "2020-11-16",
+          "2020-11-23"
+        ],
+        "eligible": 2225,
+        "successes": 832,
+        "rate": 37.3933,
+        "ci_95": [
+          35.4062,
+          39.4238
+        ]
+      },
+      "growth": {
+        "week_start": "2020-11-30",
+        "week_end": "2020-12-13",
+        "weeks": [
+          "2020-11-30",
+          "2020-12-07"
+        ],
+        "eligible": 2957,
+        "successes": 1345,
+        "rate": 45.4853,
+        "ci_95": [
+          43.6975,
+          47.2848
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-12-14",
+        "week_end": "2020-12-27",
+        "weeks": [
+          "2020-12-14",
+          "2020-12-21"
+        ],
+        "eligible": 1412,
+        "successes": 777,
+        "rate": 55.0283,
+        "ci_95": [
+          52.4234,
+          57.6059
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 8.092,
+          "z_score": 5.8418,
+          "p_value": 5.164495340677962e-09
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 17.6351,
+          "z_score": 10.4356,
+          "p_value": 1.7045629676492904e-25
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 1412,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 5.8418,
+        "minimum_period_sample": 1412,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 17.6351,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 2
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-02",
+        "week_end": "2020-11-15",
+        "weeks": [
+          "2020-11-02",
+          "2020-11-09"
+        ],
+        "eligible": 1906,
+        "successes": 586,
+        "rate": 30.745,
+        "ci_95": [
+          28.7139,
+          32.8536
+        ]
+      },
+      "growth": {
+        "week_start": "2020-11-16",
+        "week_end": "2020-11-29",
+        "weeks": [
+          "2020-11-16",
+          "2020-11-23"
+        ],
+        "eligible": 2225,
+        "successes": 832,
+        "rate": 37.3933,
+        "ci_95": [
+          35.4062,
+          39.4238
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-11-30",
+        "week_end": "2020-12-13",
+        "weeks": [
+          "2020-11-30",
+          "2020-12-07"
+        ],
+        "eligible": 2957,
+        "successes": 1345,
+        "rate": 45.4853,
+        "ci_95": [
+          43.6975,
+          47.2848
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 6.6482,
+          "z_score": 4.4864,
+          "p_value": 7.243699497643574e-06
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 14.7403,
+          "z_score": 10.2559,
+          "p_value": 1.1139149292809197e-24
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 1906,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 4.4864,
+        "minimum_period_sample": 1906,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 14.7403,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 3
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-02",
+        "week_end": "2020-11-15",
+        "weeks": [
+          "2020-11-02",
+          "2020-11-09"
+        ],
+        "eligible": 46898,
+        "successes": 587,
+        "rate": 1.2517,
+        "ci_95": [
+          1.155,
+          1.3563
+        ]
+      },
+      "growth": {
+        "week_start": "2020-11-16",
+        "week_end": "2020-11-29",
+        "weeks": [
+          "2020-11-16",
+          "2020-11-23"
+        ],
+        "eligible": 52544,
+        "successes": 832,
+        "rate": 1.5834,
+        "ci_95": [
+          1.4802,
+          1.6938
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-11-30",
+        "week_end": "2020-12-13",
+        "weeks": [
+          "2020-11-30",
+          "2020-12-07"
+        ],
+        "eligible": 68889,
+        "successes": 1346,
+        "rate": 1.9539,
+        "ci_95": [
+          1.8532,
+          2.0599
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 0.3318,
+          "z_score": 4.4037,
+          "p_value": 1.06400354525384e-05
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 0.7022,
+          "z_score": 9.1551,
+          "p_value": 5.431681757445883e-20
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 46898,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 4.4037,
+        "minimum_period_sample": 46898,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 0.7022,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 4
+    },
+    {
+      "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+      "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-09",
+        "week_end": "2020-11-22",
+        "weeks": [
+          "2020-11-09",
+          "2020-11-16"
+        ],
+        "eligible": 2075,
+        "successes": 709,
+        "rate": 34.1687,
+        "ci_95": [
+          32.159,
+          36.2369
+        ]
+      },
+      "growth": {
+        "week_start": "2020-11-23",
+        "week_end": "2020-12-06",
+        "weeks": [
+          "2020-11-23",
+          "2020-11-30"
+        ],
+        "eligible": 2592,
+        "successes": 1046,
+        "rate": 40.3549,
+        "ci_95": [
+          38.4818,
+          42.2566
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-12-07",
+        "week_end": "2020-12-20",
+        "weeks": [
+          "2020-12-07",
+          "2020-12-14"
+        ],
+        "eligible": 2550,
+        "successes": 1304,
+        "rate": 51.1373,
+        "ci_95": [
+          49.1969,
+          53.0742
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 6.1863,
+          "z_score": 4.3355,
+          "p_value": 1.4542631676823254e-05
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 16.9686,
+          "z_score": 11.5764,
+          "p_value": 5.430292661974727e-31
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 2075,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 4.3355,
+        "minimum_period_sample": 2075,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 16.9686,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 5
+    },
+    {
+      "metric": "SESSION_START_TO_PURCHASE",
+      "metric_label": "Session Start \u2192 Purchase",
+      "baseline": {
+        "week_start": "2020-11-09",
+        "week_end": "2020-11-22",
+        "weeks": [
+          "2020-11-09",
+          "2020-11-16"
+        ],
+        "eligible": 47858,
+        "successes": 710,
+        "rate": 1.4836,
+        "ci_95": [
+          1.3791,
+          1.5958
+        ]
+      },
+      "growth": {
+        "week_start": "2020-11-23",
+        "week_end": "2020-12-06",
+        "weeks": [
+          "2020-11-23",
+          "2020-11-30"
+        ],
+        "eligible": 57676,
+        "successes": 1047,
+        "rate": 1.8153,
+        "ci_95": [
+          1.7095,
+          1.9275
+        ]
+      },
+      "confirmation": {
+        "week_start": "2020-12-07",
+        "week_end": "2020-12-20",
+        "weeks": [
+          "2020-12-07",
+          "2020-12-14"
+        ],
+        "eligible": 71205,
+        "successes": 1304,
+        "rate": 1.8313,
+        "ci_95": [
+          1.7354,
+          1.9324
+        ]
+      },
+      "statistics": {
+        "growth_vs_baseline": {
+          "delta_pp": 0.3318,
+          "z_score": 4.1933,
+          "p_value": 2.7493059961340898e-05
+        },
+        "confirmation_vs_baseline": {
+          "delta_pp": 0.3478,
+          "z_score": 4.5626,
+          "p_value": 5.053605093848204e-06
+        },
+        "growth_significant_positive": true,
+        "confirmation_significant_positive": true
+      },
+      "growth_weeks_individually_above_baseline": true,
+      "confirmation_above_baseline": true,
+      "minimum_period_sample": 47858,
+      "qualifies": true,
+      "reproducibility": "REPRODUCED",
+      "rank_components": {
+        "data_quality": 1,
+        "statistical_strength_min_abs_z": 4.1933,
+        "minimum_period_sample": 47858,
+        "two_week_growth_persistence": 1,
+        "confirmation_delta_pp": 0.3478,
+        "business_relevance_weight": 5
+      },
+      "main_limitation": null,
+      "rank": 6
+    }
+  ],
+  "selected_candidate": {
+    "metric": "BEGIN_CHECKOUT_TO_PURCHASE",
+    "metric_label": "Strict same-user, same-session Begin Checkout \u2192 Purchase",
+    "baseline": {
+      "week_start": "2020-11-23",
+      "week_end": "2020-12-06",
+      "weeks": [
+        "2020-11-23",
+        "2020-11-30"
+      ],
+      "eligible": 2592,
+      "successes": 1046,
+      "rate": 40.3549,
+      "ci_95": [
+        38.4818,
+        42.2566
+      ]
+    },
+    "growth": {
+      "week_start": "2020-12-07",
+      "week_end": "2020-12-20",
+      "weeks": [
+        "2020-12-07",
+        "2020-12-14"
+      ],
+      "eligible": 2550,
+      "successes": 1304,
+      "rate": 51.1373,
+      "ci_95": [
+        49.1969,
+        53.0742
+      ]
+    },
+    "confirmation": {
+      "week_start": "2020-12-21",
+      "week_end": "2021-01-03",
+      "weeks": [
+        "2020-12-21",
+        "2020-12-28"
+      ],
+      "eligible": 670,
+      "successes": 369,
+      "rate": 55.0746,
+      "ci_95": [
+        51.2899,
+        58.8015
+      ]
+    },
+    "statistics": {
+      "growth_vs_baseline": {
+        "delta_pp": 10.7823,
+        "z_score": 7.7602,
+        "p_value": 8.478177572179715e-15
+      },
+      "confirmation_vs_baseline": {
+        "delta_pp": 14.7197,
+        "z_score": 6.853,
+        "p_value": 7.229234240166529e-12
+      },
+      "growth_significant_positive": true,
+      "confirmation_significant_positive": true
+    },
+    "growth_weeks_individually_above_baseline": true,
+    "confirmation_above_baseline": true,
+    "minimum_period_sample": 670,
+    "qualifies": true,
+    "reproducibility": "REPRODUCED",
+    "rank_components": {
+      "data_quality": 1,
+      "statistical_strength_min_abs_z": 6.853,
+      "minimum_period_sample": 670,
+      "two_week_growth_persistence": 1,
+      "confirmation_delta_pp": 14.7197,
+      "business_relevance_weight": 5
+    },
+    "main_limitation": null,
+    "rank": 1
+  },
+  "segment_localization": {
+    "scope": "same-session metric; lifecycle is based on whether the investigated session contains first_visit",
+    "category_assessment": "Not evaluated: category is not required to assess this metric's initial localization and would add high-cardinality exploratory noise.",
+    "dimensions": [
+      {
+        "dimension": "lifecycle",
+        "available": true,
+        "baseline_rate": 40.3549,
+        "growth_rate": 51.1373,
+        "composition_effect_pp": 3.4364,
+        "within_segment_effect_pp": 7.346,
+        "within_segment_share_of_total_lift": 0.6813,
+        "segments": [
+          {
+            "segment": "new",
+            "baseline_eligible": 1522,
+            "baseline_rate": 27.2668,
+            "growth_eligible": 1220,
+            "growth_rate": 36.4754,
+            "growth_mix_share_pct": 47.8807,
+            "within_segment_delta_pp": 9.2087,
+            "within_segment_p_value": 2.406249643931792e-07,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "returning",
+            "baseline_eligible": 1070,
+            "baseline_rate": 58.972,
+            "growth_eligible": 1328,
+            "growth_rate": 64.6837,
+            "growth_mix_share_pct": 52.1193,
+            "within_segment_delta_pp": 5.7118,
+            "within_segment_p_value": 0.004150520167750238,
+            "significant_positive_within_segment": true
+          }
+        ]
+      },
+      {
+        "dimension": "device",
+        "available": true,
+        "baseline_rate": 40.3549,
+        "growth_rate": 51.1373,
+        "composition_effect_pp": -0.0159,
+        "within_segment_effect_pp": 10.7983,
+        "within_segment_share_of_total_lift": 1.0015,
+        "segments": [
+          {
+            "segment": "desktop",
+            "baseline_eligible": 1511,
+            "baseline_rate": 38.9146,
+            "growth_eligible": 1481,
+            "growth_rate": 51.8569,
+            "growth_mix_share_pct": 58.124,
+            "within_segment_delta_pp": 12.9422,
+            "within_segment_p_value": 1.1592618478654672e-12,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "mobile",
+            "baseline_eligible": 1021,
+            "baseline_rate": 42.1156,
+            "growth_eligible": 1020,
+            "growth_rate": 50.7843,
+            "growth_mix_share_pct": 40.0314,
+            "within_segment_delta_pp": 8.6687,
+            "within_segment_p_value": 8.628606901916344e-05,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "tablet",
+            "baseline_eligible": 60,
+            "baseline_rate": 46.6667,
+            "growth_eligible": 47,
+            "growth_rate": 38.2979,
+            "growth_mix_share_pct": 1.8446,
+            "within_segment_delta_pp": -8.3688,
+            "within_segment_p_value": 0.3854864795727604,
+            "significant_positive_within_segment": false
+          }
+        ]
+      },
+      {
+        "dimension": "acquisition",
+        "available": true,
+        "baseline_rate": 40.3549,
+        "growth_rate": 51.1373,
+        "composition_effect_pp": 0.6538,
+        "within_segment_effect_pp": 10.1286,
+        "within_segment_share_of_total_lift": 0.9394,
+        "segments": [
+          {
+            "segment": "(data deleted) / (data deleted)",
+            "baseline_eligible": 238,
+            "baseline_rate": 59.2437,
+            "growth_eligible": 292,
+            "growth_rate": 65.7534,
+            "growth_mix_share_pct": 11.46,
+            "within_segment_delta_pp": 6.5097,
+            "within_segment_p_value": 0.12295194452961797,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "(data deleted) / referral",
+            "baseline_eligible": 0,
+            "baseline_rate": 40.3549,
+            "growth_eligible": 0,
+            "growth_rate": null,
+            "growth_mix_share_pct": 0.0,
+            "within_segment_delta_pp": null,
+            "within_segment_p_value": null,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "(direct) / (none)",
+            "baseline_eligible": 570,
+            "baseline_rate": 37.3684,
+            "growth_eligible": 601,
+            "growth_rate": 50.0832,
+            "growth_mix_share_pct": 23.5871,
+            "within_segment_delta_pp": 12.7148,
+            "within_segment_p_value": 1.1745801092844838e-05,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "<Other> / (data deleted)",
+            "baseline_eligible": 5,
+            "baseline_rate": 60.0,
+            "growth_eligible": 5,
+            "growth_rate": 40.0,
+            "growth_mix_share_pct": 0.1962,
+            "within_segment_delta_pp": -20.0,
+            "within_segment_p_value": 0.5270892568655383,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "<Other> / <Other>",
+            "baseline_eligible": 357,
+            "baseline_rate": 32.7731,
+            "growth_eligible": 291,
+            "growth_rate": 42.6117,
+            "growth_mix_share_pct": 11.4207,
+            "within_segment_delta_pp": 9.8386,
+            "within_segment_p_value": 0.009952490761183135,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "<Other> / cpc",
+            "baseline_eligible": 0,
+            "baseline_rate": 40.3549,
+            "growth_eligible": 0,
+            "growth_rate": null,
+            "growth_mix_share_pct": 0.0,
+            "within_segment_delta_pp": null,
+            "within_segment_p_value": null,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "<Other> / organic",
+            "baseline_eligible": 58,
+            "baseline_rate": 32.7586,
+            "growth_eligible": 50,
+            "growth_rate": 60.0,
+            "growth_mix_share_pct": 1.9623,
+            "within_segment_delta_pp": 27.2414,
+            "within_segment_p_value": 0.004576685445958783,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "<Other> / referral",
+            "baseline_eligible": 256,
+            "baseline_rate": 41.7969,
+            "growth_eligible": 240,
+            "growth_rate": 47.9167,
+            "growth_mix_share_pct": 9.4192,
+            "within_segment_delta_pp": 6.1198,
+            "within_segment_p_value": 0.1707551042932233,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "google / cpc",
+            "baseline_eligible": 101,
+            "baseline_rate": 34.6535,
+            "growth_eligible": 90,
+            "growth_rate": 47.7778,
+            "growth_mix_share_pct": 3.5322,
+            "within_segment_delta_pp": 13.1243,
+            "within_segment_p_value": 0.0654757474872668,
+            "significant_positive_within_segment": false
+          },
+          {
+            "segment": "google / organic",
+            "baseline_eligible": 749,
+            "baseline_rate": 37.6502,
+            "growth_eligible": 716,
+            "growth_rate": 47.3464,
+            "growth_mix_share_pct": 28.1005,
+            "within_segment_delta_pp": 9.6962,
+            "within_segment_p_value": 0.0001740042862514939,
+            "significant_positive_within_segment": true
+          },
+          {
+            "segment": "shop.googlemerchandisestore.com / referral",
+            "baseline_eligible": 258,
+            "baseline_rate": 50.0,
+            "growth_eligible": 263,
+            "growth_rate": 60.076,
+            "growth_mix_share_pct": 10.3218,
+            "within_segment_delta_pp": 10.076,
+            "within_segment_p_value": 0.020789418291357106,
+            "significant_positive_within_segment": true
+          }
+        ]
+      }
+    ],
+    "classification": "BROAD",
+    "significant_positive_within_segment_count": 8,
+    "supporting_dimensions": 2,
+    "composition_effect": "Composition and within-segment effects are reported per dimension; neither is a causal attribution.",
+    "within_segment_effect": "A positive within-segment comparison indicates an observed rate change after holding that dimension's observed mix fixed; it does not identify a mechanism."
+  },
+  "evidence": [
+    "Strict same-user, same-session Begin Checkout \u2192 Purchase increased from 40.35% in the baseline to 51.14% across two consecutive growth weeks.",
+    "The confirmation period was 55.07%, still above the baseline with a two-sided pooled proportion-test p-value of 7.22923e-12.",
+    "The selected comparison uses at least 670 eligible observations in each two-week period and excludes partial boundary weeks.",
+    "The scan used only pre-specified metrics and a deterministic six-week (baseline \u2192 growth \u2192 confirmation) window rule."
+  ],
+  "hypotheses": [
+    "Observed within-segment change or traffic composition may be associated with the increase; the decomposition does not establish why the metric changed.",
+    "The persisted improvement may be compatible with a repeatable opportunity, but only a separate replication or controlled test could distinguish mechanism from temporal coincidence."
+  ],
+  "unknowns": [
+    "Whether campaigns, merchandising, pricing, inventory, seasonality, product experience, or measurement conditions caused the observed change.",
+    "Whether the pattern will recur in an independent later period or outside this obfuscated public sample.",
+    "Whether dimensions not evaluated in this bounded Phase A scan would alter the descriptive localization."
+  ],
+  "suggested_future_evidence": "REPLICATION_TEST: reproduce the observed window on an independent fully observed period before considering a controlled scale test; do not infer an intervention from this descriptive scan.",
+  "reproducibility": "REPRODUCED",
+  "non_causal_boundary": "This is a descriptive, read-only exploration. No causal root cause, intervention recommendation, production enum, or product logic is asserted or changed."
+}
